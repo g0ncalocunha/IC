@@ -86,12 +86,14 @@ public:
             }
     }
 
-    void printContentInMap(map<wchar_t, int> map) 
+    template <typename K, typename V>
+    
+    void printContentInMap(const map<K, V>& map) 
     {
         wcout << "\nContents of the file stored in Map:" << endl;
         for (auto const& [key, val] : map)
         {
-            wcout << key << ':' << val << endl;
+            wcout << key << L':' << val << endl;
         }
     }
 
