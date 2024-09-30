@@ -17,7 +17,7 @@ private:
     wifstream fin;
 
 public:
-    map<char, int> mapCharacter;
+    map<wchar_t, int> mapCharacter;
     map<wstring, int> mapWord;
 
     bool readFile(const string &filename)
@@ -73,17 +73,20 @@ public:
 
     void countCharacterOccurence()
     {
+        locale loc("");
         for (const auto &line : textContent)
         {
             for (const auto &character : line)
             {
-                mapCharacter[character] += 1;
+                if(iswalpha(character)){
+                    mapCharacter[character] += 1;
+                }
                 
             }
             }
-        }
+    }
 
-    void printContentInMap(map<char, int> map) 
+    void printContentInMap(map<wchar_t, int> map) 
     {
         wcout << "\nContents of the file stored in Map:" << endl;
         for (auto const& [key, val] : map)
