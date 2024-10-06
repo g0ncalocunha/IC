@@ -6,6 +6,11 @@
 #include <algorithm>
 #include <clocale>
 #include <cwctype>
+#include <matplotlibcpp.h>
+#include <codecvt>
+#include <locale>
+
+namespace plt=matplotlibcpp;
 
 using namespace std;
 
@@ -15,6 +20,9 @@ private:
     vector<wstring> textContent;
     wstring line;
     wifstream fin;
+    vector<char> x_axis;
+    vector<int> y_axis;
+    vector<string> labels;
 
 public:
     map<wchar_t, int> mapCharacter;
@@ -112,6 +120,39 @@ public:
     //         }
     //     }
     // }
+
+    template <typename K, typename V>
+    void plotFrequencies(const map<K, V>& map, string title, string xlabel) {
+        x_axis.clear();
+        y_axis.clear();
+        labels.clear();  
+
+        int index = 0;
+        wstring_convert<codecvt_utf8<wchar_t>, wchar_t> converter; 
+
+        for (auto const& [key, val] : map) {
+            string label;
+
+            label = converter.to_bytes(key);
+
+            x_axis.push_back(index++);
+            y_axis.push_back(val);
+            labels.push_back(label);  
+        }
+
+        plt::plot(x_axis, y_axis);
+        plt::title(title);
+        plt::xlabel(xlabel);
+        plt::ylabel("Frequency");
+
+        if (x_axis.size() == labels.size()) {
+            plt::xticks(x_axis, labels); 
+        }
+
+        plt::show();
+    }
+
+
 };
 int main()
 {
@@ -127,5 +168,6 @@ int main()
     processor.printContentInVector();
     processor.countCharacterOccurence();
     processor.printContentInMap(processor.mapCharacter);
+    processor.plotFrequencies(processor.mapCharacter, "Character Frequency", "Characters");
     return 0;
 }
