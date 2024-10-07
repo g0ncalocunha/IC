@@ -130,23 +130,52 @@ public:
 
     template <typename K, typename V>
     void plotFrequencies(const map<K, V>& map, string title, string xlabel) {
-        x_axis.clear();
-        y_axis.clear();
-        labels.clear();  
+        vector<int> x_axis;
+        vector<V> y_axis;
+        vector<string> labels;
 
-        int index = 0;
         wstring_convert<codecvt_utf8<wchar_t>, wchar_t> converter; 
 
-        for (auto const& [key, val] : map) {
-            string label;
+        if (title == "Word Frequency") {  
+            vector<pair<K, V>> top10;
 
-            label = converter.to_bytes(key);
+            for (const auto& [key, val] : map) {
+                if (top10.size() < 10) {
+                    top10.push_back({key, val});
+                } else {
+                    auto min_it = min_element(top10.begin(), top10.end(), 
+                                                [](const auto& a, const auto& b) {
+                                                    return a.second < b.second;
+                                                });
+                    if (val > min_it->second) {
+                        *min_it = {key, val};  
+                    }
+                }
+            }
 
-            x_axis.push_back(index++);
-            y_axis.push_back(val);
-            labels.push_back(label);  
+            sort(top10.begin(), top10.end(), 
+                    [](const auto& a, const auto& b) {
+                        return a.second > b.second;
+                    });
+
+            int index = 0;
+            for (const auto& [key, val] : top10) {
+                string label = converter.to_bytes(key);
+                x_axis.push_back(index++);
+                y_axis.push_back(val);
+                labels.push_back(label);
+            }
+        } else {
+            int index = 0;
+            for (const auto& [key, val] : map) {
+                string label = converter.to_bytes(key);
+                x_axis.push_back(index++);
+                y_axis.push_back(val);
+                labels.push_back(label);
+            }
         }
 
+        plt::figure_size(1200, 800);
         plt::plot(x_axis, y_axis, "*");
         plt::title(title);
         plt::xlabel(xlabel);
