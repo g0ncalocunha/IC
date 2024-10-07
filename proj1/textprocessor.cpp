@@ -105,21 +105,17 @@ public:
         }
     }
 
-    // void countWordOccurence()
-    // {
-    //     for (const auto &line : textContent)
-    //     {
-    //         // split line into words
-    //         line.split(' ');
-    //         for (const auto &word : line)
-    //         {
-    //             if (word.length() > 0)
-    //             {
-    //                 mapWord[word] += 1;
-    //             }
-    //         }
-    //     }
-    // }
+    void countWordOccurence()
+    {
+        locale loc("");
+        for (const auto &line : textContent)
+        {
+            for (const auto &word : line)
+            {
+                mapWord[word] += 1;
+            }
+        }
+    }
 
     template <typename K, typename V>
     void plotFrequencies(const map<K, V>& map, string title, string xlabel) {
