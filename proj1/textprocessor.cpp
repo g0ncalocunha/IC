@@ -9,6 +9,7 @@
 #include <matplotlibcpp.h>
 #include <codecvt>
 #include <locale>
+#include <sstream>
 
 namespace plt=matplotlibcpp;
 
@@ -94,6 +95,28 @@ public:
             }
     }
 
+    void countWordOccurrence()
+    {
+        for (const auto &line : textContent)
+        {
+            wstring word;
+            wstringstream wss(line);
+            
+            while (wss >> word)
+            {
+                if (mapWord.find(word) != mapWord.end())
+                {
+                    mapWord[word]++;
+                }
+                else
+                {
+                    mapWord[word] = 1;
+                }
+            }
+        }
+    }
+
+
     template <typename K, typename V>
     
     void printContentInMap(const map<K, V>& map) 
@@ -102,18 +125,6 @@ public:
         for (auto const& [key, val] : map)
         {
             wcout << key << L':' << val << endl;
-        }
-    }
-
-    void countWordOccurence()
-    {
-        locale loc("");
-        for (const auto &line : textContent)
-        {
-            for (const auto &word : line)
-            {
-                mapWord[word] += 1;
-            }
         }
     }
 
@@ -165,6 +176,9 @@ int main()
     processor.printContentInVector();
     processor.countCharacterOccurence();
     processor.printContentInMap(processor.mapCharacter);
+    processor.countWordOccurrence();
+    processor.printContentInMap(processor.mapWord);
     processor.plotFrequencies(processor.mapCharacter, "Character Frequency", "Characters");
+    processor.plotFrequencies(processor.mapWord, "Word Frequency", "Words");
     return 0;
 }
