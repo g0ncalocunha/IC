@@ -136,7 +136,7 @@ public:
             labels.push_back(label);  
         }
 
-        plt::plot(x_axis, y_axis);
+        plt::plot(x_axis, y_axis, "*");
         plt::title(title);
         plt::xlabel(xlabel);
         plt::ylabel("Frequency");
@@ -150,6 +150,7 @@ public:
 
 
 };
+
 int main()
 {
     locale::global(locale(""));
