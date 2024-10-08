@@ -1,4 +1,4 @@
-*.gitmodules
+.gitmodules
 
 
 *.exe
