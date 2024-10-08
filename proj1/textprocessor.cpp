@@ -196,18 +196,18 @@ int main()
     locale::global(locale(""));
 
     TextProcessor processor;
-    if (processor.readFile("a.txt"))
+    if (processor.readFile("textprocessor_files/a.txt"))
     {
         wcout << "\nFile read successfully!" << endl;
+        processor.printContentInVector();
+        processor.applyTransformation();
+        processor.printContentInVector();
+        processor.countCharacterOccurence();
+        processor.printContentInMap(processor.mapCharacter);
+        processor.countWordOccurrence();
+        processor.printContentInMap(processor.mapWord);
+        processor.plotFrequencies(processor.mapCharacter, "Character Frequency", "Characters");
+        processor.plotFrequencies(processor.mapWord, "Word Frequency", "Words");
     }
-    processor.printContentInVector();
-    processor.applyTransformation();
-    processor.printContentInVector();
-    processor.countCharacterOccurence();
-    processor.printContentInMap(processor.mapCharacter);
-    processor.countWordOccurrence();
-    processor.printContentInMap(processor.mapWord);
-    processor.plotFrequencies(processor.mapCharacter, "Character Frequency", "Characters");
-    processor.plotFrequencies(processor.mapWord, "Word Frequency", "Words");
     return 0;
 }
