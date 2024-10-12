@@ -5,5 +5,5 @@ textprocessor:
 	g++ -o textprocessor.out textprocessor.cpp -std=c++20 -I./matplotlib-cpp -I/usr/include/python3.10 -lpython3.10
 	chmod +x textprocessor.out
 audioprocesor:
-	g++ audioprocessor.cpp -o audioprocessor.out -lsfml-audio -lsfml-system
+	g++ audioprocessor.cpp -o audioprocessor.out -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 	chmod +x audioprocessor.out
