@@ -12,3 +12,4 @@ sudo apt install \
     libgbm-dev
 
 sudo apt-get install libsfml-dev
+sudo apt-get install libfftw3-dev
