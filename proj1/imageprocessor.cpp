@@ -85,12 +85,50 @@ class ImageProcessor
       return diffImage;
     }
 
-    Scalar calculateMSE(const Mat &image1, const Mat &image2)
+    double calculateMSE(const Mat &image1, const Mat &image2)
     {
-      Scalar meanValue = mean((image1 - image2) ^ 2);
-      cout << "MSE: " << meanValue << endl;
-      return meanValue;
+      Mat s1;
+      absdiff(image1, image2, s1);       // |image1 - image2|
+      s1.convertTo(s1, CV_32F);  // convert to float
+      s1 = s1.mul(s1);           // |image1 - image2|^2
+
+      Scalar s = sum(s1);        // sum elements per channel
+
+      double sse = s.val[0] + s.val[1] + s.val[2]; // sum channels
+
+      double mse = sse / (double)(image1.channels() * image1.total());
+      cout << "MSE: " << mse << endl;
+      return mse;
     }
+
+    double calculatePSNR(const Mat &image1, const Mat &image2)
+    {
+      double mse = calculateMSE(image1, image2);
+      if (mse == 0) 
+      {
+        cout << "MSE is zero: there is no noise in the signal";
+        return 100;
+      }
+      double max_pixel = 255.0;
+      double psnr = 20 * log10(max_pixel / sqrt(mse));
+      cout << "PSNR: " << psnr << endl;
+      return psnr;
+    }
+
+    Mat quantizeImage(const Mat &image, int levels)
+    {
+      Mat quantizedImage;
+      float scale = 255.0 / (levels - 1);
+      image.convertTo(quantizedImage, CV_32F); // Convert to float for processing
+      quantizedImage = quantizedImage / scale;
+      quantizedImage.convertTo(quantizedImage, CV_32F, 1.0, 0.5); // Add 0.5 for rounding
+      quantizedImage.convertTo(quantizedImage, CV_8U); // Convert back to 8-bit
+      quantizedImage = quantizedImage * scale;
+      imshow("Quantized Image", quantizedImage);
+      waitKey(0);
+      return quantizedImage;
+    }
+
 };
 
 int main(int argc, char const *argv[])
@@ -102,7 +140,12 @@ int main(int argc, char const *argv[])
   processor.gaussianBlur(image);
   Mat image2 = processor.showImage("imageprocessor_files/peppers.ppm");
   processor.imageDifference(image,image2);
-  processor.calculateMSE(image, image2);
+  processor.calculateMSE(image, image);
+  processor.calculatePSNR(image, image2);
+
+  // Quantize the grayscale image to 4 levels
+  Mat quantizedImage = processor.quantizeImage(greyImage, 10); // Bigger number = better quality, less MSE and more PSNR
+  processor.calculatePSNR(greyImage, quantizedImage);
   processor.calculateHistogram(greyImage);
   return 0;
 }
