@@ -24,6 +24,9 @@ private:
     vector<char> x_axis;
     vector<int> y_axis;
     vector<string> labels;
+    map<wstring, int> nGramsmap;
+    vector<wstring> words;
+    wstring word;
 
 public:
     map<wchar_t, int> mapCharacter;
@@ -136,7 +139,7 @@ public:
 
         wstring_convert<codecvt_utf8<wchar_t>, wchar_t> converter; 
 
-        if (title == "Word Frequency") {  
+        if (title == "Word Frequency" || title.find("gram") != string::npos) {  
             vector<pair<K, V>> top10;
 
             for (const auto& [key, val] : map) {
@@ -189,6 +192,46 @@ public:
     }
 
 
+    void generateNGrams(int n){
+        string title = (n == 2) ? "Bigram Frequency"
+                            : "Trigram Frequency";
+        
+        for (const auto& line : textContent)
+        {
+            wstringstream wss(line);
+
+            while (wss >> word) {
+                words.push_back(word);
+            }
+
+            if(words.size()<n){
+                continue;
+            }
+
+            for (size_t i = 0; i <= words.size() - n; ++i)
+            {
+                wstring nGram;
+
+                for (int j = 0; j < n; ++j)
+                {
+                    if (j > 0) {
+                        nGram += L" "; 
+                    }
+                    nGram += words[i + j];
+                }
+
+                nGramsmap[nGram]++;
+            }
+        }
+
+        wcout << L"\nN-Gram Frequencies (n = " << n << L"):\n";
+        for (const auto& [key, val] : nGramsmap)
+        {
+            wcout << key << L" : " << val << endl;
+        }
+        plotFrequencies(nGramsmap, title, "N-Grams");
+    }
+
 };
 
 int main()
@@ -208,6 +251,8 @@ int main()
         processor.printContentInMap(processor.mapWord);
         processor.plotFrequencies(processor.mapCharacter, "Character Frequency", "Characters");
         processor.plotFrequencies(processor.mapWord, "Word Frequency", "Words");
+        processor.generateNGrams(2);
+        processor.generateNGrams(3);
     }
     return 0;
 }
