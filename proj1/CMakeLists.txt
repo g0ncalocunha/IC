@@ -19,4 +19,4 @@ add_executable(imageProcessor imageprocessor.cpp)
 
 target_link_libraries(textProcessor ${Python3_LIBRARIES})
 target_link_libraries(audioProcessor sfml-graphics sfml-window sfml-system sfml-audio)
-target_link_libraries(imageProcessor ${OpenCV_LIBS})
+target_link_libraries(imageProcessor ${OpenCV_LIBS} ${Python3_LIBRARIES})
