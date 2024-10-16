@@ -6,7 +6,6 @@
 *.so
 *.dylib
 
-build/
 *.o
 *.obj
 *.gch
