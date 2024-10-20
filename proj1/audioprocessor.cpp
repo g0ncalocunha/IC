@@ -13,6 +13,8 @@
 #include <thread>
 #include <chrono>
 #include <cmath>
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
 
@@ -29,6 +31,12 @@ private:
     vector<sf::Int16> targetChannel;
     vector<sf::Int16> quantizedSamples;
     unsigned int channelCount;
+    const unsigned int WINDOW_WIDTH = 1920;
+    const unsigned int WINDOW_HEIGHT = 800;
+    const unsigned int LEFT_MARGIN = 100;
+    const unsigned int RIGHT_MARGIN = 50;
+    const unsigned int TOP_MARGIN = 50;
+    const unsigned int BOTTOM_MARGIN = 100;
 
 public:
     bool readFile(const string &file)
@@ -70,43 +78,141 @@ public:
 
     void plotAudioWaveform()
     {
-        samples = buffer.getSamples();
+        const unsigned int GRAPH_HEIGHT = (WINDOW_HEIGHT - TOP_MARGIN - BOTTOM_MARGIN) / 2;
+
+        sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Audio Waveform");
+        sf::Font font;
+        if (!font.loadFromFile("arial.ttf")) {
+            std::cerr << "Error loading font!" << std::endl;
+            return;
+        }
+
         sf::Uint64 sampleCount = buffer.getSampleCount();
         unsigned int channelCount = buffer.getChannelCount();
         sf::Uint64 samplesPerChannel = sampleCount / channelCount;
+        unsigned int sampleRate = buffer.getSampleRate();
+        const sf::Int16* samples = buffer.getSamples();
 
-        sf::RenderWindow window(sf::VideoMode(1920, 600), "Audio's Waveform");
+        float duration = static_cast<float>(samplesPerChannel) / sampleRate;
+        float scaleX = (WINDOW_WIDTH - LEFT_MARGIN - RIGHT_MARGIN) / duration;
+        float scaleY = GRAPH_HEIGHT / 2.0f;  
 
         vector<sf::VertexArray> waveforms(channelCount, sf::VertexArray(sf::LinesStrip, samplesPerChannel));
-        float scaleX = static_cast<float>(window.getSize().x) / samplesPerChannel;
-        float scaleY = window.getSize().y / (2.0f * channelCount);
-
-        for (unsigned int channel = 0; channel < channelCount; ++channel)
-        {
-            for (sf::Uint64 i = 0; i < samplesPerChannel; ++i)
-            {
-                float x = i * scaleX;
-                float y = (samples[i * channelCount + channel] / 32768.0f) * scaleY;
-                waveforms[channel][i].position = sf::Vector2f(x, (channel + 0.5f) * (window.getSize().y / channelCount) + y);
-                waveforms[channel][i].color = sf::Color(50 * (channel + 1), 50 * (channel + 2), 250); // Different color for each channel
+        for (unsigned int channel = 0; channel < channelCount; ++channel) {
+            float channelOffset = TOP_MARGIN + GRAPH_HEIGHT * (channel + 0.5f);
+            for (sf::Uint64 i = 0; i < samplesPerChannel; ++i) {
+                float timeInSeconds = static_cast<float>(i) / sampleRate;
+                float x = LEFT_MARGIN + timeInSeconds * scaleX;
+                float sampleValue = static_cast<float>(samples[i * channelCount + channel]) / 32768.0f;
+                float y = channelOffset - sampleValue * scaleY;
+                waveforms[channel][i].position = sf::Vector2f(x, y);
+                waveforms[channel][i].color = sf::Color(50 * (channel + 1), 50 * (channel + 2), 250);;  
             }
         }
 
-        while (window.isOpen())
-        {
-            sf::Event event;
-            while (window.pollEvent(event))
-            {
-                if (event.type == sf::Event::Closed)
-                {
-                    window.close();
+        std::vector<sf::VertexArray> axes;
+        for (unsigned int channel = 0; channel < channelCount; ++channel) {
+            float yPosition = TOP_MARGIN + GRAPH_HEIGHT * (channel + 1);
+            
+            sf::VertexArray xAxis(sf::Lines, 2);
+            xAxis[0].position = sf::Vector2f(LEFT_MARGIN, yPosition);
+            xAxis[1].position = sf::Vector2f(WINDOW_WIDTH - RIGHT_MARGIN, yPosition);
+            xAxis[0].color = xAxis[1].color = sf::Color::Black;
+            axes.push_back(xAxis);
+
+            sf::VertexArray yAxis(sf::Lines, 2);
+            yAxis[0].position = sf::Vector2f(LEFT_MARGIN, yPosition - GRAPH_HEIGHT);
+            yAxis[1].position = sf::Vector2f(LEFT_MARGIN, yPosition);
+            yAxis[0].color = yAxis[1].color = sf::Color::Black;
+            axes.push_back(yAxis);
+        }
+
+        sf::Text xAxisLabel("Time (s)", font, 20);
+        xAxisLabel.setFillColor(sf::Color::Black);
+        xAxisLabel.setPosition(WINDOW_WIDTH / 2.0f -40, WINDOW_HEIGHT - (BOTTOM_MARGIN / 2.0f) + 10);
+
+        sf::Text yAxisLabel("Amplitude", font, 20);
+        yAxisLabel.setFillColor(sf::Color::Black);
+        yAxisLabel.setPosition(LEFT_MARGIN-80, WINDOW_HEIGHT/2.0f);
+        yAxisLabel.setRotation(-90);
+
+        std::vector<sf::Text> timeTicks;
+        std::vector<sf::VertexArray> timeLines;
+        int majorTickInterval = 1; 
+        int minorTicksPerMajor = 4; 
+
+        for (int i = 0; i <= static_cast<int>(duration); ++i) {
+            sf::Text tickLabel(std::to_string(i), font, 18);
+            tickLabel.setFillColor(sf::Color::Black);
+            tickLabel.setPosition(LEFT_MARGIN + i * scaleX, (WINDOW_HEIGHT - BOTTOM_MARGIN / 2.0f ) -20 );
+            timeTicks.push_back(tickLabel);
+
+            sf::VertexArray majorLine(sf::Lines, 2);
+            majorLine[0].position = sf::Vector2f(LEFT_MARGIN + i * scaleX, WINDOW_HEIGHT - BOTTOM_MARGIN);
+            majorLine[1].position = sf::Vector2f(LEFT_MARGIN + i * scaleX, WINDOW_HEIGHT - BOTTOM_MARGIN + 10);
+            majorLine[0].color = majorLine[1].color = sf::Color::Black;
+            timeLines.push_back(majorLine);
+
+            if (i < static_cast<int>(duration)) {
+                for (int j = 1; j < minorTicksPerMajor; ++j) {
+                    float minorX = LEFT_MARGIN + (i + static_cast<float>(j) / minorTicksPerMajor) * scaleX;
+                    sf::VertexArray minorLine(sf::Lines, 2);
+                    minorLine[0].position = sf::Vector2f(minorX, WINDOW_HEIGHT - BOTTOM_MARGIN);
+                    minorLine[1].position = sf::Vector2f(minorX, WINDOW_HEIGHT - BOTTOM_MARGIN + 5);
+                    minorLine[0].color = minorLine[1].color = sf::Color(200, 200, 200);
+                    timeLines.push_back(minorLine);
                 }
             }
-            window.clear(sf::Color::Transparent);
-            for (const auto &waveform : waveforms)
-            {
-                window.draw(waveform);
+        }
+
+        std::vector<std::vector<sf::Text>> amplitudeTicks(channelCount);
+        int tickCountY = 5;
+        float tickPadding = 15.0f;
+        for (unsigned int channel = 0; channel < channelCount; ++channel) {
+            for (int i = 0; i <= tickCountY; ++i) {
+                float amplitude = 1.0f - (2.0f * i / tickCountY);
+                std::ostringstream amplitudeStream;
+                amplitudeStream << std::fixed << std::setprecision(2) << amplitude;
+                sf::Text tick(amplitudeStream.str(), font, 15);
+                tick.setFillColor(sf::Color::Black);
+
+                float yPos = TOP_MARGIN + GRAPH_HEIGHT * channel + i * (GRAPH_HEIGHT / tickCountY);
+                if (i==0){
+                    yPos+=tickPadding;
+                }else if(i==tickCountY){
+                    yPos-=tickPadding;
+                }
+                tick.setPosition(LEFT_MARGIN - 40, yPos);
+                amplitudeTicks[channel].push_back(tick);
             }
+        }
+
+        std::vector<sf::Text> amplitudeLabels(channelCount);
+        for (unsigned int channel = 0; channel < channelCount; ++channel) {
+            sf::Text label("Amplitude", font, 18);
+            label.setFillColor(sf::Color::Black);
+            float yPos = TOP_MARGIN + GRAPH_HEIGHT * (channel + 0.5f);
+            label.setPosition(LEFT_MARGIN - 80, yPos);
+            label.setRotation(-90);
+            amplitudeLabels[channel] = label;
+        }
+
+        while (window.isOpen()) {
+            sf::Event event;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed) window.close();
+            }
+
+            window.clear(sf::Color::White);
+            for (const auto& axis : axes) window.draw(axis);
+            for (const auto& waveform : waveforms) window.draw(waveform);
+            for (const auto& line : timeLines) window.draw(line);
+            for (const auto& tick : timeTicks) window.draw(tick);
+            for (const auto& channelTicks : amplitudeTicks) {
+                for (const auto& tick : channelTicks) window.draw(tick);
+            }
+            window.draw(xAxisLabel);
+            window.draw(yAxisLabel);
             window.display();
         }
     }
@@ -379,7 +485,7 @@ int main(int argc, char *argv[])
 
     if (argc != 2)
     {
-        filename = "audioprocessor_files/a.wav";
+        filename = "audioprocessor_files/sample04.wav";
     }
     else
     {
