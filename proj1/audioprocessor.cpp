@@ -83,7 +83,7 @@ public:
         sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Audio Waveform");
         sf::Font font;
         if (!font.loadFromFile("arial.ttf")) {
-            std::cerr << "Error loading font!" << std::endl;
+            cerr << "Error loading font!" << endl;
             return;
         }
 
@@ -110,7 +110,7 @@ public:
             }
         }
 
-        std::vector<sf::VertexArray> axes;
+        vector<sf::VertexArray> axes;
         for (unsigned int channel = 0; channel < channelCount; ++channel) {
             float yPosition = TOP_MARGIN + GRAPH_HEIGHT * (channel + 1);
             
@@ -136,13 +136,13 @@ public:
         yAxisLabel.setPosition(LEFT_MARGIN-80, WINDOW_HEIGHT/2.0f);
         yAxisLabel.setRotation(-90);
 
-        std::vector<sf::Text> timeTicks;
-        std::vector<sf::VertexArray> timeLines;
+        vector<sf::Text> timeTicks;
+        vector<sf::VertexArray> timeLines;
         int majorTickInterval = 1; 
         int minorTicksPerMajor = 4; 
 
         for (int i = 0; i <= static_cast<int>(duration); ++i) {
-            sf::Text tickLabel(std::to_string(i), font, 18);
+            sf::Text tickLabel(to_string(i), font, 18);
             tickLabel.setFillColor(sf::Color::Black);
             tickLabel.setPosition(LEFT_MARGIN + i * scaleX, (WINDOW_HEIGHT - BOTTOM_MARGIN / 2.0f ) -20 );
             timeTicks.push_back(tickLabel);
@@ -165,14 +165,14 @@ public:
             }
         }
 
-        std::vector<std::vector<sf::Text>> amplitudeTicks(channelCount);
+        vector<vector<sf::Text>> amplitudeTicks(channelCount);
         int tickCountY = 5;
         float tickPadding = 15.0f;
         for (unsigned int channel = 0; channel < channelCount; ++channel) {
             for (int i = 0; i <= tickCountY; ++i) {
                 float amplitude = 1.0f - (2.0f * i / tickCountY);
-                std::ostringstream amplitudeStream;
-                amplitudeStream << std::fixed << std::setprecision(2) << amplitude;
+                ostringstream amplitudeStream;
+                amplitudeStream << fixed << setprecision(2) << amplitude;
                 sf::Text tick(amplitudeStream.str(), font, 15);
                 tick.setFillColor(sf::Color::Black);
 
@@ -187,7 +187,7 @@ public:
             }
         }
 
-        std::vector<sf::Text> amplitudeLabels(channelCount);
+        vector<sf::Text> amplitudeLabels(channelCount);
         for (unsigned int channel = 0; channel < channelCount; ++channel) {
             sf::Text label("Amplitude", font, 18);
             label.setFillColor(sf::Color::Black);
@@ -219,20 +219,17 @@ public:
 
     void getLeftRightChannels()
     {
-        channelCount = buffer.getChannelCount();
+        samples=buffer.getSamples();
         sf::Uint64 sampleCount = buffer.getSampleCount();
-
         if (channelCount == 2)
         {
+            leftChannel.reserve(sampleCount / 2);
+            rightChannel.reserve(sampleCount / 2);
             for (sf::Uint64 i = 0; i < sampleCount; i += 2)
             {
                 leftChannel.push_back(samples[i]);
                 rightChannel.push_back(samples[i + 1]);
             }
-        }
-        else
-        {
-            cerr << "Audio is not stereo." << endl;
         }
     }
 
@@ -247,51 +244,142 @@ public:
         }
     }
 
-    void plotHistogram(bool quantized = false)
+    void plotHistogram(bool quantized, string title)
     {
+        channelCount = buffer.getChannelCount();
         if (quantized)
         {
             targetChannel = quantizedSamples;
         }
+
+        if (channelCount < 2)
+        {
+            cerr << "Error: Channel count is not stereo." << endl;
+            return;
+        }
+
+        if (title == "Right Channel")
+        {
+            getLeftRightChannels();
+            targetChannel = rightChannel;
+        }
+        else if (title == "Left Channel")
+        {
+            getLeftRightChannels();
+            targetChannel = leftChannel;
+        }
+        else if (title == "Mid Channel")
+        {
+            getMIDchannel();
+            targetChannel = midChannel;
+        }
         else
         {
-            if (channelCount > 1)
-            {
-                getLeftRightChannels();
-                getMIDchannel();
-                targetChannel = midChannel;
-            }
-            else
-            {
-                cerr << "Error: Channel count is not stereo." << endl;
-                return;
-            }
+            getMIDchannel();
+            targetChannel = sideChannel; 
         }
-        vector<int> histogram(256, 0);
-        int binSize = 256; // Handle 16-bit sample values
 
-        sf::Color color = sf::Color::Red;
-        int windowWidth = 600;
-        int windowHeight = 600;
-        int binWidth = 3;
+        if (targetChannel.empty())
+        {
+            cerr << "Error: targetChannel is empty." << endl;
+            return;
+        }
+
+        vector<int> histogram(256, 0);  // Ajusta o histograma para 256 bins
+        int binSize = 256;  // 256 bins para lidar com valores de 16 bits
+
+        sf::Color color = quantized ? sf::Color::Blue : sf::Color::Magenta;
+
+        int windowWidth = 950;
+        int windowHeight = 650;
+        int binWidth = windowWidth / histogram.size();
         int maxHeight = 400;
 
-        sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), quantized ? "Audio Quantization Histogram" : "Audio Histogram");
+        sf::Font font;
+        if (!font.loadFromFile("arial.ttf"))
+        {
+            cerr << "Error loading font." << endl;
+        }
+
+        sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), title + " Histogram");
 
         for (auto sample : targetChannel)
         {
-            int binIndex = (sample + 32768) / binSize; // Handle signed 16-bit samples
+            int binIndex = (sample + 32768) / binSize;
             if (binIndex >= 0 && binIndex < static_cast<int>(histogram.size()))
             {
                 histogram[binIndex]++;
+            }
+            else
+            {
+                cerr << "ERROR: Out of bounds access in histogram" << endl;
             }
         }
 
         int maxBinValue = *max_element(histogram.begin(), histogram.end());
 
         int totalBinsWidth = histogram.size() * binWidth;
-        int startX = (windowWidth - totalBinsWidth) / 2; // Center horizontally
-        int startY = windowHeight - 50;
+        int startX = (windowWidth - totalBinsWidth) / 2;  // Centrando histograma
+        int startY = windowHeight - 50; 
+
+        sf::Text xLabel("Amplitude", font, 14);
+        xLabel.setFillColor(sf::Color::Black);
+        xLabel.setPosition(windowWidth / 2, windowHeight - 35);  
+
+        sf::Text yLabel("Frequency", font, 14);
+        yLabel.setFillColor(sf::Color::Black);
+        yLabel.setPosition(20, windowHeight / 2 - 20);  
+        yLabel.setRotation(-90);
+
+        sf::Vertex xAxis[] =
+        {
+            sf::Vertex(sf::Vector2f(startX, startY - 20)),
+            sf::Vertex(sf::Vector2f(startX + totalBinsWidth, startY - 20))  
+        };
+
+        sf::Vertex yAxis[] =
+        {
+            sf::Vertex(sf::Vector2f(startX, startY)),
+            sf::Vertex(sf::Vector2f(startX, startY - windowHeight))  
+        };
+
+        xAxis[0].color = xAxis[1].color = sf::Color::Black;
+        yAxis[0].color = yAxis[1].color = sf::Color::Black;
+
+        vector<sf::Text> yTickLabels;
+        vector<sf::Vertex> yTicks;
+        int numYTicks = 5;
+        for (int i = 0; i <= numYTicks; ++i)
+        {
+            float yPos = startY - (i * maxHeight / numYTicks) - 20;  
+
+            yTicks.push_back(sf::Vertex(sf::Vector2f(startX - 5, yPos), sf::Color::Black));
+            yTicks.push_back(sf::Vertex(sf::Vector2f(startX + 5, yPos), sf::Color::Black));
+
+            sf::Text label(to_string(i * maxBinValue / numYTicks), font, 12);
+            label.setFillColor(sf::Color::Black);
+            label.setPosition(startX - 40, yPos - 10);
+            yTickLabels.push_back(label);
+        }
+
+        vector<sf::Text> xTickLabels;
+        vector<sf::Vertex> xTicks;
+        int numXTicks = 10;
+        float xTickInterval = static_cast<float>(histogram.size()) / numXTicks;
+
+        for (int i = 0; i <= numXTicks; ++i)
+        {
+            float xPos = startX + i * (totalBinsWidth / numXTicks);
+            
+            xTicks.push_back(sf::Vertex(sf::Vector2f(xPos, startY - 25), sf::Color::Black));  // Subir ticks X (-20px)
+            xTicks.push_back(sf::Vertex(sf::Vector2f(xPos, startY - 15), sf::Color::Black));  // Subir ticks X (-20px)
+
+            int labelValue = static_cast<int>(i * (256 / numXTicks));
+            sf::Text label(to_string(labelValue), font, 12);
+            label.setFillColor(sf::Color::Black);
+            label.setPosition(xPos - 10, startY + 10 - 20); 
+            xTickLabels.push_back(label);
+        }
 
         while (window.isOpen())
         {
@@ -304,18 +392,45 @@ public:
                 }
             }
 
-            window.clear(sf::Color::Black);
+            window.clear(sf::Color::White);
 
-            // Draw histogram bars
+            // Desenhar eixos
+            window.draw(xAxis, 2, sf::Lines);
+            window.draw(yAxis, 2, sf::Lines);
+
+            // Desenhar ticks do eixo Y e seus rótulos
+            for (size_t i = 0; i < yTicks.size(); i += 2)
+            {
+                window.draw(&yTicks[i], 2, sf::Lines);
+            }
+            for (const auto& label : yTickLabels)
+            {
+                window.draw(label);
+            }
+
+            // Desenhar ticks do eixo X e seus rótulos
+            for (size_t i = 0; i < xTicks.size(); i += 2)
+            {
+                window.draw(&xTicks[i], 2, sf::Lines);
+            }
+            for (const auto& label : xTickLabels)
+            {
+                window.draw(label);
+            }
+
+            // Desenhar as barras 
             for (size_t i = 0; i < histogram.size(); ++i)
             {
                 float binHeight = static_cast<float>(histogram[i]) / maxBinValue * maxHeight;
-
-                sf::RectangleShape bar(sf::Vector2f(binWidth - 1, -binHeight)); // -binHeight to flip vertically
-                bar.setPosition(startX + i * binWidth, startY);
+                sf::RectangleShape bar(sf::Vector2f(binWidth - 1, -binHeight));
+                bar.setPosition(startX + i * binWidth, startY -20);
                 bar.setFillColor(color);
                 window.draw(bar);
             }
+
+            // Desenhar rótulos dos eixos
+            window.draw(xLabel);
+            window.draw(yLabel);
 
             window.display();
         }
@@ -501,9 +616,12 @@ int main(int argc, char *argv[])
     p.playAudio();
     p.getAudioInfo();
     p.plotAudioWaveform();
-    p.plotHistogram();
+    p.plotHistogram(false, "Right Channel");
+    p.plotHistogram(false, "Left Channel");
+    p.plotHistogram(false, "Mid Channel");
+    p.plotHistogram(false, "Side Channel");
     p.quantization(8);
-    p.plotHistogram(true);
+    p.plotHistogram(true, "Quantization");
     p.compareAudios();
     p.frequencyAnalyser();
     p.noiseAdder(filename);
