@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/home/goncalo/MECT1-1/IC/build",
+  "command": "/usr/bin/c++  -I/usr/include/python3.10 -I/home/goncalo/MECT1-1/IC/proj1/matplotlib-cpp -I/usr/include/opencv4 -I/home/goncalo/MECT1-1/IC/proj1/include -g -o CMakeFiles/textProcessor.dir/textprocessor.cpp.o -c /home/goncalo/MECT1-1/IC/proj1/textprocessor.cpp",
+  "file": "/home/goncalo/MECT1-1/IC/proj1/textprocessor.cpp"
+},
+{
+  "directory": "/home/goncalo/MECT1-1/IC/build",
+  "command": "/usr/bin/c++  -I/usr/include/python3.10 -I/home/goncalo/MECT1-1/IC/proj1/matplotlib-cpp -I/usr/include/opencv4 -I/home/goncalo/MECT1-1/IC/proj1/include -g -o CMakeFiles/audioProcessor.dir/audioprocessor.cpp.o -c /home/goncalo/MECT1-1/IC/proj1/audioprocessor.cpp",
+  "file": "/home/goncalo/MECT1-1/IC/proj1/audioprocessor.cpp"
+},
+{
+  "directory": "/home/goncalo/MECT1-1/IC/build",
+  "command": "/usr/bin/c++  -I/usr/include/python3.10 -I/home/goncalo/MECT1-1/IC/proj1/matplotlib-cpp -I/home/goncalo/MECT1-1/IC/proj1/include -isystem /usr/include/opencv4 -g -o CMakeFiles/imageProcessor.dir/imageprocessor.cpp.o -c /home/goncalo/MECT1-1/IC/proj1/imageprocessor.cpp",
+  "file": "/home/goncalo/MECT1-1/IC/proj1/imageprocessor.cpp"
+}
+]
