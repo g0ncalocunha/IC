@@ -16,6 +16,7 @@
 *.log
 *.dbg
 
+.build/
 .vscode/
 .idea/
 *.code-workspace
@@ -27,6 +28,7 @@
 *.swp
 *~
 
+CMakeCache.txt
 .DS_Store
 Thumbs.db
 desktop.ini
