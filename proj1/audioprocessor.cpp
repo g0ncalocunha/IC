@@ -222,32 +222,37 @@ public:
     }
 
 
-    void getLeftRightChannels()
+    void getLeftRightMidSideChannels(const string& title)
     {
-        samples=buffer.getSamples();
+        samples = buffer.getSamples();
         sf::Uint64 sampleCount = buffer.getSampleCount();
+        
         if (channelCount == 2)
         {
             leftChannel.reserve(sampleCount / 2);
             rightChannel.reserve(sampleCount / 2);
+            
             for (sf::Uint64 i = 0; i < sampleCount; i += 2)
             {
                 leftChannel.push_back(samples[i]);
-                rightChannel.push_back(samples[i + 1]);
+                if (i + 1 < sampleCount) 
+                {
+                    rightChannel.push_back(samples[i + 1]);
+                }
+            }
+            if (title.find("Mid") != string::npos || title.find("Side") != string::npos)
+            {
+                for (size_t i = 0; i < leftChannel.size(); ++i)
+                {
+                    int mid = (leftChannel[i] + rightChannel[i]) / 2;
+                    int side = (leftChannel[i] - rightChannel[i]) / 2;
+                    midChannel.push_back(mid);
+                    sideChannel.push_back(side);
+                }
             }
         }
     }
 
-    void getMIDchannel()
-    {
-        for (size_t i = 0; i < leftChannel.size(); ++i)
-        {
-            int mid = (leftChannel[i] + rightChannel[i]) / 2;
-            int side = (leftChannel[i] - rightChannel[i]) / 2;
-            midChannel.push_back(mid);
-            sideChannel.push_back(side);
-        }
-    }
 
     void plotHistogram(string title)
     {
@@ -261,22 +266,22 @@ public:
 
         if (title == "Right Channel")
         {
-            getLeftRightChannels();
+            getLeftRightMidSideChannels(title);
             targetChannel = rightChannel;
         }
         else if (title == "Left Channel")
         {
-            getLeftRightChannels();
+            getLeftRightMidSideChannels(title);
             targetChannel = leftChannel;
         }
         else if (title == "Mid Channel")
         {
-            getMIDchannel();
+            getLeftRightMidSideChannels(title);
             targetChannel = midChannel;
         }
         else
         {
-            getMIDchannel();
+            getLeftRightMidSideChannels(title);
             targetChannel = sideChannel; 
         }
 
@@ -437,77 +442,93 @@ public:
         }
     }
 
-    void quantization(int n)
+    void quantization(int n) 
     {
-        samples=buffer.getSamples();
+        const sf::Int16* samples = buffer.getSamples();
         int sampleCount = buffer.getSampleCount();
         if (sampleCount <= 0) {
             cerr << "Error: No samples to quantize!" << endl;
-            return; 
+            return;
         }
+        
         int max_value = *max_element(samples, samples + sampleCount);
         int min_value = *min_element(samples, samples + sampleCount);
+        
         if (max_value == min_value) {
             cerr << "Error: All samples have the same value!" << endl;
             quantizedSamples.resize(sampleCount, static_cast<sf::Int16>(min_value)); 
             return;
         }
+
         int numLevels = 1 << n;
         float step_size = static_cast<float>(max_value - min_value) / (numLevels - 1);
+        
         quantizedSamples.resize(sampleCount);
-        for (size_t i = 0; i < sampleCount; ++i)
-        {
-            float normalizedSample = (samples[i] - min_value) / step_size;
-            quantizedSamples[i] = static_cast<sf::Int16>(round(normalizedSample)) * step_size + min_value;
+
+        // Quantize the samples
+        for (size_t i = 0; i < sampleCount; ++i) {
+            // Normalize the sample to [0, numLevels-1], then round and map back to the original range
+            float normalizedSample = static_cast<float>(samples[i] - min_value) / (max_value - min_value) * (numLevels - 1);
+            quantizedSamples[i] = static_cast<sf::Int16>(round(normalizedSample) * step_size + min_value);
         }
     }
 
-    void plotBothWaveforms()
+    void plotBothWaveforms() 
     {
-        const unsigned int WINDOW_WIDTH = 1850; 
+        const unsigned int WINDOW_WIDTH = 1850;
         const unsigned int WINDOW_HEIGHT = 800;
-        const unsigned int LEFT_MARGIN = 80;  
+        const unsigned int LEFT_MARGIN = 100;
         const unsigned int RIGHT_MARGIN = 50;
         const unsigned int TOP_MARGIN = 50;
-        const unsigned int BOTTOM_MARGIN = 50;
-        const unsigned int CENTER_MARGIN = 100; 
+        const unsigned int BOTTOM_MARGIN = 80;
+        const unsigned int CENTER_MARGIN = 100;
         const unsigned int GRAPH_WIDTH = (WINDOW_WIDTH - LEFT_MARGIN - RIGHT_MARGIN - CENTER_MARGIN) / 2;
         const unsigned int GRAPH_HEIGHT = WINDOW_HEIGHT - TOP_MARGIN - BOTTOM_MARGIN;
+        const float TICK_LENGTH = 5.0f;
+
+        // Constants for 16-bit audio
+        const sf::Int16 MAX_AMPLITUDE = 32767;
+        const sf::Int16 MIN_AMPLITUDE = -32768;
 
         sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Original vs Quantized Audio Waveforms");
         sf::Font font;
         if (!font.loadFromFile("arial.ttf")) {
-            std::cerr << "Error loading font!" << std::endl;
+            cerr << "Error loading font!" << endl;
             return;
         }
 
+        // Get audio buffer properties
         sf::Uint64 sampleCount = buffer.getSampleCount();
         unsigned int channelCount = buffer.getChannelCount();
         sf::Uint64 samplesPerChannel = sampleCount / channelCount;
-        unsigned int sampleRate = buffer.getSampleRate();
+        const sf::Int16* samples = buffer.getSamples();
 
-        sf::Int16 maxAmplitude = 0;
-        const sf::Int16* originalSamples = buffer.getSamples();
-        for (sf::Uint64 i = 0; i < sampleCount; ++i) {
-            maxAmplitude = std::max(maxAmplitude, static_cast<sf::Int16>(std::abs(originalSamples[i])));
-            maxAmplitude = std::max(maxAmplitude, static_cast<sf::Int16>(std::abs(quantizedSamples[i])));
-        }
-
+        // Scale factors
         float scaleX = static_cast<float>(GRAPH_WIDTH) / samplesPerChannel;
-        float scaleY = (GRAPH_HEIGHT / 2.0f) / maxAmplitude;
+        float scaleY = (GRAPH_HEIGHT / 2.0f) / MAX_AMPLITUDE;
 
-        auto drawWaveform = [&](const sf::Int16* samples, sf::Color color, float xOffset) {
+        // Lambda function to draw the waveform
+        auto drawWaveform = [&](const sf::Int16* samples, sf::Color color, float xOffset, bool quantized, int bitDepth = 16) {
             sf::VertexArray waveform(sf::LineStrip, samplesPerChannel);
+            
+            int levels = 1 << bitDepth;  // Number of quantization levels
+            float stepSize = static_cast<float>(MAX_AMPLITUDE) / (levels / 2);  // Step size for uniform quantization
+
             for (sf::Uint64 i = 0; i < samplesPerChannel; ++i) {
                 float x = xOffset + i * scaleX;
-                float y = TOP_MARGIN + GRAPH_HEIGHT / 2 - samples[i * channelCount] * scaleY;
+                float amplitude = samples[i * channelCount];
+
+                if (quantized) {
+                    // Quantize the sample to the desired bit depth
+                    amplitude = round(amplitude / stepSize) * stepSize;
+                }
+
+                // Scale and position the sample in the graph
+                float y = TOP_MARGIN + GRAPH_HEIGHT / 2 - amplitude * scaleY;
                 waveform[i] = sf::Vertex(sf::Vector2f(x, y), color);
             }
             return waveform;
         };
-
-        sf::VertexArray originalWaveform = drawWaveform(originalSamples, sf::Color::Blue, LEFT_MARGIN);
-        sf::VertexArray quantizedWaveform = drawWaveform(quantizedSamples.data(), sf::Color::Red, LEFT_MARGIN + GRAPH_WIDTH + CENTER_MARGIN);
 
         auto drawAxis = [&](float xOffset) {
             sf::VertexArray axis(sf::Lines, 4);
@@ -518,10 +539,42 @@ public:
             return axis;
         };
 
+        auto drawTicks = [&](float xOffset) -> sf::VertexArray {
+            const int NUM_Y_TICKS = 7;
+            const int NUM_X_TICKS = 11;
+            int totalVertices = (NUM_Y_TICKS + NUM_X_TICKS) * 2;
+            
+            sf::VertexArray ticks(sf::Lines, totalVertices);
+            int currentVertex = 0;
+
+            for (int i = -3; i <= 3; ++i) {
+                float amplitude = i * (MAX_AMPLITUDE / 4);
+                float y = WINDOW_HEIGHT / 2 + TOP_MARGIN - amplitude * scaleY;
+                ticks[currentVertex] = sf::Vertex(sf::Vector2f(xOffset, y), sf::Color::Black);
+                ticks[currentVertex + 1] = sf::Vertex(sf::Vector2f(xOffset - TICK_LENGTH, y), sf::Color::Black);
+                currentVertex += 2;
+            }
+
+            int tickInterval = samplesPerChannel / 10;
+            for (int i = 0; i <= 10; ++i) {
+                float x = xOffset + (i * tickInterval) * scaleX;
+                ticks[currentVertex] = sf::Vertex(sf::Vector2f(x, WINDOW_HEIGHT - BOTTOM_MARGIN), sf::Color::Black);
+                ticks[currentVertex + 1] = sf::Vertex(sf::Vector2f(x, WINDOW_HEIGHT - BOTTOM_MARGIN + TICK_LENGTH), sf::Color::Black);
+                currentVertex += 2;
+            }
+
+            return ticks;
+        };
+
+        sf::VertexArray originalWaveform = drawWaveform(samples, sf::Color::Blue, LEFT_MARGIN, false);
+        sf::VertexArray quantizedWaveform = drawWaveform(samples, sf::Color::Red, LEFT_MARGIN + GRAPH_WIDTH + CENTER_MARGIN, true, 4);  // Quantized to 4 bits
+
         sf::VertexArray originalAxis = drawAxis(LEFT_MARGIN);
         sf::VertexArray quantizedAxis = drawAxis(LEFT_MARGIN + GRAPH_WIDTH + CENTER_MARGIN);
+        sf::VertexArray originalTicks = drawTicks(LEFT_MARGIN);
+        sf::VertexArray quantizedTicks = drawTicks(LEFT_MARGIN + GRAPH_WIDTH + CENTER_MARGIN);
 
-        auto createText = [&](const std::string& content, unsigned int size, sf::Color color, float x, float y, float rotation = 0) {
+        auto createText = [&](const string& content, unsigned int size, sf::Color color, float x, float y, float rotation = 0) {
             sf::Text text(content, font, size);
             text.setFillColor(color);
             text.setPosition(x, y);
@@ -532,41 +585,48 @@ public:
         sf::Text originalLabel = createText("Original", 24, sf::Color::Blue, LEFT_MARGIN, TOP_MARGIN / 2);
         sf::Text quantizedLabel = createText("Quantized", 24, sf::Color::Red, LEFT_MARGIN + GRAPH_WIDTH + CENTER_MARGIN, TOP_MARGIN / 2);
         sf::Text xAxisLabel = createText("Sample", 20, sf::Color::Black, WINDOW_WIDTH / 2 - 40, WINDOW_HEIGHT - BOTTOM_MARGIN / 2);
-        sf::Text yAxisLabel = createText("Amplitude", 20, sf::Color::Black, LEFT_MARGIN / 4 - 20, WINDOW_HEIGHT / 2 + 20);
-        yAxisLabel.setRotation(-90);
+        sf::Text yAxisLabel = createText("Amplitude", 20, sf::Color::Black, LEFT_MARGIN / 4 - 20, WINDOW_HEIGHT / 2 + 20, -90);
 
-        std::vector<sf::Text> sampleTicks;
-        int tickInterval = samplesPerChannel / 10; 
-        for (int i = 0; i <= samplesPerChannel; i += tickInterval) {
-            sampleTicks.push_back(createText(std::to_string(i), 16, sf::Color::Black, LEFT_MARGIN + i * scaleX, WINDOW_HEIGHT - BOTTOM_MARGIN + 10));
-            sampleTicks.push_back(createText(std::to_string(i), 16, sf::Color::Black, LEFT_MARGIN + GRAPH_WIDTH + CENTER_MARGIN + i * scaleX, WINDOW_HEIGHT - BOTTOM_MARGIN + 10));
+        vector<sf::Text> sampleTicks;
+        int tickInterval = samplesPerChannel / 10;
+        for (int i = 0; i <= 10; ++i) {
+            int sampleNum = i * tickInterval;
+            sampleTicks.push_back(createText(to_string(sampleNum), 16, sf::Color::Black, LEFT_MARGIN + sampleNum * scaleX, WINDOW_HEIGHT - BOTTOM_MARGIN + 10));
+            sampleTicks.push_back(createText(to_string(sampleNum), 16, sf::Color::Black, LEFT_MARGIN + GRAPH_WIDTH + CENTER_MARGIN + sampleNum * scaleX, WINDOW_HEIGHT - BOTTOM_MARGIN + 10));
         }
 
-        std::vector<sf::Text> amplitudeTicks;
-        int ampTickInterval = maxAmplitude / 5; 
-        for (int i = -maxAmplitude; i <= maxAmplitude; i += ampTickInterval) {
-            float y = WINDOW_HEIGHT / 2 + TOP_MARGIN - i * scaleY; // Adjust y position
-            amplitudeTicks.push_back(createText(std::to_string(i), 16, sf::Color::Black, LEFT_MARGIN - 50, y));
-            amplitudeTicks.push_back(createText(std::to_string(i), 16, sf::Color::Black, LEFT_MARGIN + GRAPH_WIDTH + CENTER_MARGIN - 50, y));
+        vector<sf::Text> amplitudeTicks;
+        for (int i = -4; i <= 4; ++i) {
+            int amplitude = i * (MAX_AMPLITUDE / 4);
+            amplitudeTicks.push_back(createText(to_string(amplitude), 16, sf::Color::Black, LEFT_MARGIN - 60, WINDOW_HEIGHT / 2 - amplitude * scaleY - 45));
+            amplitudeTicks.push_back(createText(to_string(amplitude), 16, sf::Color::Black, LEFT_MARGIN + GRAPH_WIDTH + CENTER_MARGIN - 60, WINDOW_HEIGHT / 2 - amplitude * scaleY - 45));
         }
 
         while (window.isOpen()) {
             sf::Event event;
             while (window.pollEvent(event)) {
-                if (event.type == sf::Event::Closed) window.close();
+                if (event.type == sf::Event::Closed)
+                    window.close();
             }
 
             window.clear(sf::Color::White);
+
             window.draw(originalWaveform);
             window.draw(quantizedWaveform);
             window.draw(originalAxis);
             window.draw(quantizedAxis);
+            window.draw(originalTicks);
+            window.draw(quantizedTicks);
             window.draw(originalLabel);
             window.draw(quantizedLabel);
             window.draw(xAxisLabel);
             window.draw(yAxisLabel);
-            for (const auto& tick : sampleTicks) window.draw(tick);
-            for (const auto& tick : amplitudeTicks) window.draw(tick);
+
+            for (const auto& tick : sampleTicks)
+                window.draw(tick);
+            for (const auto& tick : amplitudeTicks)
+                window.draw(tick);
+
             window.display();
         }
     }
@@ -655,7 +715,6 @@ public:
             spectrum[i].color = sf::Color::Green;
         }
 
-        // Font loading remains the same
         sf::Font font;
         if (!font.loadFromFile("arial.ttf"))
         {
@@ -714,19 +773,16 @@ public:
             xTickLabels.push_back(tickLabel);
         }
 
-        // Prepare Y-axis ticks and labels
         float maxMagnitude = *max_element(magnitude.begin(), magnitude.end());
         for (int i = 0; i <= yTicks; ++i)
         {
             float y = window.getSize().y - bottomPadding - i * (window.getSize().y - (topPadding + bottomPadding)) / yTicks;
             
-            // Tick mark
             sf::RectangleShape tick(sf::Vector2f(6, 2));
             tick.setFillColor(sf::Color::Black);
             tick.setPosition(leftPadding - 6, y);
             yTickMarks.push_back(tick);
 
-            // Label with 2 decimal places
             sf::Text tickLabel;
             tickLabel.setFont(font);
             tickLabel.setCharacterSize(tickLabelSize);
@@ -757,14 +813,11 @@ public:
 
             window.clear(sf::Color::White);
             
-            // Draw axes
             window.draw(xAxis);
             window.draw(yAxis);
             
-            // Draw spectrum
             window.draw(spectrum);
             
-            // Draw all tick marks and labels
             for (const auto& tick : xTickMarks)
                 window.draw(tick);
             for (const auto& label : xTickLabels)
@@ -774,7 +827,6 @@ public:
             for (const auto& label : yTickLabels)
                 window.draw(label);
                 
-            // Draw axis labels
             window.draw(xAxisLabel);
             window.draw(yAxisLabel);
 
@@ -846,18 +898,18 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    // p.playAudio();
+    p.playAudio();
     p.getAudioInfo();
-    // p.plotAudioWaveform();
-    // p.plotHistogram("Right Channel");
-    // p.plotHistogram("Left Channel");
-    // p.plotHistogram("Mid Channel");
-    // p.plotHistogram("Side Channel");
-    // p.quantization(16);
-    // p.plotBothWaveforms();
-    // p.compareAudios();
+    p.plotAudioWaveform();
+    p.plotHistogram("Right Channel");
+    p.plotHistogram("Left Channel");
+    p.plotHistogram("Mid Channel");
+    p.plotHistogram("Side Channel");
+    p.quantization(16);
+    p.plotBothWaveforms();
+    p.compareAudios();
     p.frequencyAnalyser();
-    // p.noiseAdder(filename);
+    p.noiseAdder(filename);
 
     return 0;
 }
