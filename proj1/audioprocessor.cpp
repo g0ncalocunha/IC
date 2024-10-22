@@ -637,19 +637,113 @@ public:
         fftw_free(in);
         fftw_free(out);
 
-        // Plot the frequency spectrum
-        sf::RenderWindow window(sf::VideoMode(1920, 600), "Frequency Spectrum");
+        sf::RenderWindow window(sf::VideoMode(1200, 600), "Frequency Spectrum");
+        float leftPadding = 100.0f;  
+        float rightPadding = 50.0f;
+        float topPadding = 50.0f;
+        float bottomPadding = 50.0f;
 
         sf::VertexArray spectrum(sf::LinesStrip, samplesPerChannel);
-        float scaleX = static_cast<float>(window.getSize().x) / samplesPerChannel;
-        float scaleY = window.getSize().y / *max_element(magnitude.begin(), magnitude.end());
+        float scaleX = (window.getSize().x - (leftPadding + rightPadding)) / samplesPerChannel;
+        float scaleY = (window.getSize().y - (topPadding + bottomPadding)) / *max_element(magnitude.begin(), magnitude.end()) * 0.8;
 
         for (sf::Uint64 i = 0; i < samplesPerChannel; ++i)
         {
             float x = i * scaleX;
             float y = magnitude[i] * scaleY;
-            spectrum[i].position = sf::Vector2f(x, window.getSize().y - y);
+            spectrum[i].position = sf::Vector2f(x + leftPadding +2, window.getSize().y - bottomPadding - y);
             spectrum[i].color = sf::Color::Green;
+        }
+
+        // Font loading remains the same
+        sf::Font font;
+        if (!font.loadFromFile("arial.ttf"))
+        {
+            cerr << "Error loading font!" << endl;
+            return;
+        }
+
+        int labelSize = 14;
+        int tickLabelSize = 12;
+
+        sf::Text xAxisLabel("Frequency (Hz)", font, labelSize);
+        xAxisLabel.setFillColor(sf::Color::Black);
+        xAxisLabel.setPosition(window.getSize().x / 2 - 50, window.getSize().y - bottomPadding + 25);
+
+        sf::Text yAxisLabel("Magnitude", font, labelSize);
+        yAxisLabel.setFillColor(sf::Color::Black);
+        yAxisLabel.setPosition(15, window.getSize().y / 2);
+        yAxisLabel.setRotation(-90);
+
+        sf::RectangleShape xAxis(sf::Vector2f(window.getSize().x - (leftPadding + rightPadding), 2));
+        xAxis.setFillColor(sf::Color::Black);
+        xAxis.setPosition(leftPadding, window.getSize().y - bottomPadding);
+
+        sf::RectangleShape yAxis(sf::Vector2f(2, window.getSize().y - (topPadding + bottomPadding)));
+        yAxis.setFillColor(sf::Color::Black);
+        yAxis.setPosition(leftPadding, topPadding);
+
+        int xTicks = 10;
+        int yTicks = 8;
+
+        vector<sf::Text> xTickLabels;
+        vector<sf::RectangleShape> xTickMarks;
+        vector<sf::Text> yTickLabels;
+        vector<sf::RectangleShape> yTickMarks;
+
+        for (int i = 0; i <= xTicks; ++i)
+        {
+            float x = leftPadding + i * (window.getSize().x - (leftPadding + rightPadding)) / xTicks;
+            
+            sf::RectangleShape tick(sf::Vector2f(2, 6));
+            tick.setFillColor(sf::Color::Black);
+            tick.setPosition(x, window.getSize().y - bottomPadding);
+            xTickMarks.push_back(tick);
+
+            sf::Text tickLabel;
+            tickLabel.setFont(font);
+            tickLabel.setCharacterSize(tickLabelSize);
+            tickLabel.setFillColor(sf::Color::Black);
+
+            int frequencyValue = static_cast<int>((i * (44100 / 2)) / xTicks);
+            string labelText = to_string(frequencyValue);
+            tickLabel.setString(labelText);
+            
+            float textWidth = labelText.length() * (tickLabelSize * 0.6f);
+            tickLabel.setPosition(x - textWidth/2, window.getSize().y - bottomPadding + 8);
+            xTickLabels.push_back(tickLabel);
+        }
+
+        // Prepare Y-axis ticks and labels
+        float maxMagnitude = *max_element(magnitude.begin(), magnitude.end());
+        for (int i = 0; i <= yTicks; ++i)
+        {
+            float y = window.getSize().y - bottomPadding - i * (window.getSize().y - (topPadding + bottomPadding)) / yTicks;
+            
+            // Tick mark
+            sf::RectangleShape tick(sf::Vector2f(6, 2));
+            tick.setFillColor(sf::Color::Black);
+            tick.setPosition(leftPadding - 6, y);
+            yTickMarks.push_back(tick);
+
+            // Label with 2 decimal places
+            sf::Text tickLabel;
+            tickLabel.setFont(font);
+            tickLabel.setCharacterSize(tickLabelSize);
+            tickLabel.setFillColor(sf::Color::Black);
+
+            float magnitudeValue = (maxMagnitude * i) / yTicks;
+            
+            // Format number with 2 decimal places
+            std::stringstream stream;
+            stream << std::fixed << std::setprecision(2) << magnitudeValue;
+            string labelText = stream.str();
+            
+            tickLabel.setString(labelText);
+            
+            float textWidth = labelText.length() * (tickLabelSize * 0.6f);
+            tickLabel.setPosition(leftPadding - textWidth - 10, y - tickLabelSize/2);
+            yTickLabels.push_back(tickLabel);
         }
 
         while (window.isOpen())
@@ -658,15 +752,36 @@ public:
             while (window.pollEvent(event))
             {
                 if (event.type == sf::Event::Closed)
-                {
                     window.close();
-                }
             }
-            window.clear(sf::Color::Black);
+
+            window.clear(sf::Color::White);
+            
+            // Draw axes
+            window.draw(xAxis);
+            window.draw(yAxis);
+            
+            // Draw spectrum
             window.draw(spectrum);
+            
+            // Draw all tick marks and labels
+            for (const auto& tick : xTickMarks)
+                window.draw(tick);
+            for (const auto& label : xTickLabels)
+                window.draw(label);
+            for (const auto& tick : yTickMarks)
+                window.draw(tick);
+            for (const auto& label : yTickLabels)
+                window.draw(label);
+                
+            // Draw axis labels
+            window.draw(xAxisLabel);
+            window.draw(yAxisLabel);
+
             window.display();
         }
     }
+
 
     void noiseAdder(const string &filename){
         //add noise to audio
@@ -733,16 +848,16 @@ int main(int argc, char *argv[])
 
     // p.playAudio();
     p.getAudioInfo();
-    p.plotAudioWaveform();
-    p.plotHistogram("Right Channel");
-    p.plotHistogram("Left Channel");
-    p.plotHistogram("Mid Channel");
-    p.plotHistogram("Side Channel");
-    p.quantization(16);
-    p.plotBothWaveforms();
-    p.compareAudios();
+    // p.plotAudioWaveform();
+    // p.plotHistogram("Right Channel");
+    // p.plotHistogram("Left Channel");
+    // p.plotHistogram("Mid Channel");
+    // p.plotHistogram("Side Channel");
+    // p.quantization(16);
+    // p.plotBothWaveforms();
+    // p.compareAudios();
     p.frequencyAnalyser();
-    p.noiseAdder(filename);
+    // p.noiseAdder(filename);
 
     return 0;
 }
