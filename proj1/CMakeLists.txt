@@ -12,7 +12,7 @@ set(SFML_DIR "/SFML-2.6.1/lib/cmake/SFML")
 find_package(SFML COMPONENTS graphics window system audio REQUIRED)
 include_directories(${SFML_INCLUDE_DIR})
 
-set(OpenCV_DIR "/opencv-4.x/cmake")
+set(OpenCV_DIR "/usr/lib/x86_64-linux-gnu/cmake/opencv4")
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS} include)
 
