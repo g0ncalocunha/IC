@@ -133,8 +133,12 @@ class ImageProcessor
 
 int main(int argc, char const *argv[])
 {
+  if (argc != 2) {
+    cerr << "Usage: " << argv[0] << " <image_input_file>" << std::endl;
+    return -1;
+  }
   ImageProcessor processor;
-  Mat image = processor.showImage("imageprocessor_files/baboon.ppm");
+  Mat image = processor.showImage(argv[0]);
   vector<Mat> channels = processor.splitImage(image);
   Mat greyImage = processor.toGrayscale(image);
   processor.gaussianBlur(image);
