@@ -1,0 +1,5 @@
+<map id="cv::detail::GraphCutSeamFinder" name="cv::detail::GraphCutSeamFinder">
+<area shape="rect" id="node1" title="Minimum graph cut&#45;based seam estimator. See details in &#160;." alt="" coords="101,160,297,296"/>
+<area shape="rect" id="node2" href="$d0/d03/classcv_1_1detail_1_1GraphCutSeamFinderBase.html" title="Base class for all minimum graph&#45;cut&#45;based seam estimators." alt="" coords="5,13,192,105"/>
+<area shape="rect" id="node3" href="$d7/d09/classcv_1_1detail_1_1SeamFinder.html" title="Base class for a seam estimator." alt="" coords="217,5,383,112"/>
+</map>

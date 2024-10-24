@@ -1,0 +1,5 @@
+<map id="cv::gapi::ie::Params::cfgBatchSize" name="cv::gapi::ie::Params::cfgBatchSize">
+<area shape="rect" id="node1" title="Specifies the inference batch size." alt="" coords="5,27,153,69"/>
+<area shape="rect" id="node2" href="$d3/dce/namespacecv_1_1util.html#ae87e1848e5fe5add52bc859f0e1e36b0" title=" " alt="" coords="201,5,371,32"/>
+<area shape="rect" id="node3" href="$df/d5b/namespacecv_1_1gapi_1_1streaming.html#a0a915e69f4cc8284293e40fc9ffbf157" title="Gets dimensions from Mat." alt="" coords="213,57,359,98"/>
+</map>

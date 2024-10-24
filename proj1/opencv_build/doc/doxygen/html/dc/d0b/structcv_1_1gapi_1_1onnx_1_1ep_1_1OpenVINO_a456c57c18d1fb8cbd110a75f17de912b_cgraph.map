@@ -1,0 +1,4 @@
+<map id="cv::gapi::onnx::ep::OpenVINO::cfgEnableDynamicShapes" name="cv::gapi::onnx::ep::OpenVINO::cfgEnableDynamicShapes">
+<area shape="rect" id="node1" title="Enables OpenVINO Execution Provider dynamic shapes." alt="" coords="5,5,232,61"/>
+<area shape="rect" id="node2" href="$d3/dce/namespacecv_1_1util.html#a40544b3ca23b3917f2a5de6b0273079d" title=" " alt="" coords="280,20,428,47"/>
+</map>

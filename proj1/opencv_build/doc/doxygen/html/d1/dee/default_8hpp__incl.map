@@ -1,0 +1,72 @@
+<map id="opencv2/gapi/streaming/onevpl/default.hpp" name="opencv2/gapi/streaming/onevpl/default.hpp">
+<area shape="rect" id="node1" title=" " alt="" coords="2731,5,2909,47"/>
+<area shape="rect" id="node2" href="$da/dfe/exports_8hpp.html" title=" " alt="" coords="2143,773,2364,799"/>
+<area shape="rect" id="node3" href="$d4/d0c/cfg__params_8hpp.html" title=" " alt="" coords="2731,95,2909,136"/>
+<area shape="rect" id="node69" href="$d1/de2/device__selector__interface_8hpp.html" title=" " alt="" coords="2959,572,3137,628"/>
+<area shape="rect" id="node4" title=" " alt="" coords="2908,683,2959,710"/>
+<area shape="rect" id="node5" title=" " alt="" coords="2592,1317,2669,1344"/>
+<area shape="rect" id="node6" title=" " alt="" coords="2841,1317,2900,1344"/>
+<area shape="rect" id="node7" href="$d2/d2e/source_8hpp.html" title=" " alt="" coords="1895,184,2073,225"/>
+<area shape="rect" id="node13" href="$d9/d7a/variant_8hpp.html" title=" " alt="" coords="470,773,682,799"/>
+<area shape="rect" id="node8" title=" " alt="" coords="277,1317,369,1344"/>
+<area shape="rect" id="node9" href="$dd/d48/gmetaarg_8hpp.html" title=" " alt="" coords="1523,273,1727,300"/>
+<area shape="rect" id="node10" title=" " alt="" coords="2517,1019,2579,1045"/>
+<area shape="rect" id="node11" href="$d3/d42/gapi_2include_2opencv2_2gapi_2util_2util_8hpp.html" title=" " alt="" coords="2076,862,2263,889"/>
+<area shape="rect" id="node21" href="$d7/d78/gmat_8hpp.html" title=" " alt="" coords="1717,497,1891,524"/>
+<area shape="rect" id="node65" href="$d6/d5e/gscalar_8hpp.html" title=" " alt="" coords="969,497,1156,524"/>
+<area shape="rect" id="node66" href="$d2/d8f/garray_8hpp.html" title=" " alt="" coords="1335,423,1516,449"/>
+<area shape="rect" id="node67" href="$d5/d1f/gopaque_8hpp.html" title=" " alt="" coords="783,348,980,375"/>
+<area shape="rect" id="node68" href="$df/d35/gframe_8hpp.html" title=" " alt="" coords="1615,423,1803,449"/>
+<area shape="rect" id="node12" title=" " alt="" coords="2142,944,2197,971"/>
+<area shape="rect" id="node14" title=" " alt="" coords="604,944,660,971"/>
+<area shape="rect" id="node15" href="$d6/d2e/compiler__hints_8hpp.html" title=" " alt="" coords="1560,855,1755,896"/>
+<area shape="rect" id="node16" href="$d6/dd8/throw_8hpp.html" title=" " alt="" coords="336,862,539,889"/>
+<area shape="rect" id="node20" href="$dc/d54/type__traits_8hpp.html" title=" " alt="" coords="94,855,261,896"/>
+<area shape="rect" id="node17" title=" " alt="" coords="466,1243,526,1269"/>
+<area shape="rect" id="node18" title=" " alt="" coords="266,944,337,971"/>
+<area shape="rect" id="node19" title=" " alt="" coords="361,944,428,971"/>
+<area shape="rect" id="node22" title=" " alt="" coords="1565,587,1641,613"/>
+<area shape="rect" id="node23" href="$dc/d17/opencv__includes_8hpp.html" title=" " alt="" coords="1316,765,1476,807"/>
+<area shape="rect" id="node57" href="$d2/ded/gcommon_8hpp.html" title=" " alt="" coords="1282,587,1489,613"/>
+<area shape="rect" id="node62" href="$d2/d54/assert_8hpp.html" title=" " alt="" coords="1906,773,2118,799"/>
+<area shape="rect" id="node24" href="$d3/d82/core_2include_2opencv2_2core_2mat_8hpp.html" title=" " alt="" coords="1314,862,1481,889"/>
+<area shape="rect" id="node26" href="$dc/dcc/cvdef_8h.html" title=" " alt="" coords="1165,1317,1325,1344"/>
+<area shape="rect" id="node34" href="$df/dc3/core_2include_2opencv2_2core_2base_8hpp.html" title=" " alt="" coords="1813,1093,1985,1120"/>
+<area shape="rect" id="node53" href="$d6/d04/core_2include_2opencv2_2core_2types_8hpp.html" title=" " alt="" coords="1187,944,1365,971"/>
+<area shape="rect" id="node25" href="$dc/d09/matx_8hpp.html" title=" " alt="" coords="1458,1019,1633,1045"/>
+<area shape="rect" id="node55" href="$df/d28/bufferpool_8hpp.html" title=" " alt="" coords="1441,944,1647,971"/>
+<area shape="rect" id="node56" title=" " alt="" coords="1672,944,1859,971"/>
+<area shape="rect" id="node48" href="$df/d73/traits_8hpp.html" title=" " alt="" coords="805,1093,979,1120"/>
+<area shape="rect" id="node49" href="$db/dbb/core_2include_2opencv2_2core_2saturate_8hpp.html" title=" " alt="" coords="1004,1093,1199,1120"/>
+<area shape="rect" id="node51" title=" " alt="" coords="1458,1093,1569,1120"/>
+<area shape="rect" id="node52" title=" " alt="" coords="1593,1093,1788,1120"/>
+<area shape="rect" id="node27" href="$da/dd7/core_2include_2opencv2_2core_2version_8hpp.html" title=" " alt="" coords="1361,1392,1551,1419"/>
+<area shape="rect" id="node28" title=" " alt="" coords="2471,1392,2529,1419"/>
+<area shape="rect" id="node29" href="$d2/d10/core_2include_2opencv2_2core_2hal_2interface_8h.html" title=" " alt="" coords="1575,1392,1782,1419"/>
+<area shape="rect" id="node32" href="$d1/dac/cv__cpu__dispatch_8h.html" title=" " alt="" coords="1105,1392,1247,1419"/>
+<area shape="rect" id="node33" title=" " alt="" coords="1271,1392,1337,1419"/>
+<area shape="rect" id="node30" title=" " alt="" coords="1291,1467,1362,1493"/>
+<area shape="rect" id="node31" title=" " alt="" coords="1643,1467,1714,1493"/>
+<area shape="rect" id="node35" title=" " alt="" coords="2188,1168,2407,1195"/>
+<area shape="rect" id="node36" title=" " alt="" coords="1137,1168,1204,1195"/>
+<area shape="rect" id="node37" title=" " alt="" coords="2160,1243,2245,1269"/>
+<area shape="rect" id="node38" href="$dd/dc7/cvstd_8hpp.html" title=" " alt="" coords="1228,1168,1404,1195"/>
+<area shape="rect" id="node44" href="$db/d38/neon__utils_8hpp.html" title=" " alt="" coords="1529,1168,1737,1195"/>
+<area shape="rect" id="node45" href="$db/d68/vsx__utils_8hpp.html" title=" " alt="" coords="1762,1168,1961,1195"/>
+<area shape="rect" id="node47" href="$d1/d26/check_8hpp.html" title=" " alt="" coords="1985,1168,2164,1195"/>
+<area shape="rect" id="node39" title=" " alt="" coords="1247,1243,1313,1269"/>
+<area shape="rect" id="node40" title=" " alt="" coords="1338,1243,1403,1269"/>
+<area shape="rect" id="node41" title=" " alt="" coords="1157,1243,1222,1269"/>
+<area shape="rect" id="node42" title=" " alt="" coords="967,1243,1030,1269"/>
+<area shape="rect" id="node43" href="$d7/d47/cvstd__wrapper_8hpp.html" title=" " alt="" coords="1479,1243,1623,1269"/>
+<area shape="rect" id="node46" title=" " alt="" coords="1849,1243,1924,1269"/>
+<area shape="rect" id="node50" href="$d0/d2b/fast__math_8hpp.html" title=" " alt="" coords="906,1168,1113,1195"/>
+<area shape="rect" id="node54" title=" " alt="" coords="1324,1019,1383,1045"/>
+<area shape="rect" id="node58" title=" " alt="" coords="1119,683,1206,710"/>
+<area shape="rect" id="node59" href="$d2/d62/any_8hpp.html" title=" " alt="" coords="706,773,894,799"/>
+<area shape="rect" id="node61" href="$db/dd5/optional_8hpp.html" title=" " alt="" coords="825,683,1044,710"/>
+<area shape="rect" id="node63" href="$d1/d70/render__types_8hpp.html" title=" " alt="" coords="1535,676,1689,717"/>
+<area shape="rect" id="node64" href="$d7/d29/gapi_2include_2opencv2_2gapi_2s11n_2base_8hpp.html" title=" " alt="" coords="1866,683,2073,710"/>
+<area shape="rect" id="node60" title=" " alt="" coords="715,862,791,889"/>
+<area shape="rect" id="node70" href="$de/d78/accel__types_8hpp.html" title=" " alt="" coords="3084,676,3263,717"/>
+</map>

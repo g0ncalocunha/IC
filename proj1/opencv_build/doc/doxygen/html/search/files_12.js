@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['oak_2ehpp_10280',['oak.hpp',['../de/d62/oak_8hpp.html',1,'']]],
+  ['oak_5fdevices_2emarkdown_10281',['oak_devices.markdown',['../d0/d98/oak__devices_8markdown.html',1,'']]],
+  ['objdetect_2ehpp_10282',['objdetect.hpp',['../d8/da3/objdetect_8hpp.html',1,'(Global Namespace)'],['../d7/df0/objdetect_2objdetect_8hpp.html',1,'(Global Namespace)']]],
+  ['object_5ffactory_2eh_10283',['object_factory.h',['../de/d9f/object__factory_8h.html',1,'']]],
+  ['ocl_2ehpp_10284',['ocl.hpp',['../da/d74/ocl_8hpp.html',1,'']]],
+  ['ocl_5fdefs_2ehpp_10285',['ocl_defs.hpp',['../d1/d08/ocl__defs_8hpp.html',1,'']]],
+  ['ocl_5fgenbase_2ehpp_10286',['ocl_genbase.hpp',['../d1/d1f/ocl__genbase_8hpp.html',1,'']]],
+  ['onnx_2ehpp_10287',['onnx.hpp',['../d6/d71/onnx_8hpp.html',1,'']]],
+  ['opencl_5finfo_2ehpp_10288',['opencl_info.hpp',['../d6/d54/opencl__info_8hpp.html',1,'']]],
+  ['opencl_5fsvm_2ehpp_10289',['opencl_svm.hpp',['../df/d48/opencl__svm_8hpp.html',1,'']]],
+  ['opencv_5fincludes_2ehpp_10290',['opencv_includes.hpp',['../dc/d17/opencv__includes_8hpp.html',1,'']]],
+  ['opengl_2ehpp_10291',['opengl.hpp',['../d4/db0/opengl_8hpp.html',1,'']]],
+  ['opening_5fclosing_5fhats_2emarkdown_10292',['opening_closing_hats.markdown',['../dd/d42/opening__closing__hats_8markdown.html',1,'']]],
+  ['operations_2ehpp_10293',['operations.hpp',['../d6/d00/operations_8hpp.html',1,'']]],
+  ['operators_2ehpp_10294',['operators.hpp',['../dd/dcd/operators_8hpp.html',1,'']]],
+  ['optical_5fflow_2emarkdown_10295',['optical_flow.markdown',['../db/d50/optical__flow_8markdown.html',1,'']]],
+  ['optim_2ehpp_10296',['optim.hpp',['../d3/d46/optim_8hpp.html',1,'']]],
+  ['optional_2ehpp_10297',['optional.hpp',['../db/dd5/optional_8hpp.html',1,'']]],
+  ['orbbec_5fastra_5fopenni_2emarkdown_10298',['orbbec_astra_openni.markdown',['../d3/dc3/orbbec__astra__openni_8markdown.html',1,'']]],
+  ['orbbec_5fuvc_2emarkdown_10299',['orbbec_uvc.markdown',['../de/dc9/orbbec__uvc_8markdown.html',1,'']]],
+  ['ot_2ehpp_10300',['ot.hpp',['../d1/dca/cpu_2ot_8hpp.html',1,'(Global Namespace)'],['../d4/d80/ot_8hpp.html',1,'(Global Namespace)']]],
+  ['out_5fof_5ffocus_5fdeblur_5ffilter_2emarkdown_10301',['out_of_focus_deblur_filter.markdown',['../d4/d4d/out__of__focus__deblur__filter_8markdown.html',1,'']]],
+  ['ov_2ehpp_10302',['ov.hpp',['../da/d96/ov_8hpp.html',1,'']]],
+  ['ovx_2ehpp_10303',['ovx.hpp',['../dd/ded/ovx_8hpp.html',1,'']]],
+  ['ovx_5fdefs_2ehpp_10304',['ovx_defs.hpp',['../de/d03/ovx__defs_8hpp.html',1,'']]]
+];

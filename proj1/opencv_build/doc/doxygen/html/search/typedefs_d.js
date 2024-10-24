@@ -1,0 +1,13 @@
+var searchData=
+[
+  ['object_15029',['Object',['../db/de9/classcv_1_1DetectionBasedTracker.html#acf2c841a29a7ebda695fd90521c4781f',1,'cv::DetectionBasedTracker']]],
+  ['opengldrawcallback_15030',['OpenGlDrawCallback',['../d7/dfc/group__highgui.html#ga8bed4feb08f866e81514a31fdacaceee',1,'cv']]],
+  ['optional_15031',['optional',['../d2/d75/namespacecv.html#ac32210320fdf7a0291f24671c9d003c4',1,'cv']]],
+  ['optionalopaqueref_15032',['OptionalOpaqueRef',['../d2/daf/namespacecv_1_1detail.html#a67979a6b4d3805587e107f04d306bb5b',1,'cv::detail']]],
+  ['optionalvectorref_15033',['OptionalVectorRef',['../d2/daf/namespacecv_1_1detail.html#a84d678e087b235c8137c1d3225f9a398',1,'cv::detail']]],
+  ['out_15034',['Out',['../dd/d98/structcv_1_1gapi_1_1ie_1_1PortCfg.html#a73601a4545cc2eea31511e6067010523',1,'cv::gapi::ie::PortCfg::Out()'],['../d2/dbe/structcv_1_1gapi_1_1onnx_1_1PortCfg.html#ab733975d04ae7959793fbdb12d933748',1,'cv::gapi::onnx::PortCfg::Out()']]],
+  ['outargs_15035',['OutArgs',['../dc/d2d/classcv_1_1GKernelTypeM_3_01K_00_01std_1_1function_3_01std_1_1tuple_3_01R_8_8_8_01_4_07Args_8_8_8_08_4_01_4.html#a5d425af9fdadd9e84aa9ae9da620fb54',1,'cv::GKernelTypeM&lt; K, std::function&lt; std::tuple&lt; R... &gt;(Args...)&gt; &gt;::OutArgs()'],['../df/d7c/classcv_1_1GKernelType_3_01K_00_01std_1_1function_3_01R_07Args_8_8_8_08_4_01_4.html#a4d3d93d4cceda20b6712ca4b0a21ceaa',1,'cv::GKernelType&lt; K, std::function&lt; R(Args...)&gt; &gt;::OutArgs()'],['../d1/da2/classcv_1_1GNetworkType_3_01K_00_01std_1_1function_3_01std_1_1tuple_3_01R_8_8_8_01_4_07Args_8_8_8_08_4_01_4.html#a36e3cb62226e67796bf747908a4eacf2',1,'cv::GNetworkType&lt; K, std::function&lt; std::tuple&lt; R... &gt;(Args...)&gt; &gt;::OutArgs()'],['../dc/de8/classcv_1_1GNetworkType_3_01K_00_01std_1_1function_3_01R_07Args_8_8_8_08_4_01_4.html#a3e36c5b5f896a8c38ca9ec9214cb42e8',1,'cv::GNetworkType&lt; K, std::function&lt; R(Args...)&gt; &gt;::OutArgs()']]],
+  ['outputarray_15036',['OutputArray',['../dc/d84/group__core__basic.html#gaad17fda1d0f0d1ee069aebb1df2913c0',1,'cv']]],
+  ['outputarrayofarrays_15037',['OutputArrayOfArrays',['../dc/d84/group__core__basic.html#ga889a09549b98223016170d9b613715de',1,'cv']]],
+  ['outtype_15038',['outType',['../d7/d6b/structcv_1_1detail_1_1InferROITraits_3_01GInferROIBase_01_4.html#aecd55bea4d50441d8352a0105f650f14',1,'cv::detail::InferROITraits&lt; GInferROIBase &gt;::outType()'],['../dd/de5/structcv_1_1detail_1_1InferROITraits_3_01GInferListBase_01_4.html#ae48b2fc65b99080d4dddcf917a9fe14f',1,'cv::detail::InferROITraits&lt; GInferListBase &gt;::outType()']]]
+];

@@ -1,0 +1,5 @@
+<map id="cv::dnn::TextDetectionModel" name="cv::dnn::TextDetectionModel">
+<area shape="rect" id="node1" title="Base class for text detection networks." alt="" coords="5,419,212,555"/>
+<area shape="rect" id="node2" href="$d3/df0/classcv_1_1dnn_1_1Model.html" title="This class is presented high&#45;level API for neural networks." alt="" coords="32,145,185,369"/>
+<area shape="rect" id="node3" title=" " alt="" coords="59,5,158,83"/>
+</map>

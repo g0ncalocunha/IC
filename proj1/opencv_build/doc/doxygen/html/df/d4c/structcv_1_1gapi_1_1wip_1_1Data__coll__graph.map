@@ -1,0 +1,13 @@
+<map id="cv::gapi::wip::Data" name="cv::gapi::wip::Data">
+<area shape="rect" id="node1" title="This aggregate type represents all types which G&#45;API can handle (via variant)." alt="" coords="81,977,223,1143"/>
+<area shape="rect" id="node2" href="$d3/d74/structcv_1_1GRunArg.html" title=" " alt="" coords="95,733,209,928"/>
+<area shape="rect" id="node3" href="$dc/d3e/classcv_1_1util_1_1variant.html" title=" " alt="" coords="18,403,131,671"/>
+<area shape="rect" id="node4" title=" " alt="" coords="5,204,75,281"/>
+<area shape="rect" id="node5" title=" " alt="" coords="173,483,325,590"/>
+<area shape="rect" id="node6" title=" " alt="" coords="99,204,186,281"/>
+<area shape="rect" id="node7" title=" " alt="" coords="73,5,212,97"/>
+<area shape="rect" id="node8" href="$d9/dc4/classcv_1_1util_1_1any.html" title=" " alt="" coords="210,160,323,325"/>
+<area shape="rect" id="node9" title=" " alt="" coords="348,197,500,289"/>
+<area shape="rect" id="node10" title=" " alt="" coords="366,13,405,90"/>
+<area shape="rect" id="node11" title=" " alt="" coords="442,13,481,90"/>
+</map>

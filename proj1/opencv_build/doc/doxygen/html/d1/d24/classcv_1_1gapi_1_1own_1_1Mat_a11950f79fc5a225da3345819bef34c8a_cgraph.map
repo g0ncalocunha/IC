@@ -1,0 +1,12 @@
+<map id="cv::gapi::own::Mat::clone" name="cv::gapi::own::Mat::clone">
+<area shape="rect" id="node1" title="Creates a full copy of the matrix and the underlying data." alt="" coords="5,201,145,243"/>
+<area shape="rect" id="node2" href="$d1/d24/classcv_1_1gapi_1_1own_1_1Mat.html#a47cb530df8c61d0b3dfb7c7d3c240bfd" title="Copies the matrix to another one." alt="" coords="193,201,333,243"/>
+<area shape="rect" id="node3" href="$d1/d24/classcv_1_1gapi_1_1own_1_1Mat.html#aa234313065f8e7c8b333266dbb668a76" title=" " alt="" coords="395,5,535,47"/>
+<area shape="rect" id="node4" href="$d0/d06/namespacecv_1_1gapi_1_1own_1_1detail.html#aafeec5427533d638f2f8437397363899" title=" " alt="" coords="389,71,541,112"/>
+<area shape="rect" id="node5" href="$d1/d24/classcv_1_1gapi_1_1own_1_1Mat.html#ac17970b7962e231610288a8b0f035161" title="Returns the depth of a matrix element." alt="" coords="395,136,535,177"/>
+<area shape="rect" id="node6" href="$d1/d24/classcv_1_1gapi_1_1own_1_1Mat.html#a17a22f04a8935c8034f0c4b81b68bb44" title="Returns the matrix element size in bytes." alt="" coords="395,201,535,243"/>
+<area shape="rect" id="node7" href="$d1/d24/classcv_1_1gapi_1_1own_1_1Mat.html#abff622ef7ef3019c18800de316c08963" title="Returns the type of a matrix element." alt="" coords="596,231,736,272"/>
+<area shape="rect" id="node8" href="$d1/d24/classcv_1_1gapi_1_1own_1_1Mat.html#ac7a730baeea428e9b58c20805cc56248" title="Returns a pointer to the specified matrix row." alt="" coords="381,318,548,345"/>
+<area shape="rect" id="node9" href="$d1/d24/classcv_1_1gapi_1_1own_1_1Mat.html#a93dbce66072b6125bf87634f230f9470" title="Returns the total number of array elements." alt="" coords="395,369,535,411"/>
+<area shape="rect" id="node10" href="$d7/df3/group__imgproc__motion.html#ga1a567a79901513811ff3b9976923b199" title="Adds an image to the accumulator image." alt="" coords="606,377,726,403"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="cv::gapi::ov::Params::cfgResize" name="cv::gapi::ov::Params::cfgResize">
+<area shape="rect" id="node1" title="Specifies resize interpolation algorithm." alt="" coords="5,5,156,47"/>
+<area shape="rect" id="node2" href="$dd/dcf/namespacecv_1_1gapi_1_1ov_1_1detail.html#a704bf69c507dcc8d4c8011020b596a96" title=" " alt="" coords="204,5,409,47"/>
+<area shape="rect" id="node3" href="$d3/dce/namespacecv_1_1util.html#a40544b3ca23b3917f2a5de6b0273079d" title=" " alt="" coords="457,13,605,39"/>
+</map>

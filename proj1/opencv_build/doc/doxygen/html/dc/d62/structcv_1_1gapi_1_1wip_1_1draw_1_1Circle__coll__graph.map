@@ -1,0 +1,11 @@
+<map id="cv::gapi::wip::draw::Circle" name="cv::gapi::wip::draw::Circle">
+<area shape="rect" id="node1" title="This structure represents a circle to draw." alt="" coords="227,2319,369,2425"/>
+<area shape="rect" id="node2" href="$d1/da0/classcv_1_1Scalar__.html" title="Template class for a 4&#45;element vector derived from Vec." alt="" coords="63,1959,261,2212"/>
+<area shape="rect" id="node3" href="$d6/dcf/classcv_1_1Vec.html" title=" " alt="" coords="94,1583,230,1909"/>
+<area shape="rect" id="node4" href="$de/de1/classcv_1_1Matx.html" title=" " alt="" coords="5,817,175,1144"/>
+<area shape="rect" id="node7" href="$d6/dcf/classcv_1_1Vec.html" title="Template class for short numerical vectors, a partial case of Matx." alt="" coords="104,1193,247,1520"/>
+<area shape="rect" id="node5" href="$de/de1/classcv_1_1Matx.html" title="Template class for small matrices whose type and size are known at compilation time." alt="" coords="49,160,216,487"/>
+<area shape="rect" id="node6" title=" " alt="" coords="193,5,238,83"/>
+<area shape="rect" id="node9" href="$db/d4e/classcv_1_1Point__.html" title="Template class for 2D points specified by its coordinates x and y." alt="" coords="195,511,401,793"/>
+<area shape="rect" id="node8" title=" " alt="" coords="336,2047,375,2124"/>
+</map>

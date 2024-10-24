@@ -1,0 +1,4 @@
+<map id="cv::saturate_cast&lt; unsigned &gt;" name="cv::saturate_cast&lt; unsigned &gt;">
+<area shape="rect" id="node1" title="Saturate cast to unsigned integer and unsigned long long integer We intentionally do not clip negativ..." alt="" coords="5,5,148,47"/>
+<area shape="rect" id="node2" href="$db/d2e/softfloat_8hpp.html#ac78db640183b31da362d6f2779742a94" title="Rounds a number to nearest even integer." alt="" coords="196,13,275,39"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="cv::dnn::TextDetectionModel_EAST" name="cv::dnn::TextDetectionModel_EAST">
+<area shape="rect" id="node1" title="This class represents high&#45;level API for text detection DL networks compatible with EAST model." alt="" coords="5,604,252,813"/>
+<area shape="rect" id="node2" href="$d4/de1/classcv_1_1dnn_1_1TextDetectionModel.html" title="Base class for text detection networks." alt="" coords="25,419,232,555"/>
+<area shape="rect" id="node3" href="$d3/df0/classcv_1_1dnn_1_1Model.html" title="This class is presented high&#45;level API for neural networks." alt="" coords="52,145,205,369"/>
+<area shape="rect" id="node4" title=" " alt="" coords="79,5,178,83"/>
+</map>

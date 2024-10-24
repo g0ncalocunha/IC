@@ -1,0 +1,5 @@
+<map id="cv::aruco::GridBoard" name="cv::aruco::GridBoard">
+<area shape="rect" id="node1" title="Planar board with grid arrangement of markers." alt="" coords="11,389,193,525"/>
+<area shape="rect" id="node2" href="$d4/db2/classcv_1_1aruco_1_1Board.html" title="Board of ArUco markers." alt="" coords="5,145,199,340"/>
+<area shape="rect" id="node3" title=" " alt="" coords="53,5,151,83"/>
+</map>

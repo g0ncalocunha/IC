@@ -1,0 +1,4 @@
+<map id="cv::utils::optional_shared_lock_guard&lt; _Mutex &gt;" name="cv::utils::optional_shared_lock_guard&lt; _Mutex &gt;">
+<area shape="rect" id="node1" title="An optional shared scoped lock (RAII&#45;style locking for shared/reader access)." alt="" coords="5,145,192,296"/>
+<area shape="rect" id="node2" title=" " alt="" coords="61,5,136,83"/>
+</map>

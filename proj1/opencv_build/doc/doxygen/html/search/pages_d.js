@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['object_20detection_17852',['Object Detection',['../dc/d73/tutorial_js_table_of_contents_objdetect.html',1,'tutorial_js_root'],['../d9/de5/tutorial_py_table_of_contents_objdetect.html',1,'(Global Namespace)']]],
+  ['object_20detection_20_28objdetect_20module_29_17853',['Object Detection (objdetect module)',['../d2/d64/tutorial_table_of_content_objdetect.html',1,'tutorial_root']]],
+  ['object_20detection_20example_17854',['Object Detection Example',['../d0/d0f/tutorial_js_object_detection.html',1,'tutorial_js_table_of_contents_dnn']]],
+  ['object_20detection_20example_20with_20camera_17855',['Object Detection Example with Camera',['../d2/d14/tutorial_js_object_detection_with_camera.html',1,'tutorial_js_table_of_contents_dnn']]],
+  ['object_20detection_20with_20generalized_20ballard_20and_20guil_20hough_20transform_17856',['Object detection with Generalized Ballard and Guil Hough Transform',['../da/ddc/tutorial_generalized_hough_ballard_guil.html',1,'tutorial_table_of_content_imgproc']]],
+  ['ocr_20of_20hand_2dwritten_20data_20using_20knn_17857',['OCR of Hand-written Data using kNN',['../d8/d4b/tutorial_py_knn_opencv.html',1,'tutorial_py_knn_index']]],
+  ['ocr_20of_20hand_2dwritten_20data_20using_20svm_17858',['OCR of Hand-written Data using SVM',['../dd/d3b/tutorial_py_svm_opencv.html',1,'tutorial_py_svm_index']]],
+  ['opencv_20configuration_20options_20reference_17859',['OpenCV configuration options reference',['../db/d05/tutorial_config_reference.html',1,'tutorial_table_of_content_introduction']]],
+  ['opencv_20environment_20variables_20reference_17860',['OpenCV environment variables reference',['../d6/dea/tutorial_env_reference.html',1,'tutorial_table_of_content_introduction']]],
+  ['opencv_20installation_20overview_17861',['OpenCV installation overview',['../d0/d3d/tutorial_general_install.html',1,'tutorial_table_of_content_introduction']]],
+  ['opencv_20ios_17862',['OpenCV iOS',['../d3/dc9/tutorial_table_of_content_ios.html',1,'tutorial_root']]],
+  ['opencv_20ios_20_2d_20image_20processing_17863',['OpenCV iOS - Image Processing',['../d3/def/tutorial_image_manipulation.html',1,'tutorial_table_of_content_ios']]],
+  ['opencv_20ios_20_2d_20video_20processing_17864',['OpenCV iOS - Video Processing',['../db/dc8/tutorial_video_processing.html',1,'tutorial_table_of_content_ios']]],
+  ['opencv_20ios_20hello_17865',['OpenCV iOS Hello',['../d7/d88/tutorial_hello.html',1,'tutorial_table_of_content_ios']]],
+  ['opencv_20modules_17866',['OpenCV modules',['../index.html',1,'']]],
+  ['opencv_20tutorials_17867',['OpenCV Tutorials',['../d9/df8/tutorial_root.html',1,'']]],
+  ['opencv_20usage_20with_20openvino_17868',['OpenCV usage with OpenVINO',['../dc/dfe/tutorial_dnn_openvino.html',1,'tutorial_table_of_content_dnn']]],
+  ['opencv_2dpython_20bindings_17869',['OpenCV-Python Bindings',['../df/da2/tutorial_py_table_of_contents_bindings.html',1,'tutorial_py_root']]],
+  ['opencv_2dpython_20tutorials_17870',['OpenCV-Python Tutorials',['../d6/d00/tutorial_py_root.html',1,'']]],
+  ['opencv_2ejs_20tutorials_17871',['OpenCV.js Tutorials',['../d5/d10/tutorial_js_root.html',1,'']]],
+  ['operations_20with_20images_17872',['Operations with images',['../d5/d98/tutorial_mat_operations.html',1,'tutorial_table_of_content_core']]],
+  ['optical_20flow_17873',['Optical Flow',['../db/d7f/tutorial_js_lucas_kanade.html',1,'tutorial_js_table_of_contents_video'],['../d4/dee/tutorial_optical_flow.html',1,'tutorial_table_of_content_other'],['../d7/d8b/tutorial_py_lucas_kanade.html',1,'(Global Namespace)']]],
+  ['orb_20_28oriented_20fast_20and_20rotated_20brief_29_17874',['ORB (Oriented FAST and Rotated BRIEF)',['../d1/d89/tutorial_py_orb.html',1,'tutorial_py_table_of_contents_feature2d']]],
+  ['other_20tutorials_20_28ml_2c_20objdetect_2c_20photo_2c_20stitching_2c_20video_29_17875',['Other tutorials (ml, objdetect, photo, stitching, video)',['../d3/dd5/tutorial_table_of_content_other.html',1,'tutorial_root']]],
+  ['out_2dof_2dfocus_20deblur_20filter_17876',['Out-of-focus Deblur Filter',['../de/d3c/tutorial_out_of_focus_deblur_filter.html',1,'tutorial_table_of_content_imgproc']]]
+];

@@ -1,0 +1,5 @@
+<map id="cv::AlignMTB" name="cv::AlignMTB">
+<area shape="rect" id="node1" title="This algorithm converts images to median threshold bitmaps (1 for pixels brighter than median luminan..." alt="" coords="5,447,165,671"/>
+<area shape="rect" id="node2" href="$d4/df2/classcv_1_1AlignExposures.html" title="The base class for algorithms that align images of the same scene with different exposures." alt="" coords="13,321,157,399"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="8,5,163,273"/>
+</map>

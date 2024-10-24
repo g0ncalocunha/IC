@@ -1,0 +1,12 @@
+<map id="cv::detail::tracking::TrackerModel" name="cv::detail::tracking::TrackerModel">
+<area shape="rect" id="node1" title="Abstract class that represents the model of the target." alt="" coords="557,484,767,752"/>
+<area shape="rect" id="node2" title=" " alt="" coords="116,322,301,414"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,153,196,230"/>
+<area shape="rect" id="node4" title=" " alt="" coords="460,153,589,230"/>
+<area shape="rect" id="node7" title=" " alt="" coords="374,329,595,407"/>
+<area shape="rect" id="node9" title=" " alt="" coords="620,315,811,421"/>
+<area shape="rect" id="node5" title=" " alt="" coords="505,5,544,83"/>
+<area shape="rect" id="node6" title=" " alt="" coords="835,329,873,407"/>
+<area shape="rect" id="node8" title=" " alt="" coords="900,322,1088,414"/>
+<area shape="rect" id="node10" title=" " alt="" coords="822,145,1003,237"/>
+</map>

@@ -1,0 +1,13 @@
+<map id="cv::QtFont" name="cv::QtFont">
+<area shape="rect" id="node1" title="QtFont available only for Qt. See cv::fontQt." alt="" coords="251,2381,337,2459"/>
+<area shape="rect" id="node2" href="$d1/da0/classcv_1_1Scalar__.html" title=" " alt="" coords="5,1992,204,2245"/>
+<area shape="rect" id="node3" href="$d6/dcf/classcv_1_1Vec.html" title="Template class for short numerical vectors, a partial case of Matx." alt="" coords="40,911,183,1237"/>
+<area shape="rect" id="node8" href="$d6/dcf/classcv_1_1Vec.html" title=" " alt="" coords="151,1300,287,1627"/>
+<area shape="rect" id="node4" href="$de/de1/classcv_1_1Matx.html" title=" " alt="" coords="81,535,251,861"/>
+<area shape="rect" id="node5" href="$de/de1/classcv_1_1Matx.html" title="Template class for small matrices whose type and size are known at compilation time." alt="" coords="83,145,249,472"/>
+<area shape="rect" id="node6" title=" " alt="" coords="143,5,189,83"/>
+<area shape="rect" id="node7" href="$d1/da0/classcv_1_1Scalar__.html" title="Template class for a 4&#45;element vector derived from Vec." alt="" coords="120,1676,319,1929"/>
+<area shape="rect" id="node9" title=" " alt="" coords="227,2080,278,2157"/>
+<area shape="rect" id="node10" title=" " alt="" coords="317,2080,356,2157"/>
+<area shape="rect" id="node11" title=" " alt="" coords="391,2080,491,2157"/>
+</map>

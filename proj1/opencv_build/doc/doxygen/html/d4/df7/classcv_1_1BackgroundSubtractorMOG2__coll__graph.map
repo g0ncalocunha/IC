@@ -1,0 +1,5 @@
+<map id="cv::BackgroundSubtractorMOG2" name="cv::BackgroundSubtractorMOG2">
+<area shape="rect" id="node1" title="Gaussian Mixture&#45;based Background/Foreground Segmentation Algorithm." alt="" coords="5,461,277,685"/>
+<area shape="rect" id="node2" href="$d7/df6/classcv_1_1BackgroundSubtractor.html" title="Base class for background/foreground segmentation. :" alt="" coords="47,321,235,413"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="64,5,219,273"/>
+</map>

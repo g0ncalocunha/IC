@@ -1,0 +1,7 @@
+<map id="cv::detail::SphericalPortraitWarper" name="cv::detail::SphericalPortraitWarper">
+<area shape="rect" id="node1" title=" " alt="" coords="30,823,231,929"/>
+<area shape="rect" id="node2" href="$d6/d65/classcv_1_1detail_1_1RotationWarperBase.html" title=" " alt="" coords="5,549,256,773"/>
+<area shape="rect" id="node3" href="$da/db8/classcv_1_1detail_1_1RotationWarper.html" title="Rotation&#45;only model image warper interface." alt="" coords="17,5,207,200"/>
+<area shape="rect" id="node4" href="$d6/d65/classcv_1_1detail_1_1RotationWarperBase.html" title="Base class for rotation&#45;based warper using a detail::ProjectorBase_ derived class." alt="" coords="147,263,357,487"/>
+<area shape="rect" id="node5" title=" " alt="" coords="233,64,271,141"/>
+</map>

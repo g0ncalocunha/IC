@@ -1,0 +1,4 @@
+<map id="cv::v_popcount" name="cv::v_popcount">
+<area shape="rect" id="node1" title="Count the 1 bits in the vector lanes and return result as corresponding unsigned type." alt="" coords="5,5,124,32"/>
+<area shape="rect" id="node2" href="$df/d91/group__core__hal__intrin.html#ga55e5411f51c4ece4e9fdd5af84f51391" title=" " alt="" coords="172,5,345,32"/>
+</map>

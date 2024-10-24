@@ -1,0 +1,11 @@
+<map id="main" name="main">
+<area shape="rect" id="node1" title=" " alt="" coords="5,183,60,209"/>
+<area shape="rect" id="node2" href="$dc/d46/group__highgui__qt.html#ga938dc3ab0a9f115156439bd380816e2c" title="Attaches a button to the control panel." alt="" coords="129,5,257,32"/>
+<area shape="rect" id="node3" href="$d7/dfc/group__highgui.html#gaf78d2155d30b728fc413803745b67a9b" title="Creates a trackbar and attaches it to the specified window." alt="" coords="123,56,263,83"/>
+<area shape="rect" id="node4" href="$d7/dfc/group__highgui.html#ga6b7fc1c1a8960438156912027b38f481" title="Destroys all of the HighGUI windows." alt="" coords="108,107,277,133"/>
+<area shape="rect" id="node5" href="$d4/da8/group__imgcodecs.html#gacbaa02cffc4ec2422dfa2e24412a99e2" title="Loads an image from a file." alt="" coords="147,157,238,184"/>
+<area shape="rect" id="node6" href="$d7/dfc/group__highgui.html#ga453d42fe4cb60e5723281a89973ee563" title="Displays an image in the specified window." alt="" coords="145,208,240,235"/>
+<area shape="rect" id="node7" href="$d7/dfc/group__highgui.html#ga5afdf8410934fd099df85c75b2e0888b" title="Creates a window." alt="" coords="122,259,263,285"/>
+<area shape="rect" id="node8" href="$d7/dfc/group__highgui.html#ga89e7806b0a616f6f1d502bd8c183ad3e" title="Sets mouse handler for the specified window." alt="" coords="111,309,274,336"/>
+<area shape="rect" id="node9" href="$d7/dfc/group__highgui.html#ga5628525ad33f52eab17feebcfba38bd7" title="Waits for a pressed key." alt="" coords="145,360,241,387"/>
+</map>

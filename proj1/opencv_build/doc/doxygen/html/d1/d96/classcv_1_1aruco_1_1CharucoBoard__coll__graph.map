@@ -1,0 +1,5 @@
+<map id="cv::aruco::CharucoBoard" name="cv::aruco::CharucoBoard">
+<area shape="rect" id="node1" title="ChArUco board is a planar chessboard where the markers are placed inside the white squares of a chess..." alt="" coords="5,389,252,613"/>
+<area shape="rect" id="node2" href="$d4/db2/classcv_1_1aruco_1_1Board.html" title="Board of ArUco markers." alt="" coords="32,145,225,340"/>
+<area shape="rect" id="node3" title=" " alt="" coords="79,5,178,83"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="cv::Algorithm::loadFromString" name="cv::Algorithm::loadFromString">
+<area shape="rect" id="node1" title="Loads algorithm from a String." alt="" coords="5,35,220,61"/>
+<area shape="rect" id="node2" href="$de/dd9/classcv_1_1FileNode.html#a82d59aab4765da6140c238c54aadfa92" title="returns true if the node is empty" alt="" coords="280,5,431,32"/>
+<area shape="rect" id="node3" href="$da/d56/classcv_1_1FileStorage.html#a7153604af73ca7de43b977eedd1bbe09" title="Returns the first element of the top&#45;level mapping." alt="" coords="268,57,443,98"/>
+</map>

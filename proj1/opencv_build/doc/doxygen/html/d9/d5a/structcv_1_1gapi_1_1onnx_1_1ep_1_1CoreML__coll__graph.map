@@ -1,0 +1,4 @@
+<map id="cv::gapi::onnx::ep::CoreML" name="cv::gapi::onnx::ep::CoreML">
+<area shape="rect" id="node1" title="This structure provides functions that fill inference options for ONNX CoreML Execution Provider...." alt="" coords="5,175,233,311"/>
+<area shape="rect" id="node2" title=" " alt="" coords="94,5,145,83"/>
+</map>

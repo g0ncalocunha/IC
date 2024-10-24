@@ -1,0 +1,5 @@
+<map id="cv::dnn::normalize_axis" name="cv::dnn::normalize_axis">
+<area shape="rect" id="node1" title=" " alt="" coords="5,31,180,57"/>
+<area shape="rect" id="node2" href="$df/d57/namespacecv_1_1dnn.html#a170f9ba8c1c63fa01c35c26023d1be91" title="Converts axis from [&#45;dims; dims) (similar to Python&#39;s slice notation) to [0; dims) range." alt="" coords="228,5,403,32"/>
+<area shape="rect" id="node3" href="$df/d57/namespacecv_1_1dnn.html#a270ae5dc357c85f7fec6d94470b52189" title=" " alt="" coords="258,56,373,83"/>
+</map>

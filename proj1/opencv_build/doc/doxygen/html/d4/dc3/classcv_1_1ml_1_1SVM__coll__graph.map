@@ -1,0 +1,5 @@
+<map id="cv::ml::SVM" name="cv::ml::SVM">
+<area shape="rect" id="node1" title="Support Vector Machines." alt="" coords="5,564,184,847"/>
+<area shape="rect" id="node2" href="$db/d7d/classcv_1_1ml_1_1StatModel.html" title="Base class for statistical models in OpenCV ML." alt="" coords="27,321,162,516"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="17,5,172,273"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="cv::StereoSGBM" name="cv::StereoSGBM">
+<area shape="rect" id="node1" title="The class implements the modified H. Hirschmuller algorithm &#160;that differs from the original one as fo..." alt="" coords="15,623,194,847"/>
+<area shape="rect" id="node2" href="$d2/d6e/classcv_1_1StereoMatcher.html" title="The base class for stereo correspondence algorithms." alt="" coords="5,321,204,575"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="27,5,182,273"/>
+</map>

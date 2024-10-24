@@ -1,0 +1,5 @@
+<map id="cv::ml::NormalBayesClassifier" name="cv::ml::NormalBayesClassifier">
+<area shape="rect" id="node1" title="Bayes classifier for normally distributed data." alt="" coords="5,564,223,671"/>
+<area shape="rect" id="node2" href="$db/d7d/classcv_1_1ml_1_1StatModel.html" title="Base class for statistical models in OpenCV ML." alt="" coords="47,321,181,516"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="37,5,191,273"/>
+</map>

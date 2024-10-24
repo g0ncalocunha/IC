@@ -1,0 +1,4 @@
+<map id="cv::dnn::BackendWrapper" name="cv::dnn::BackendWrapper">
+<area shape="rect" id="node1" title="Derivatives of this class wraps cv::Mat for different backends and targets." alt="" coords="5,160,192,311"/>
+<area shape="rect" id="node2" title=" " alt="" coords="79,5,118,83"/>
+</map>

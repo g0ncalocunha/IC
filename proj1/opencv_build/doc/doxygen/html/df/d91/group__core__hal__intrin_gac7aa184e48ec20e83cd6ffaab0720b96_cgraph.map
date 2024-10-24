@@ -1,0 +1,4 @@
+<map id="cv::v256_load_expand" name="cv::v256_load_expand">
+<area shape="rect" id="node1" title="Load register contents from memory with double expand." alt="" coords="5,5,172,32"/>
+<area shape="rect" id="node2" href="$db/de0/group__core__utils.html#gadbc1b082037ac3725f3b12fe6c541c61" title="Alignment check of passed values." alt="" coords="220,5,324,32"/>
+</map>

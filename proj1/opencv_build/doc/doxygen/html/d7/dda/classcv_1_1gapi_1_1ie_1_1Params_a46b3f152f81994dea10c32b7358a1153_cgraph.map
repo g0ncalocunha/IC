@@ -1,0 +1,4 @@
+<map id="cv::gapi::ie::Params::cfgOutputLayers" name="cv::gapi::ie::Params::cfgOutputLayers">
+<area shape="rect" id="node1" title="Specifies sequence of network output layers names for inference." alt="" coords="5,5,153,47"/>
+<area shape="rect" id="node2" href="$db/d30/namespacecv_1_1gapi_1_1oak.html#a93c5015908db797b44c78266fa290b39" title=" " alt="" coords="201,13,344,39"/>
+</map>

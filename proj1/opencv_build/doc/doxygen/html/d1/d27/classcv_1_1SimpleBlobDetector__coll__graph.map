@@ -1,0 +1,5 @@
+<map id="cv::SimpleBlobDetector" name="cv::SimpleBlobDetector">
+<area shape="rect" id="node1" title="Class for extracting blobs from an image. :" alt="" coords="5,593,180,729"/>
+<area shape="rect" id="node2" href="$d0/d13/classcv_1_1Feature2D.html" title="Abstract base class for 2D image feature detectors and descriptor extractors." alt="" coords="7,321,179,545"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="15,5,170,273"/>
+</map>

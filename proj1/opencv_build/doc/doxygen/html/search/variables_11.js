@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['r_14658',['r',['../d1/df4/structcv_1_1detail_1_1tracked__cv__umat.html#a6a9a4f76fd04649d4d5fa85f56b3cfae',1,'cv::detail::tracked_cv_umat']]],
+  ['r_14659',['R',['../d4/d0a/structcv_1_1detail_1_1CameraParams.html#ab1fe6908cde4a9662e20f03e7dfcc272',1,'cv::detail::CameraParams']]],
+  ['r_14660',['r',['../d3/d73/structcv_1_1detail_1_1tracked__cv__mat.html#a65576ef7daf7c86e056b42b34a80520f',1,'cv::detail::tracked_cv_mat']]],
+  ['r_5fkinv_14661',['r_kinv',['../dc/d2c/structcv_1_1detail_1_1ProjectorBase.html#a2f30b2a02c9fddf1bacb47a805b00c82',1,'cv::detail::ProjectorBase']]],
+  ['radius_14662',['radius',['../d8/d07/structcv_1_1gapi_1_1wip_1_1draw_1_1Circle.html#a4fcaf2bca152dd7d01a1cf6a7bf1bba9',1,'cv::gapi::wip::draw::Circle']]],
+  ['randomgeneratorstate_14663',['randomGeneratorState',['../d6/dd0/structcv_1_1UsacParams.html#a0c777f5bf6d3c36802c58671df58cd4d',1,'cv::UsacParams']]],
+  ['range_5fwidth_5f_14664',['range_width_',['../d8/d72/classcv_1_1detail_1_1BestOf2NearestRangeMatcher.html#aaaf95a87a78f32d7c8a99e6cbaf3c375',1,'cv::detail::BestOf2NearestRangeMatcher']]],
+  ['ratectrlmode_14665',['rateCtrlMode',['../d1/d8b/structcv_1_1gapi_1_1oak_1_1EncoderConfig.html#a0f582f5852e5a730a99f4c6f21296ff4',1,'cv::gapi::oak::EncoderConfig']]],
+  ['re_14666',['re',['../da/df6/classcv_1_1Complex.html#ac4cd4a983c71a573eaeaa8bbbda02495',1,'cv::Complex']]],
+  ['recentedge_14667',['recentEdge',['../df/dbf/classcv_1_1Subdiv2D.html#a80cd8452cf0a0eb8fab9a6875a1bbd0f',1,'cv::Subdiv2D']]],
+  ['rect_14668',['rect',['../d6/d30/structcv_1_1gapi_1_1wip_1_1draw_1_1Rect.html#a1390f78cbd67ee974d11bd6b9ab3858b',1,'cv::gapi::wip::draw::Rect']]],
+  ['refcount_14669',['refcount',['../db/d58/structcv_1_1UMatData.html#a21d534e3d518241614744ecf92119a84',1,'cv::UMatData::refcount()'],['../d4/d8d/structcv_1_1SparseMat_1_1Hdr.html#acdcfa90051a2b0cc818ab61ea3f89f74',1,'cv::SparseMat::Hdr::refcount()']]],
+  ['refinement_5fmask_5f_14670',['refinement_mask_',['../d5/d56/classcv_1_1detail_1_1BundleAdjusterBase.html#a56ea71911cc8a1693544f2f6a890ba73',1,'cv::detail::BundleAdjusterBase']]],
+  ['relativecornerrefinmentwinsize_14671',['relativeCornerRefinmentWinSize',['../d1/dcd/structcv_1_1aruco_1_1DetectorParameters.html#ae132faf9c0907a424247100639342b70',1,'cv::aruco::DetectorParameters']]],
+  ['reserved_14672',['reserved',['../df/dfd/structcv_1_1details_1_1FPDenormalsModeState.html#a1d58b44f668343f3a4f213ae8c67a0ee',1,'cv::details::FPDenormalsModeState']]],
+  ['reshape_5ftable_14673',['reshape_table',['../d0/db5/structcv_1_1gapi_1_1ie_1_1detail_1_1ParamDesc.html#abaac8827988377f2df281411af8c057d',1,'cv::gapi::ie::detail::ParamDesc']]],
+  ['resolution_14674',['resolution',['../d4/d95/structcv_1_1gapi_1_1oak_1_1ColorCameraParams.html#a8be5f48b8ac168eb943a2db59b6a899b',1,'cv::gapi::oak::ColorCameraParams']]],
+  ['response_14675',['response',['../d2/d29/classcv_1_1KeyPoint.html#a1f163ac418c281042e28895b20514360',1,'cv::KeyPoint::response()'],['../d9/daa/structcvhalKeyPoint.html#aafc45286e9e117335903c1cb0d6eb5b7',1,'cvhalKeyPoint::response()']]],
+  ['reverse_14676',['reverse',['../d1/dd1/classcv_1_1dnn_1_1CumSumLayer.html#a956874365a45a78ecf20ddd97c43b9e3',1,'cv::dnn::CumSumLayer']]],
+  ['right_14677',['right',['../d4/d7d/classcv_1_1ml_1_1DTrees_1_1Node.html#aef80dc1796c5c0a694482af8dc63ae99',1,'cv::ml::DTrees::Node']]],
+  ['rinv_14678',['rinv',['../dc/d2c/structcv_1_1detail_1_1ProjectorBase.html#a4665331ebb0ea7db6d4f48151da35509',1,'cv::detail::ProjectorBase']]],
+  ['rois_14679',['rois',['../d9/d17/structcv_1_1GFluidOutputRois.html#afddaa3fbe65f8dfdc086ef6ba5ebdd81',1,'cv::GFluidOutputRois']]],
+  ['rows_14680',['rows',['../d3/d63/classcv_1_1Mat.html#abed816466c45234254d25bc59c31245e',1,'cv::Mat::rows()'],['../d7/d45/classcv_1_1UMat.html#a8137e5d25233b57db5616f227f1772ee',1,'cv::UMat::rows()'],['../da/d5d/structcv_1_1gapi_1_1own_1_1detail_1_1MatHeader.html#a89ced746488193fb87bcd1a4794955db',1,'cv::gapi::own::detail::MatHeader::rows()']]],
+  ['run_14681',['run',['../d2/da8/classcv_1_1gapi_1_1python_1_1GPythonKernel.html#a987e0c43b7cc66ab1516df1d1ec8413e',1,'cv::gapi::python::GPythonKernel']]]
+];

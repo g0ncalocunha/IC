@@ -1,0 +1,18 @@
+<map id="v_log_default_32f" name="v_log_default_32f">
+<area shape="rect" id="node1" title=" " alt="" coords="5,335,144,361"/>
+<area shape="rect" id="node2" href="$df/d91/group__core__hal__intrin.html#gaa1671a24cf3656d041297b52b4a5a395" title="Add values." alt="" coords="241,5,323,32"/>
+<area shape="rect" id="node3" href="$df/d91/group__core__hal__intrin.html#gaec35974cdd96baa1576b9ae9f86d4099" title="Bitwise AND." alt="" coords="241,56,323,83"/>
+<area shape="rect" id="node4" href="$df/d91/group__core__hal__intrin.html#ga140593e5fc051e291791899ad50976a6" title="Convert to float." alt="" coords="229,107,335,133"/>
+<area shape="rect" id="node5" href="$df/d91/group__core__hal__intrin.html#gad6cb63a351b8e0c64ac2abe4054d321e" title="Equal comparison." alt="" coords="245,157,319,184"/>
+<area shape="rect" id="node6" href="$df/d91/group__core__hal__intrin.html#ga44b69b35f3ec20e27258064ab5d3d1bd" title="Multiply and add." alt="" coords="239,208,325,235"/>
+<area shape="rect" id="node7" href="$df/d91/group__core__hal__intrin.html#gad459f5156e6bf8b7bb18c633e89c3db1" title="Greater&#45;than or equal comparison." alt="" coords="245,259,319,285"/>
+<area shape="rect" id="node8" href="$df/d91/group__core__hal__intrin.html#ga3211700e9178627ba2f714ad51a1d402" title="Less&#45;than comparison." alt="" coords="248,309,316,336"/>
+<area shape="rect" id="node9" href="$df/d91/group__core__hal__intrin.html#ga1e4bc8bb5680faccb7c64c09861f3ba1" title="Multiply values." alt="" coords="240,360,324,387"/>
+<area shape="rect" id="node10" href="$df/d91/group__core__hal__intrin.html#gaa53d35aac149dda825a81ead7d83d4fb" title="Bitwise OR." alt="" coords="246,411,318,437"/>
+<area shape="rect" id="node11" href="$df/d91/group__core__hal__intrin.html#gad3112e8e42689f2627b2840026478e60" title=" " alt="" coords="193,461,371,488"/>
+<area shape="rect" id="node12" href="$df/d91/group__core__hal__intrin.html#ga74fce39a590d1d725a175fbdd1f6ee00" title=" " alt="" coords="192,512,372,539"/>
+<area shape="rect" id="node13" href="$df/d91/group__core__hal__intrin.html#gae440a2520e3b796df0be134e2fe6a7b0" title="Per&#45;element select (blend operation)" alt="" coords="233,563,331,589"/>
+<area shape="rect" id="node15" href="$df/d91/group__core__hal__intrin.html#ga70704d74c4a6910a4b393313311e9d97" title="Bitwise shift right." alt="" coords="243,613,321,640"/>
+<area shape="rect" id="node16" href="$df/d91/group__core__hal__intrin.html#ga64c2ba10b9bea070f90e1fab66a6ba1a" title="Subtract values." alt="" coords="241,664,323,691"/>
+<area shape="rect" id="node14" href="$da/dd3/group__gapi__math.html#gaba076d51941328cb7ca9348b7b535220" title="Applies a mask to a matrix." alt="" coords="420,563,536,589"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="cv::ORB" name="cv::ORB">
+<area shape="rect" id="node1" title="Class implementing the ORB (oriented BRIEF) keypoint detector and descriptor extractor." alt="" coords="105,609,269,848"/>
+<area shape="rect" id="node2" href="$d0/d13/classcv_1_1Feature2D.html" title="Abstract base class for 2D image feature detectors and descriptor extractors." alt="" coords="5,323,177,547"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="14,5,169,273"/>
+<area shape="rect" id="node4" title=" " alt="" coords="201,396,240,473"/>
+</map>

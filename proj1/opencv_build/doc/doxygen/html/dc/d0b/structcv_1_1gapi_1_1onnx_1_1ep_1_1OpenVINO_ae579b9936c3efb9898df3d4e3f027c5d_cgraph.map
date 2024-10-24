@@ -1,0 +1,4 @@
+<map id="cv::gapi::onnx::ep::OpenVINO::cfgNumThreads" name="cv::gapi::onnx::ep::OpenVINO::cfgNumThreads">
+<area shape="rect" id="node1" title="Specifies OpenVINO Execution Provider number of threads." alt="" coords="5,5,213,47"/>
+<area shape="rect" id="node2" href="$d3/dce/namespacecv_1_1util.html#a40544b3ca23b3917f2a5de6b0273079d" title=" " alt="" coords="261,13,409,39"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="cv::gapi::GNetPackage" name="cv::gapi::GNetPackage">
+<area shape="rect" id="node1" title="A container class for network configurations. Similar to GKernelPackage. Use cv::gapi::networks() to ..." alt="" coords="249,655,415,776"/>
+<area shape="rect" id="node2" title=" " alt="" coords="235,515,429,592"/>
+<area shape="rect" id="node3" title=" " alt="" coords="172,375,327,452"/>
+<area shape="rect" id="node4" title=" " alt="" coords="31,191,118,268"/>
+<area shape="rect" id="node5" title=" " alt="" coords="5,5,144,97"/>
+<area shape="rect" id="node6" href="$d9/dc4/classcv_1_1util_1_1any.html" title=" " alt="" coords="142,147,255,312"/>
+<area shape="rect" id="node7" title=" " alt="" coords="279,154,425,305"/>
+<area shape="rect" id="node8" title=" " alt="" coords="377,375,506,452"/>
+<area shape="rect" id="node9" title=" " alt="" coords="449,191,487,268"/>
+</map>

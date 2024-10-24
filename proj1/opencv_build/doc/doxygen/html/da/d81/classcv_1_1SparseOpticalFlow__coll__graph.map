@@ -1,0 +1,4 @@
+<map id="cv::SparseOpticalFlow" name="cv::SparseOpticalFlow">
+<area shape="rect" id="node1" title="Base interface for sparse optical flow algorithms." alt="" coords="5,321,171,399"/>
+<area shape="rect" id="node2" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="11,5,165,273"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="cv::TickMeter::getTimeSec" name="cv::TickMeter::getTimeSec">
+<area shape="rect" id="node1" title="returns passed time in seconds." alt="" coords="5,5,200,32"/>
+<area shape="rect" id="node2" href="$db/de0/group__core__utils.html#ga705441a9ef01f47acdc55d87fbe5090c" title="Returns the number of ticks per second." alt="" coords="248,5,407,32"/>
+</map>

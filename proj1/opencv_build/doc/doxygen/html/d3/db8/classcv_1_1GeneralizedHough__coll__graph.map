@@ -1,0 +1,4 @@
+<map id="cv::GeneralizedHough" name="cv::GeneralizedHough">
+<area shape="rect" id="node1" title="finds arbitrary template in the grayscale image using Generalized Hough Transform" alt="" coords="5,321,188,589"/>
+<area shape="rect" id="node2" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="19,5,174,273"/>
+</map>
