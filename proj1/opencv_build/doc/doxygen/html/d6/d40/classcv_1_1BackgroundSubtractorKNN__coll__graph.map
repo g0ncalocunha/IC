@@ -1,0 +1,5 @@
+<map id="cv::BackgroundSubtractorKNN" name="cv::BackgroundSubtractorKNN">
+<area shape="rect" id="node1" title="K&#45;nearest neighbours &#45; based Background/Foreground Segmentation Algorithm." alt="" coords="5,461,223,729"/>
+<area shape="rect" id="node2" href="$d7/df6/classcv_1_1BackgroundSubtractor.html" title="Base class for background/foreground segmentation. :" alt="" coords="20,321,208,413"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="37,5,191,273"/>
+</map>

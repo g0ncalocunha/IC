@@ -1,0 +1,9 @@
+<map id="cv::RotatedRect" name="cv::RotatedRect">
+<area shape="rect" id="node1" title="The class represents rotated (i.e. not up&#45;right) rectangles on a plane." alt="" coords="107,865,256,1031"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,615,56,693"/>
+<area shape="rect" id="node3" href="$d6/d50/classcv_1_1Size__.html" title=" " alt="" coords="81,535,282,773"/>
+<area shape="rect" id="node4" href="$d6/d50/classcv_1_1Size__.html" title="Template class for specifying the size of an image or rectangle." alt="" coords="81,189,282,413"/>
+<area shape="rect" id="node5" title=" " alt="" coords="272,5,317,83"/>
+<area shape="rect" id="node7" href="$db/d4e/classcv_1_1Point__.html" title="Template class for 2D points specified by its coordinates x and y." alt="" coords="306,160,513,443"/>
+<area shape="rect" id="node6" href="$db/d4e/classcv_1_1Point__.html" title=" " alt="" coords="306,505,513,803"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="cv::DISOpticalFlow" name="cv::DISOpticalFlow">
+<area shape="rect" id="node1" title="DIS optical flow algorithm." alt="" coords="5,461,244,759"/>
+<area shape="rect" id="node2" href="$df/dde/classcv_1_1DenseOpticalFlow.html" title=" " alt="" coords="43,321,206,413"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="47,5,202,273"/>
+</map>

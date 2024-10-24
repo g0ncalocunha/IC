@@ -1,0 +1,4 @@
+<map id="cv::Feature2D" name="cv::Feature2D">
+<area shape="rect" id="node1" title="Abstract base class for 2D image feature detectors and descriptor extractors." alt="" coords="5,321,177,545"/>
+<area shape="rect" id="node2" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="14,5,169,273"/>
+</map>

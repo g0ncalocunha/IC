@@ -1,0 +1,5 @@
+<map id="cv::FastFeatureDetector" name="cv::FastFeatureDetector">
+<area shape="rect" id="node1" title="Wrapping class for feature detection using the FAST method. :" alt="" coords="5,593,208,773"/>
+<area shape="rect" id="node2" href="$d0/d13/classcv_1_1Feature2D.html" title="Abstract base class for 2D image feature detectors and descriptor extractors." alt="" coords="21,321,193,545"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="29,5,184,273"/>
+</map>

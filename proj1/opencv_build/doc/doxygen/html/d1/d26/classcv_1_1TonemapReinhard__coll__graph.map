@@ -1,0 +1,5 @@
+<map id="cv::TonemapReinhard" name="cv::TonemapReinhard">
+<area shape="rect" id="node1" title="This is a global tonemapping operator that models human visual system." alt="" coords="5,476,179,627"/>
+<area shape="rect" id="node2" href="$d8/d5e/classcv_1_1Tonemap.html" title="Base class for tonemapping algorithms &#45; tools that are used to map HDR image to 8&#45;bit range." alt="" coords="32,321,152,428"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="15,5,169,273"/>
+</map>

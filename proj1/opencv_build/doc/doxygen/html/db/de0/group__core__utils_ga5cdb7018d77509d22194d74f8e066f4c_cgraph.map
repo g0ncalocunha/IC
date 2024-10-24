@@ -1,0 +1,5 @@
+<map id="cv::operator&lt;&lt;" name="cv::operator&lt;&lt;">
+<area shape="rect" id="node1" title="output operator" alt="" coords="5,5,127,32"/>
+<area shape="rect" id="node2" href="$d9/d6f/classcv_1_1TickMeter.html#a9e21f1bdbe5089c7288b8df81e5ac4a1" title="returns passed time in seconds." alt="" coords="175,5,369,32"/>
+<area shape="rect" id="node3" href="$db/de0/group__core__utils.html#ga705441a9ef01f47acdc55d87fbe5090c" title="Returns the number of ticks per second." alt="" coords="417,5,576,32"/>
+</map>

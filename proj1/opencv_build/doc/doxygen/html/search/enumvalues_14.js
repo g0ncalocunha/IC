@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['uchar_17036',['UCHAR',['../dc/d84/group__core__basic.html#gga8af2ae1e077644d1dd232d29d988b79aa56283e7d906f746d62e95c8ba7814c3f',1,'cv']]],
+  ['uint64_17037',['UINT64',['../dc/d84/group__core__basic.html#gga8af2ae1e077644d1dd232d29d988b79aa6de7acf711860176ba606e9aa2b85d5f',1,'cv']]],
+  ['umat_17038',['UMAT',['../d4/d32/classcv_1_1__InputArray.html#a0f6bead7579fcd0e30b15a5d6bf5b53ba3f0f082586ac549b0d2dc49dffc8b901',1,'cv::_InputArray']]],
+  ['undefined_17039',['UNDEFINED',['../da/d56/classcv_1_1FileStorage.html#ab25ab28a95a47dd9cd9e26e71398dd3fa3e7f9ab4d3076f3fd61612e8b171930c',1,'cv::FileStorage']]],
+  ['uniform_17040',['UNIFORM',['../de/dd9/classcv_1_1FileNode.html#a5733295ed6603234f8f905ca14552dfba2e16c1d9efd38bbe01ebb7b4125df45d',1,'cv::FileNode::UNIFORM()'],['../d1/dd6/classcv_1_1RNG.html#af25905f7e5db288b4b78752e34a49c95af6797281458bec27565ee730ea228d4a',1,'cv::RNG::UNIFORM()']]],
+  ['unknown_5fvendor_17041',['UNKNOWN_VENDOR',['../d7/d9f/classcv_1_1ocl_1_1Device.html#a06800c27f9457e35270f6db17193ffd1a07b78e0f94127c1d35f5d69e03be32e3',1,'cv::ocl::Device']]],
+  ['unsigned_5fint_17042',['UNSIGNED_INT',['../dc/d84/group__core__basic.html#gga8af2ae1e077644d1dd232d29d988b79aa9ba5b3da1d35e22e1680ddbe52d36ed5',1,'cv']]],
+  ['update_5fimage_5felement_17043',['UPDATE_IMAGE_ELEMENT',['../dd/d01/group__videoio__winrt.html#ggacee36db3f3dfda0bc955791681f28fd3a8905331d148c6456bb412654b366886a',1,'cv']]],
+  ['update_5fmodel_17044',['UPDATE_MODEL',['../db/d7d/classcv_1_1ml_1_1StatModel.html#af1ea864e1c19796e6264ebb3950c0b9aa397fde9eaadd4efb07af6a7fbacea6cd',1,'cv::ml::StatModel']]],
+  ['update_5fweights_17045',['UPDATE_WEIGHTS',['../d0/dce/classcv_1_1ml_1_1ANN__MLP.html#afb51e414f22dd69f281a569145ccfad7a5c9cae15b89d51980f6a972d4b622822',1,'cv::ml::ANN_MLP']]],
+  ['usac_5faccurate_17046',['USAC_ACCURATE',['../d9/d0c/group__calib3d.html#ggaf63d4c617c61e03ab502b3c836966150a7baee4b7674e46bce6abb736f080ddc4',1,'cv']]],
+  ['usac_5fdefault_17047',['USAC_DEFAULT',['../d9/d0c/group__calib3d.html#ggaf63d4c617c61e03ab502b3c836966150a4b3528b241cd6518433d26f2979056f7',1,'cv']]],
+  ['usac_5ffast_17048',['USAC_FAST',['../d9/d0c/group__calib3d.html#ggaf63d4c617c61e03ab502b3c836966150acc5b5497953f4bd79abc96536b6f9ebf',1,'cv']]],
+  ['usac_5ffm_5f8pts_17049',['USAC_FM_8PTS',['../d9/d0c/group__calib3d.html#ggaf63d4c617c61e03ab502b3c836966150a0a768abd16b0623f5ad4c25f743c922b',1,'cv']]],
+  ['usac_5fmagsac_17050',['USAC_MAGSAC',['../d9/d0c/group__calib3d.html#ggaf63d4c617c61e03ab502b3c836966150a2823d1cb0b7bc095d0e50896ee736d22',1,'cv']]],
+  ['usac_5fparallel_17051',['USAC_PARALLEL',['../d9/d0c/group__calib3d.html#ggaf63d4c617c61e03ab502b3c836966150aaf2daaaed58488aa46d1845651764d1c',1,'cv']]],
+  ['usac_5fprosac_17052',['USAC_PROSAC',['../d9/d0c/group__calib3d.html#ggaf63d4c617c61e03ab502b3c836966150a2464c9f3555b21619482a97a1c698ac6',1,'cv']]],
+  ['usage_5fallocate_5fdevice_5fmemory_17053',['USAGE_ALLOCATE_DEVICE_MEMORY',['../dc/d84/group__core__basic.html#gga5681439dda418431eb0a672697135ed2aeeff47f93f4e35ffed58e1b7de649dab',1,'cv']]],
+  ['usage_5fallocate_5fhost_5fmemory_17054',['USAGE_ALLOCATE_HOST_MEMORY',['../dc/d84/group__core__basic.html#gga5681439dda418431eb0a672697135ed2a37b195428a7ac50f293765907fa43ad9',1,'cv']]],
+  ['usage_5fallocate_5fshared_5fmemory_17055',['USAGE_ALLOCATE_SHARED_MEMORY',['../dc/d84/group__core__basic.html#gga5681439dda418431eb0a672697135ed2a0c30cfff62017d086c6ec4052589b569',1,'cv']]],
+  ['usage_5fdefault_17056',['USAGE_DEFAULT',['../dc/d84/group__core__basic.html#gga5681439dda418431eb0a672697135ed2ae383b08ee18b73d8c1588d968f953893',1,'cv']]],
+  ['use_5favg_17057',['USE_AVG',['../d3/d8d/classcv_1_1PCA.html#ae8a94a2add0555b0414e85c08ff67f50a3449339c21160478c308f64a6a941030',1,'cv::PCA']]],
+  ['user_5fallocated_17058',['USER_ALLOCATED',['../db/d58/structcv_1_1UMatData.html#a4aaeab7d089a219c65db6b6b62bd4d12a418bf779152a73ed41c8657baf911d82',1,'cv::UMatData']]]
+];

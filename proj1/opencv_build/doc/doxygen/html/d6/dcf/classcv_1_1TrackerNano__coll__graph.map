@@ -1,0 +1,4 @@
+<map id="cv::TrackerNano" name="cv::TrackerNano">
+<area shape="rect" id="node1" title="the Nano tracker is a super lightweight dnn&#45;based general object tracking." alt="" coords="5,175,164,296"/>
+<area shape="rect" id="node2" href="$d0/d0a/classcv_1_1Tracker.html" title="Base abstract class for the long&#45;term tracker." alt="" coords="33,5,137,127"/>
+</map>

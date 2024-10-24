@@ -1,0 +1,5 @@
+<map id="cv::findChessboardCornersSB" name="cv::findChessboardCornersSB">
+<area shape="rect" id="node1" title=" " alt="" coords="5,31,216,57"/>
+<area shape="rect" id="node2" href="$d9/d0c/group__calib3d.html#gadc5bcb05cb21cf1e50963df26986d7c9" title="Finds the positions of internal corners of the chessboard using a sector based approach." alt="" coords="264,5,475,32"/>
+<area shape="rect" id="node3" href="$dc/d84/group__core__basic.html#gad9287b23bba2fed753b36ef561ae7346" title=" " alt="" coords="322,56,417,83"/>
+</map>

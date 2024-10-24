@@ -1,0 +1,3 @@
+<map id="cv::utils::lock_guard&lt; _Mutex &gt;" name="cv::utils::lock_guard&lt; _Mutex &gt;">
+<area shape="rect" id="node1" title="A simple scoped lock (RAII&#45;style locking for exclusive/write access)." alt="" coords="5,5,156,127"/>
+</map>

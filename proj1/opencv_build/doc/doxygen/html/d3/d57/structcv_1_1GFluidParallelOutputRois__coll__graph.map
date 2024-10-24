@@ -1,0 +1,10 @@
+<map id="cv::GFluidParallelOutputRois" name="cv::GFluidParallelOutputRois">
+<area shape="rect" id="node1" title="This structure forces Fluid backend to generate multiple parallel output regions in the graph...." alt="" coords="165,969,371,1047"/>
+<area shape="rect" id="node2" title=" " alt="" coords="161,815,375,907"/>
+<area shape="rect" id="node3" href="$d9/d17/structcv_1_1GFluidOutputRois.html" title="This structure allows to control the output image region which Fluid backend will produce in the grap..." alt="" coords="129,675,287,752"/>
+<area shape="rect" id="node4" title=" " alt="" coords="112,535,291,612"/>
+<area shape="rect" id="node5" href="$d2/d44/classcv_1_1Rect__.html" title="Template class for 2D rectangles." alt="" coords="5,189,208,472"/>
+<area shape="rect" id="node6" title=" " alt="" coords="84,5,129,83"/>
+<area shape="rect" id="node7" title=" " alt="" coords="247,292,377,369"/>
+<area shape="rect" id="node8" title=" " alt="" coords="293,5,331,83"/>
+</map>

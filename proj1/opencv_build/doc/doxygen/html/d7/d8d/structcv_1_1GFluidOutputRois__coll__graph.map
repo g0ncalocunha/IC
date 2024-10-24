@@ -1,0 +1,8 @@
+<map id="cv::GFluidOutputRois" name="cv::GFluidOutputRois">
+<area shape="rect" id="node1" title="This structure allows to control the output image region which Fluid backend will produce in the grap..." alt="" coords="122,675,281,752"/>
+<area shape="rect" id="node2" title=" " alt="" coords="112,535,291,612"/>
+<area shape="rect" id="node3" href="$d2/d44/classcv_1_1Rect__.html" title="Template class for 2D rectangles." alt="" coords="5,189,208,472"/>
+<area shape="rect" id="node4" title=" " alt="" coords="84,5,129,83"/>
+<area shape="rect" id="node5" title=" " alt="" coords="233,292,362,369"/>
+<area shape="rect" id="node6" title=" " alt="" coords="278,5,317,83"/>
+</map>

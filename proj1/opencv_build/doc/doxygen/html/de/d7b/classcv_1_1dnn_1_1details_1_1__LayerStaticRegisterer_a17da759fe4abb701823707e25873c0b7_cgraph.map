@@ -1,0 +1,4 @@
+<map id="cv::dnn::details::_LayerStaticRegisterer::~_LayerStaticRegisterer" name="cv::dnn::details::_LayerStaticRegisterer::~_LayerStaticRegisterer">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,193,61"/>
+<area shape="rect" id="node2" href="$d4/d67/classcv_1_1dnn_1_1LayerFactory.html#a229f5b982a69b44e38ad2e68a580fd9f" title="Unregisters registered layer with specified type name. Thread&#45;safe." alt="" coords="241,13,400,54"/>
+</map>

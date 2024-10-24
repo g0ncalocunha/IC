@@ -1,0 +1,17 @@
+<map id="cv::gapi::KalmanParams" name="cv::gapi::KalmanParams">
+<area shape="rect" id="node1" title="Structure for the Kalman filter&#39;s initialization parameters." alt="" coords="424,1527,602,1604"/>
+<area shape="rect" id="node2" href="$d3/d63/classcv_1_1Mat.html" title="n&#45;dimensional dense array class" alt="" coords="426,961,600,1376"/>
+<area shape="rect" id="node3" title=" " alt="" coords="33,359,102,436"/>
+<area shape="rect" id="node5" href="$db/d58/structcv_1_1UMatData.html" title=" " alt="" coords="404,616,622,869"/>
+<area shape="rect" id="node4" title=" " alt="" coords="103,704,211,781"/>
+<area shape="rect" id="node6" title=" " alt="" coords="156,359,260,436"/>
+<area shape="rect" id="node7" title=" " alt="" coords="368,359,546,436"/>
+<area shape="rect" id="node8" title=" " alt="" coords="378,145,536,223"/>
+<area shape="rect" id="node9" title=" " alt="" coords="438,5,476,83"/>
+<area shape="rect" id="node10" title=" " alt="" coords="284,359,344,436"/>
+<area shape="rect" id="node14" href="$d4/d26/structcv_1_1MatStep.html" title=" " alt="" coords="236,660,380,825"/>
+<area shape="rect" id="node11" title=" " alt="" coords="984,359,1023,436"/>
+<area shape="rect" id="node15" href="$df/d63/structcv_1_1MatSize.html" title=" " alt="" coords="1072,660,1196,825"/>
+<area shape="rect" id="node12" href="$df/d4c/classcv_1_1MatAllocator.html" title="Custom array allocator." alt="" coords="694,285,892,509"/>
+<area shape="rect" id="node13" title=" " alt="" coords="576,359,637,436"/>
+</map>

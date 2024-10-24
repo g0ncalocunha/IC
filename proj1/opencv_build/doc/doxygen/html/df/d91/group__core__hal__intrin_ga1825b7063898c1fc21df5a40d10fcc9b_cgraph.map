@@ -1,0 +1,7 @@
+<map id="cv::v_dotprod_expand" name="cv::v_dotprod_expand">
+<area shape="rect" id="node1" title=" " alt="" coords="5,81,169,108"/>
+<area shape="rect" id="node2" href="$df/d91/group__core__hal__intrin.html#ga38b69d7fd74ed15d3ea3dc8bc757057d" title="Convert lower half to double." alt="" coords="235,5,342,32"/>
+<area shape="rect" id="node3" href="$df/d91/group__core__hal__intrin.html#ga6c61657ba5d0ceeaddec8c75a955a092" title="Convert to double high part of vector." alt="" coords="217,56,360,83"/>
+<area shape="rect" id="node4" href="$df/d91/group__core__hal__intrin.html#ga44b69b35f3ec20e27258064ab5d3d1bd" title="Multiply and add." alt="" coords="246,107,331,133"/>
+<area shape="rect" id="node5" href="$df/d91/group__core__hal__intrin.html#ga1e4bc8bb5680faccb7c64c09861f3ba1" title="Multiply values." alt="" coords="247,157,331,184"/>
+</map>

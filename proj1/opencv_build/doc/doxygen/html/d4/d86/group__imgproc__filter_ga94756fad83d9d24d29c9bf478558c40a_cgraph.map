@@ -1,0 +1,4 @@
+<map id="cv::morphologyDefaultBorderValue" name="cv::morphologyDefaultBorderValue">
+<area shape="rect" id="node1" title="returns &quot;magic&quot; border value for erosion and dilation. It is automatically transformed to Scalar::all..." alt="" coords="5,5,219,47"/>
+<area shape="rect" id="node2" href="$d1/da0/classcv_1_1Scalar__.html#ac1509a4b8454fe7fe29db069e13a2e6f" title="returns a scalar with all elements set to v0" alt="" coords="267,5,417,47"/>
+</map>

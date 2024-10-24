@@ -1,0 +1,4 @@
+<map id="cv::GKernelPackage::includes" name="cv::GKernelPackage::includes">
+<area shape="rect" id="node1" title="Test if a particular kernel implementation KImpl is included in this kernel package." alt="" coords="5,5,153,47"/>
+<area shape="rect" id="node2" href="$dc/d1c/group__gapi__std__backends.html#ga0ea1033f48e85753bcd35218f7384ea7" title="Get a reference to CPU (OpenCV) backend." alt="" coords="201,13,367,39"/>
+</map>

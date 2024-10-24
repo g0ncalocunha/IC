@@ -1,0 +1,6 @@
+<map id="cv::Algorithm::load" name="cv::Algorithm::load">
+<area shape="rect" id="node1" title="Loads algorithm from the file." alt="" coords="5,64,149,91"/>
+<area shape="rect" id="node2" href="$de/dd9/classcv_1_1FileNode.html#a82d59aab4765da6140c238c54aadfa92" title="returns true if the node is empty" alt="" coords="215,5,366,32"/>
+<area shape="rect" id="node3" href="$da/d56/classcv_1_1FileStorage.html#a7153604af73ca7de43b977eedd1bbe09" title="Returns the first element of the top&#45;level mapping." alt="" coords="203,57,378,98"/>
+<area shape="rect" id="node4" href="$da/d56/classcv_1_1FileStorage.html#aa952c31f4e632595cd5ac107913f4fd1" title="Checks whether the file is opened." alt="" coords="197,123,384,149"/>
+</map>

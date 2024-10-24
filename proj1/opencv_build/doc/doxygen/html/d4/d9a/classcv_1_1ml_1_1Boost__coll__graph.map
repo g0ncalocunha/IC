@@ -1,0 +1,6 @@
+<map id="cv::ml::Boost" name="cv::ml::Boost">
+<area shape="rect" id="node1" title="Boosted tree classifier derived from DTrees." alt="" coords="19,865,190,1045"/>
+<area shape="rect" id="node2" href="$d8/d89/classcv_1_1ml_1_1DTrees.html" title="The class represents a single decision tree or a collection of decision trees." alt="" coords="5,564,204,817"/>
+<area shape="rect" id="node3" href="$db/d7d/classcv_1_1ml_1_1StatModel.html" title="Base class for statistical models in OpenCV ML." alt="" coords="37,321,172,516"/>
+<area shape="rect" id="node4" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="27,5,182,273"/>
+</map>

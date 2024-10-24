@@ -1,0 +1,14 @@
+<map id="cv::gapi::wip::draw::FText" name="cv::gapi::wip::draw::FText">
+<area shape="rect" id="node1" title="This structure represents a text string to draw using FreeType renderer." alt="" coords="277,2591,420,2697"/>
+<area shape="rect" id="node2" href="$d1/da0/classcv_1_1Scalar__.html" title=" " alt="" coords="85,2275,284,2528"/>
+<area shape="rect" id="node3" href="$d6/dcf/classcv_1_1Vec.html" title="Template class for short numerical vectors, a partial case of Matx." alt="" coords="5,1193,148,1520"/>
+<area shape="rect" id="node8" href="$d6/dcf/classcv_1_1Vec.html" title=" " alt="" coords="117,1583,253,1909"/>
+<area shape="rect" id="node4" href="$de/de1/classcv_1_1Matx.html" title=" " alt="" coords="28,817,197,1144"/>
+<area shape="rect" id="node5" href="$de/de1/classcv_1_1Matx.html" title="Template class for small matrices whose type and size are known at compilation time." alt="" coords="72,160,239,487"/>
+<area shape="rect" id="node6" title=" " alt="" coords="215,5,261,83"/>
+<area shape="rect" id="node10" href="$db/d4e/classcv_1_1Point__.html" title="Template class for 2D points specified by its coordinates x and y." alt="" coords="217,511,424,793"/>
+<area shape="rect" id="node7" href="$d1/da0/classcv_1_1Scalar__.html" title="Template class for a 4&#45;element vector derived from Vec." alt="" coords="85,1959,284,2212"/>
+<area shape="rect" id="node9" title=" " alt="" coords="359,2363,397,2440"/>
+<area shape="rect" id="node11" title=" " alt="" coords="422,2363,521,2440"/>
+<area shape="rect" id="node12" title=" " alt="" coords="402,2039,541,2131"/>
+</map>

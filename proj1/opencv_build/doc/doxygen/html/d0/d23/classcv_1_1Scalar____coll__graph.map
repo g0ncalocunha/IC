@@ -1,0 +1,8 @@
+<map id="cv::Scalar_&lt; _Tp &gt;" name="cv::Scalar_&lt; _Tp &gt;">
+<area shape="rect" id="node1" title="Template class for a 4&#45;element vector derived from Vec." alt="" coords="5,1676,204,1929"/>
+<area shape="rect" id="node2" href="$d6/dcf/classcv_1_1Vec.html" title=" " alt="" coords="37,1300,173,1627"/>
+<area shape="rect" id="node3" href="$de/de1/classcv_1_1Matx.html" title=" " alt="" coords="15,535,184,861"/>
+<area shape="rect" id="node6" href="$d6/dcf/classcv_1_1Vec.html" title="Template class for short numerical vectors, a partial case of Matx." alt="" coords="121,911,264,1237"/>
+<area shape="rect" id="node4" href="$de/de1/classcv_1_1Matx.html" title="Template class for small matrices whose type and size are known at compilation time." alt="" coords="16,145,183,472"/>
+<area shape="rect" id="node5" title=" " alt="" coords="77,5,122,83"/>
+</map>

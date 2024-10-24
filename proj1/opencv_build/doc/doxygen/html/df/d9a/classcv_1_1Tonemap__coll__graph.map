@@ -1,0 +1,4 @@
+<map id="cv::Tonemap" name="cv::Tonemap">
+<area shape="rect" id="node1" title="Base class for tonemapping algorithms &#45; tools that are used to map HDR image to 8&#45;bit range." alt="" coords="23,321,143,428"/>
+<area shape="rect" id="node2" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="5,5,160,273"/>
+</map>

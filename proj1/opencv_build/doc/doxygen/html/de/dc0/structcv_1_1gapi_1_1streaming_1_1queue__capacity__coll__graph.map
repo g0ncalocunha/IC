@@ -1,0 +1,4 @@
+<map id="cv::gapi::streaming::queue_capacity" name="cv::gapi::streaming::queue_capacity">
+<area shape="rect" id="node1" title="Specify queue capacity for streaming execution." alt="" coords="5,145,155,237"/>
+<area shape="rect" id="node2" title=" " alt="" coords="50,5,110,83"/>
+</map>

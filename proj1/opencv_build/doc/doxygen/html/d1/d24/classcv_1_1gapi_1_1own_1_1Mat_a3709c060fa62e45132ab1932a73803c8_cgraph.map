@@ -1,0 +1,10 @@
+<map id="cv::gapi::own::Mat::operator=" name="cv::gapi::own::Mat::operator=">
+<area shape="rect" id="node1" title="Sets all or some of the array elements to the specified value." alt="" coords="5,136,145,177"/>
+<area shape="rect" id="node2" href="$d0/d06/namespacecv_1_1gapi_1_1own_1_1detail.html#ade6038d3a875aa1114b5ddeaaa696e79" title=" " alt="" coords="201,5,353,47"/>
+<area shape="rect" id="node4" href="$d1/d24/classcv_1_1gapi_1_1own_1_1Mat.html#a35bba625657a85d6ccd38e8fa8624f75" title="Returns the number of matrix channels." alt="" coords="207,71,347,112"/>
+<area shape="rect" id="node5" href="$d1/d24/classcv_1_1gapi_1_1own_1_1Mat.html#ac17970b7962e231610288a8b0f035161" title="Returns the depth of a matrix element." alt="" coords="207,136,347,177"/>
+<area shape="rect" id="node6" href="$d1/d24/classcv_1_1gapi_1_1own_1_1Mat.html#ac7a730baeea428e9b58c20805cc56248" title="Returns a pointer to the specified matrix row." alt="" coords="193,202,360,229"/>
+<area shape="rect" id="node7" href="$d1/d24/classcv_1_1gapi_1_1own_1_1Mat.html#a93dbce66072b6125bf87634f230f9470" title="Returns the total number of array elements." alt="" coords="207,253,347,295"/>
+<area shape="rect" id="node3" href="$d6/d7d/namespacecv_1_1gapi_1_1own.html#af2332e532138858c371946406dffc6c6" title=" " alt="" coords="408,13,568,39"/>
+<area shape="rect" id="node8" href="$d7/df3/group__imgproc__motion.html#ga1a567a79901513811ff3b9976923b199" title="Adds an image to the accumulator image." alt="" coords="428,261,548,287"/>
+</map>

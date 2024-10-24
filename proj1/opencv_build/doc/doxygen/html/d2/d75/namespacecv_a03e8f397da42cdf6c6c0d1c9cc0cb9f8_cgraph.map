@@ -1,0 +1,33 @@
+<map id="cv::dumpOpenCLInformation" name="cv::dumpOpenCLInformation">
+<area shape="rect" id="node1" title=" " alt="" coords="5,784,212,811"/>
+<area shape="rect" id="node2" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a029eb84f52db258b2abf2a00629853f6" title=" " alt="" coords="283,5,483,32"/>
+<area shape="rect" id="node3" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a702ddb75d538501184c313b56b576e7f" title=" " alt="" coords="291,56,475,83"/>
+<area shape="rect" id="node4" href="$d6/d94/classcv_1_1ocl_1_1PlatformInfo.html#a5d10dd0ac83091325dd807ccf18983ff" title=" " alt="" coords="307,107,459,149"/>
+<area shape="rect" id="node5" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a370bb5033106a4f4feb09cc6813c566f" title=" " alt="" coords="277,173,488,200"/>
+<area shape="rect" id="node6" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a963606957c52e6ca0b58de3f63afa309" title=" " alt="" coords="285,224,480,251"/>
+<area shape="rect" id="node7" href="$db/de0/group__core__utils.html#ga0cccdb2f73859309b0611cf70b1b9409" title="Returns a text string formatted using the printf&#45;like expression." alt="" coords="339,275,427,301"/>
+<area shape="rect" id="node8" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a3735d24f73ec5c947f81f39d86bd4175" title=" " alt="" coords="286,325,479,352"/>
+<area shape="rect" id="node9" href="$d6/d94/classcv_1_1ocl_1_1PlatformInfo.html#a758a59567a9e1b47213863e319f4e59a" title=" " alt="" coords="307,377,459,418"/>
+<area shape="rect" id="node10" href="$dc/d83/group__core__opencl.html#gae98550085d4a41df7a1daff093fe775c" title=" " alt="" coords="295,443,470,469"/>
+<area shape="rect" id="node11" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a288b44d2d5ca484eb1c15fb4ab979e61" title="true if &#39;cl_khr_fp16&#39; extension is available" alt="" coords="293,493,472,520"/>
+<area shape="rect" id="node12" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a76093153295c43fa292d54f8928ae92d" title="true if &#39;cl_khr_fp64&#39; extension is available" alt="" coords="293,544,472,571"/>
+<area shape="rect" id="node13" href="$dc/d83/group__core__opencl.html#gad2e486ab8104a3b197001e27d54e2a95" title=" " alt="" coords="302,595,463,621"/>
+<area shape="rect" id="node14" href="$dc/d83/group__core__opencl.html#ga593387b5285a57ea03350b363c74c6cf" title=" " alt="" coords="307,645,458,672"/>
+<area shape="rect" id="node15" href="$dc/d83/group__core__opencl.html#gaf8716694664cb127e7928c335b97d217" title=" " alt="" coords="306,696,459,723"/>
+<area shape="rect" id="node16" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a95d6767205937a8c46258a23b993395c" title=" " alt="" coords="283,747,482,789"/>
+<area shape="rect" id="node17" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a92e2c210bf5f352d2a742434aca02271" title=" " alt="" coords="275,813,490,840"/>
+<area shape="rect" id="node18" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a8cdbedf915935b8a3de00abcf0ff9669" title=" " alt="" coords="277,865,489,906"/>
+<area shape="rect" id="node19" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a43a7ce355911b326d286ecaab3fb2e30" title=" " alt="" coords="260,931,505,957"/>
+<area shape="rect" id="node20" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#afd60a223663d5b4951d585e9f167d54f" title=" " alt="" coords="289,982,476,1023"/>
+<area shape="rect" id="node21" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a184e4f7fe0e23116d115822c363f3374" title=" " alt="" coords="302,1048,463,1075"/>
+<area shape="rect" id="node22" href="$d6/d94/classcv_1_1ocl_1_1PlatformInfo.html#a893789538a2d83ff6ddf98d2e37e1bd1" title=" " alt="" coords="307,1099,459,1141"/>
+<area shape="rect" id="node23" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a8de7518d696d8bca07cf792422b47be4" title=" " alt="" coords="291,1165,475,1206"/>
+<area shape="rect" id="node24" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a2c0ca2b983966a2aeff861b7d6fd4480" title=" " alt="" coords="291,1230,475,1271"/>
+<area shape="rect" id="node25" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a588b64852f17bcb7cd120507d4f6e0f4" title=" " alt="" coords="291,1295,475,1337"/>
+<area shape="rect" id="node26" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a0c8276f354defd3286fa7c714cd32950" title=" " alt="" coords="291,1361,475,1402"/>
+<area shape="rect" id="node27" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a27db2c75d80aab51898646c8cd196f3b" title=" " alt="" coords="291,1426,475,1467"/>
+<area shape="rect" id="node28" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#ad572c1f0616eff7b7f4ef619fe4db95a" title=" " alt="" coords="291,1491,475,1533"/>
+<area shape="rect" id="node29" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#a48fad69242e5a910149f2a8145a4046c" title=" " alt="" coords="291,1557,475,1598"/>
+<area shape="rect" id="node30" href="$dc/d83/group__core__opencl.html#gadb3b41d4552e9db7887855e3a1b2af37" title=" " alt="" coords="311,1623,455,1649"/>
+<area shape="rect" id="node31" href="$d7/d9f/classcv_1_1ocl_1_1Device.html#ab0aecc1d52f02547ba0cf6cba000fb8c" title=" " alt="" coords="297,1673,469,1700"/>
+</map>

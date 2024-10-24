@@ -1,0 +1,5 @@
+<map id="cv::StereoBM" name="cv::StereoBM">
+<area shape="rect" id="node1" title="Class for computing stereo correspondence using the block matching algorithm, introduced and contribu..." alt="" coords="14,623,195,861"/>
+<area shape="rect" id="node2" href="$d2/d6e/classcv_1_1StereoMatcher.html" title="The base class for stereo correspondence algorithms." alt="" coords="5,321,204,575"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="27,5,182,273"/>
+</map>

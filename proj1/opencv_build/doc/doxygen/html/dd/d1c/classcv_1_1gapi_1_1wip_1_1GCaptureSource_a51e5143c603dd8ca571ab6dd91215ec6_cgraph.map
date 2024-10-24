@@ -1,0 +1,7 @@
+<map id="cv::gapi::wip::GCaptureSource::pull" name="cv::gapi::wip::GCaptureSource::pull">
+<area shape="rect" id="node1" title=" " alt="" coords="5,74,221,115"/>
+<area shape="rect" id="node2" href="$d3/d63/classcv_1_1Mat.html#a03d2a2570d06dcae378f788725789aa4" title="Creates a full copy of the array and the underlying data." alt="" coords="314,5,426,32"/>
+<area shape="rect" id="node3" href="$d3/d63/classcv_1_1Mat.html#abbec3525a852e77998aba034813fded4" title="Returns true if the array has no elements." alt="" coords="311,56,429,83"/>
+<area shape="rect" id="node4" href="$d8/dfe/classcv_1_1VideoCapture.html#a9d2ca36789e7fcfe7a7be3b328038585" title="Returns true if video capturing has been initialized already." alt="" coords="269,107,471,133"/>
+<area shape="rect" id="node5" href="$d8/dfe/classcv_1_1VideoCapture.html#a473055e77dd7faa4d26d686226b292c1" title="Grabs, decodes and returns the next video frame." alt="" coords="285,157,455,184"/>
+</map>

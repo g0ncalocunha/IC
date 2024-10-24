@@ -1,0 +1,5 @@
+<map id="cv::gapi::s11n::detail::wrap_serialize::serialize" name="cv::gapi::s11n::detail::wrap_serialize::serialize">
+<area shape="rect" id="node1" title=" " alt="" coords="5,27,192,69"/>
+<area shape="rect" id="node2" href="$d4/dfc/structcv_1_1GCompileArg.html#ad6040af73d624049f0009f954fb82c17" title=" " alt="" coords="240,5,399,32"/>
+<area shape="rect" id="node3" href="$d6/d88/structcv_1_1gapi_1_1s11n_1_1detail_1_1S11N.html#a70be956830a6eb4ce9ce7b1c42f66c96" title="This function allows user to serialize their custom type." alt="" coords="241,57,397,98"/>
+</map>

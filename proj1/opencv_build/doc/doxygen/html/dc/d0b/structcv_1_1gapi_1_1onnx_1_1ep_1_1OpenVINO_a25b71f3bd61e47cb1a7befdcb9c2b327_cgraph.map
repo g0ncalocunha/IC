@@ -1,0 +1,4 @@
+<map id="cv::gapi::onnx::ep::OpenVINO::cfgCacheDir" name="cv::gapi::onnx::ep::OpenVINO::cfgCacheDir">
+<area shape="rect" id="node1" title="Specifies OpenVINO Execution Provider cache dir." alt="" coords="5,5,189,47"/>
+<area shape="rect" id="node2" href="$d3/dce/namespacecv_1_1util.html#a40544b3ca23b3917f2a5de6b0273079d" title=" " alt="" coords="237,13,385,39"/>
+</map>

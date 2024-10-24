@@ -1,0 +1,5 @@
+<map id="cv::CalibrateRobertson" name="cv::CalibrateRobertson">
+<area shape="rect" id="node1" title="Inverse camera response function is extracted for each brightness value by minimizing an objective fu..." alt="" coords="5,447,175,583"/>
+<area shape="rect" id="node2" href="$dd/de3/classcv_1_1CalibrateCRF.html" title="The base class for camera response calibration algorithms." alt="" coords="25,321,155,399"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="13,5,167,273"/>
+</map>

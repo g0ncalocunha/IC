@@ -1,0 +1,9 @@
+<map id="cv::detail::BestOf2NearestRangeMatcher" name="cv::detail::BestOf2NearestRangeMatcher">
+<area shape="rect" id="node1" title=" " alt="" coords="453,603,697,724"/>
+<area shape="rect" id="node2" href="$d4/d26/classcv_1_1detail_1_1BestOf2NearestMatcher.html" title="Features matcher which finds two best matches for each feature and leaves the best one only if the ra..." alt="" coords="339,417,542,553"/>
+<area shape="rect" id="node3" href="$da/d87/classcv_1_1detail_1_1FeaturesMatcher.html" title="Feature matchers base class." alt="" coords="5,145,204,325"/>
+<area shape="rect" id="node4" title=" " alt="" coords="79,5,130,83"/>
+<area shape="rect" id="node5" title=" " alt="" coords="227,197,294,274"/>
+<area shape="rect" id="node6" title=" " alt="" coords="351,189,530,281"/>
+<area shape="rect" id="node7" title=" " alt="" coords="623,197,661,274"/>
+</map>

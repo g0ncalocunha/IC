@@ -1,0 +1,5 @@
+<map id="cv::ml::ANN_MLP" name="cv::ml::ANN_MLP">
+<area shape="rect" id="node1" title="Artificial Neural Networks &#45; Multi&#45;Layer Perceptrons." alt="" coords="5,564,244,817"/>
+<area shape="rect" id="node2" href="$db/d7d/classcv_1_1ml_1_1StatModel.html" title="Base class for statistical models in OpenCV ML." alt="" coords="57,321,192,516"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="47,5,202,273"/>
+</map>

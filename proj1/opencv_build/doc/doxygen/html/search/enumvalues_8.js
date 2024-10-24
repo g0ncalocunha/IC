@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['h264_5fbaseline_16505',['H264_BASELINE',['../d1/d8b/structcv_1_1gapi_1_1oak_1_1EncoderConfig.html#ac3aab2b1ab98c425d5fe669223e584a4ac42747d36e289ef869747cd83a5eccb8',1,'cv::gapi::oak::EncoderConfig']]],
+  ['h264_5fhigh_16506',['H264_HIGH',['../d1/d8b/structcv_1_1gapi_1_1oak_1_1EncoderConfig.html#ac3aab2b1ab98c425d5fe669223e584a4a7f010e0a70f95a52b30c972f48248b31',1,'cv::gapi::oak::EncoderConfig']]],
+  ['h264_5fmain_16507',['H264_MAIN',['../d1/d8b/structcv_1_1gapi_1_1oak_1_1EncoderConfig.html#ac3aab2b1ab98c425d5fe669223e584a4a0230d15d8a52cbb87f1dbde068754b78',1,'cv::gapi::oak::EncoderConfig']]],
+  ['h265_5fmain_16508',['H265_MAIN',['../d1/d8b/structcv_1_1gapi_1_1oak_1_1EncoderConfig.html#ac3aab2b1ab98c425d5fe669223e584a4a9e94c703036edd1083d89e4397539695',1,'cv::gapi::oak::EncoderConfig']]],
+  ['hard_5fmargin_16509',['HARD_MARGIN',['../de/d54/classcv_1_1ml_1_1SVMSGD.html#a9b5c495b5593ffda8a7055da07d0b751acd1de0100047b02983977bc0a98ff86f',1,'cv::ml::SVMSGD']]],
+  ['harris_5fscore_16510',['HARRIS_SCORE',['../db/d95/classcv_1_1ORB.html#a5f63b20f3802ea09319a934b353303e7a8e3438f0b6ff355dfd1cc991c760b090',1,'cv::ORB']]],
+  ['hash_5fbit_16511',['HASH_BIT',['../dd/da9/classcv_1_1SparseMat.html#ada1045183ce229e504b4dd3e62e47b2ca79cfd2c6ddc2c192623e8426429d27d1',1,'cv::SparseMat']]],
+  ['hash_5fscale_16512',['HASH_SCALE',['../dd/da9/classcv_1_1SparseMat.html#ada1045183ce229e504b4dd3e62e47b2ca28ca477c8ed1afabd0da753827149eeb',1,'cv::SparseMat']]],
+  ['headerisnull_16513',['HeaderIsNull',['../d1/d0d/namespacecv_1_1Error.html#a759fa1af92f7aa7377c76ffb142abccaa1349d0a8af3047dfd9d32f62cfcadae8',1,'cv::Error']]],
+  ['histcmp_5fbhattacharyya_16514',['HISTCMP_BHATTACHARYYA',['../d6/dc7/group__imgproc__hist.html#gga994f53817d621e2e4228fc646342d386ad75f6e8385d2e29479cf61ba87b57450',1,'cv']]],
+  ['histcmp_5fchisqr_16515',['HISTCMP_CHISQR',['../d6/dc7/group__imgproc__hist.html#gga994f53817d621e2e4228fc646342d386aa88d6751fb2bb79e07aa8c8717fda881',1,'cv']]],
+  ['histcmp_5fchisqr_5falt_16516',['HISTCMP_CHISQR_ALT',['../d6/dc7/group__imgproc__hist.html#gga994f53817d621e2e4228fc646342d386a035d9882661edb22a95895516e441428',1,'cv']]],
+  ['histcmp_5fcorrel_16517',['HISTCMP_CORREL',['../d6/dc7/group__imgproc__hist.html#gga994f53817d621e2e4228fc646342d386a38c6d2cb4ae572e00aebd5642fae2add',1,'cv']]],
+  ['histcmp_5fhellinger_16518',['HISTCMP_HELLINGER',['../d6/dc7/group__imgproc__hist.html#gga994f53817d621e2e4228fc646342d386aab5ee4721e6f3b29ccacdeb318651f97',1,'cv']]],
+  ['histcmp_5fintersect_16519',['HISTCMP_INTERSECT',['../d6/dc7/group__imgproc__hist.html#gga994f53817d621e2e4228fc646342d386ae6ca1479390f52007fc572f49501c85b',1,'cv']]],
+  ['histcmp_5fkl_5fdiv_16520',['HISTCMP_KL_DIV',['../d6/dc7/group__imgproc__hist.html#gga994f53817d621e2e4228fc646342d386a0ac2233c6785267fa7232a6cc2788840',1,'cv']]],
+  ['host_16521',['HOST',['../dd/d70/namespacecv_1_1gapi_1_1wip_1_1onevpl.html#aede49061edfc4ea4b57fde3f92ae57d7ab9361011891280a44d85b967739cc6a5',1,'cv::gapi::wip::onevpl']]],
+  ['host_5fcopy_5fobsolete_16522',['HOST_COPY_OBSOLETE',['../db/d58/structcv_1_1UMatData.html#a4aaeab7d089a219c65db6b6b62bd4d12aa335180c2d069e30096f883702476f96',1,'cv::UMatData']]],
+  ['hough_5fgradient_16523',['HOUGH_GRADIENT',['../dd/d1a/group__imgproc__feature.html#gga073687a5b96ac7a3ab5802eb5510fe65ab1bf00a90864db34b2f72fa76389931d',1,'cv']]],
+  ['hough_5fgradient_5falt_16524',['HOUGH_GRADIENT_ALT',['../dd/d1a/group__imgproc__feature.html#gga073687a5b96ac7a3ab5802eb5510fe65aad57c72131c801de427f1fdb55c8c8ad',1,'cv']]],
+  ['hough_5fmulti_5fscale_16525',['HOUGH_MULTI_SCALE',['../dd/d1a/group__imgproc__feature.html#gga073687a5b96ac7a3ab5802eb5510fe65a0f81016a60d190b6987386a0b4b478e4',1,'cv']]],
+  ['hough_5fprobabilistic_16526',['HOUGH_PROBABILISTIC',['../dd/d1a/group__imgproc__feature.html#gga073687a5b96ac7a3ab5802eb5510fe65a2af8751122d7a6df8ef14dbc0799f76c',1,'cv']]],
+  ['hough_5fstandard_16527',['HOUGH_STANDARD',['../dd/d1a/group__imgproc__feature.html#gga073687a5b96ac7a3ab5802eb5510fe65aeb97ba90cb7ffac9d55c71290aa258cc',1,'cv']]]
+];

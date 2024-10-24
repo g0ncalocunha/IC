@@ -1,0 +1,8 @@
+<map id="cv::detail::CylindricalWarperGpu" name="cv::detail::CylindricalWarperGpu">
+<area shape="rect" id="node1" title=" " alt="" coords="5,993,236,1129"/>
+<area shape="rect" id="node2" href="$d3/dd6/classcv_1_1detail_1_1CylindricalWarper.html" title="Warper that maps an image onto the x*x + z*z = 1 cylinder." alt="" coords="19,823,223,944"/>
+<area shape="rect" id="node3" href="$d6/d65/classcv_1_1detail_1_1RotationWarperBase.html" title=" " alt="" coords="15,549,226,773"/>
+<area shape="rect" id="node4" href="$da/db8/classcv_1_1detail_1_1RotationWarper.html" title="Rotation&#45;only model image warper interface." alt="" coords="7,5,197,200"/>
+<area shape="rect" id="node5" href="$d6/d65/classcv_1_1detail_1_1RotationWarperBase.html" title="Base class for rotation&#45;based warper using a detail::ProjectorBase_ derived class." alt="" coords="137,263,347,487"/>
+<area shape="rect" id="node6" title=" " alt="" coords="223,64,261,141"/>
+</map>

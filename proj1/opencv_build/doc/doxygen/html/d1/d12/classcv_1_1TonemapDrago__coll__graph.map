@@ -1,0 +1,5 @@
+<map id="cv::TonemapDrago" name="cv::TonemapDrago">
+<area shape="rect" id="node1" title="Adaptive logarithmic mapping is a fast global tonemapping algorithm that scales the image in logarith..." alt="" coords="11,476,154,597"/>
+<area shape="rect" id="node2" href="$d8/d5e/classcv_1_1Tonemap.html" title="Base class for tonemapping algorithms &#45; tools that are used to map HDR image to 8&#45;bit range." alt="" coords="23,321,143,428"/>
+<area shape="rect" id="node3" href="$d3/d46/classcv_1_1Algorithm.html" title="This is a base class for all more or less complex algorithms in OpenCV." alt="" coords="5,5,160,273"/>
+</map>

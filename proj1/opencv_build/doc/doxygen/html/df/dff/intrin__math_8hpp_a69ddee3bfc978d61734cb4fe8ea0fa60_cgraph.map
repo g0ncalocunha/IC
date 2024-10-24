@@ -1,0 +1,19 @@
+<map id="v_exp_default_64f" name="v_exp_default_64f">
+<area shape="rect" id="node1" title=" " alt="" coords="5,335,148,361"/>
+<area shape="rect" id="node2" href="$df/d91/group__core__hal__intrin.html#gaa1671a24cf3656d041297b52b4a5a395" title="Add values." alt="" coords="244,5,327,32"/>
+<area shape="rect" id="node3" href="$df/d91/group__core__hal__intrin.html#ga38b69d7fd74ed15d3ea3dc8bc757057d" title="Convert lower half to double." alt="" coords="232,56,339,83"/>
+<area shape="rect" id="node4" href="$df/d91/group__core__hal__intrin.html#gae8a87cd966cde482b5372b81a34a8841" title="Divide values." alt="" coords="246,107,325,133"/>
+<area shape="rect" id="node5" href="$df/d91/group__core__hal__intrin.html#gab177cd2f694d25314817948889945dbe" title="Expand lower values to the wider pack type." alt="" coords="217,157,354,184"/>
+<area shape="rect" id="node6" href="$df/d91/group__core__hal__intrin.html#ga6c95c494decd17905b43d47028370817" title="Floor elements." alt="" coords="241,208,329,235"/>
+<area shape="rect" id="node8" href="$df/d91/group__core__hal__intrin.html#ga44b69b35f3ec20e27258064ab5d3d1bd" title="Multiply and add." alt="" coords="243,259,328,285"/>
+<area shape="rect" id="node9" href="$df/d91/group__core__hal__intrin.html#ga69ee01fdfd9d57067e2a967db5e8bd45" title="Choose max values for each pair." alt="" coords="241,309,329,336"/>
+<area shape="rect" id="node10" href="$df/d91/group__core__hal__intrin.html#gaf7cf8641863e5a56b642a363f539c836" title="Choose min values for each pair." alt="" coords="243,360,327,387"/>
+<area shape="rect" id="node11" href="$df/d91/group__core__hal__intrin.html#ga1e4bc8bb5680faccb7c64c09861f3ba1" title="Multiply values." alt="" coords="243,411,327,437"/>
+<area shape="rect" id="node12" href="$df/d91/group__core__hal__intrin.html#ga4f953b2e5faca089d44dc41c27c48259" title=" " alt="" coords="230,461,341,488"/>
+<area shape="rect" id="node13" href="$df/d91/group__core__hal__intrin.html#gaf5760a3131334cc200836a67d41c36af" title=" " alt="" coords="196,512,375,539"/>
+<area shape="rect" id="node14" href="$df/d91/group__core__hal__intrin.html#gae440a2520e3b796df0be134e2fe6a7b0" title="Per&#45;element select (blend operation)" alt="" coords="236,563,335,589"/>
+<area shape="rect" id="node16" href="$df/d91/group__core__hal__intrin.html#gaeef1db89347d25bda866e3ebea04f00b" title="Bitwise shift left." alt="" coords="246,613,325,640"/>
+<area shape="rect" id="node17" href="$df/d91/group__core__hal__intrin.html#ga64c2ba10b9bea070f90e1fab66a6ba1a" title="Subtract values." alt="" coords="244,664,327,691"/>
+<area shape="rect" id="node7" href="$db/de0/group__core__utils.html#ga1c4500a953c96901f87178f098c781af" title="Rounds floating&#45;point number to the nearest integer not larger than the original." alt="" coords="445,208,516,235"/>
+<area shape="rect" id="node15" href="$da/dd3/group__gapi__math.html#gaba076d51941328cb7ca9348b7b535220" title="Applies a mask to a matrix." alt="" coords="423,563,539,589"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="cv::v_store_aligned" name="cv::v_store_aligned">
+<area shape="rect" id="node1" title="Store data to memory (aligned)" alt="" coords="5,5,152,32"/>
+<area shape="rect" id="node2" href="$db/de0/group__core__utils.html#gadbc1b082037ac3725f3b12fe6c541c61" title="Alignment check of passed values." alt="" coords="340,5,444,32"/>
+<area shape="rect" id="node3" href="$df/d91/group__core__hal__intrin.html#ga275dfa9c8935f5e9a1031121cde460f4" title="Store data to memory." alt="" coords="200,31,292,57"/>
+</map>

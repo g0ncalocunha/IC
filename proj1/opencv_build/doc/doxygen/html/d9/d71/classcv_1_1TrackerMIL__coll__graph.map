@@ -1,0 +1,4 @@
+<map id="cv::TrackerMIL" name="cv::TrackerMIL">
+<area shape="rect" id="node1" title="The MIL algorithm trains a classifier in an online manner to separate the object from the background." alt="" coords="5,175,132,281"/>
+<area shape="rect" id="node2" href="$d0/d0a/classcv_1_1Tracker.html" title="Base abstract class for the long&#45;term tracker." alt="" coords="17,5,121,127"/>
+</map>

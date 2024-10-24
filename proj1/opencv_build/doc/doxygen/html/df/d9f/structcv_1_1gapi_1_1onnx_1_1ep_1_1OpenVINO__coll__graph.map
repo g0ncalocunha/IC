@@ -1,0 +1,11 @@
+<map id="cv::gapi::onnx::ep::OpenVINO" name="cv::gapi::onnx::ep::OpenVINO">
+<area shape="rect" id="node1" title="This structure provides functions that fill inference options for ONNX OpenVINO Execution Provider...." alt="" coords="125,484,348,649"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,322,65,399"/>
+<area shape="rect" id="node3" title=" " alt="" coords="291,315,454,407"/>
+<area shape="rect" id="node4" title=" " alt="" coords="136,160,223,237"/>
+<area shape="rect" id="node5" title=" " alt="" coords="110,5,249,97"/>
+<area shape="rect" id="node6" title=" " alt="" coords="305,160,440,237"/>
+<area shape="rect" id="node7" title=" " alt="" coords="315,13,353,90"/>
+<area shape="rect" id="node8" title=" " alt="" coords="391,13,429,90"/>
+<area shape="rect" id="node9" title=" " alt="" coords="478,322,529,399"/>
+</map>
