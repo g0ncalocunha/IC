@@ -154,10 +154,11 @@ int main(int argc, char const *argv[])
   processor.calculatePSNR(image, image2);
   // Task 6 - Quantize the grayscale image
   cout << "Quantization with 4 levels:  " << endl;
-  Mat quantizedImage = processor.quantizeImage(greyImage, 4); // Bigger number = better quality, less MSE and more PSNR
+  Mat quantizedImage4 = processor.quantizeImage(greyImage, 4); // Bigger number = better quality, less MSE and more PSNR
+  processor.calculatePSNR(greyImage, quantizedImage4);
   cout << "Quantization with 10 levels:  " << endl;
-  Mat quantizedImage = processor.quantizeImage(greyImage, 10); // Bigger number = better quality, less MSE and more PSNR
-  processor.calculatePSNR(greyImage, quantizedImage);
+  Mat quantizedImage10 = processor.quantizeImage(greyImage, 10); // Bigger number = better quality, less MSE and more PSNR
+  processor.calculatePSNR(greyImage, quantizedImage10);
   // Task 3
   processor.calculateHistogram(greyImage);
   return 0;
