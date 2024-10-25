@@ -3,7 +3,7 @@
 - Run the following commands
 ```
 cd ./ build
-cmake ../
+cmake .
 make
 ```
 # Running each processor
