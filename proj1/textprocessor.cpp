@@ -307,7 +307,7 @@ public:
 int main()
 {
     locale::global(locale(""));
-    string filename="textprocessor_files/de/ep-11-11-15-007-14.txt";
+    string filename="../textprocessor_files/de/ep-11-11-15-007-14.txt";
 
     TextProcessor processor;
     if (processor.readFile(filename))

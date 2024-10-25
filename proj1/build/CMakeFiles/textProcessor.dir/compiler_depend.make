@@ -438,8 +438,13 @@ CMakeFiles/textProcessor.dir/textprocessor.cpp.o: ../textprocessor.cpp \
   /usr/include/c++/11/bits/locale_conv.h \
   /usr/include/c++/11/bits/unique_ptr.h \
   /usr/include/c++/11/sstream \
-  /usr/include/c++/11/bits/sstream.tcc
+  /usr/include/c++/11/bits/sstream.tcc \
+  /usr/include/c++/11/chrono \
+  /usr/include/c++/11/ratio \
+  /usr/include/c++/11/bits/parse_numbers.h
 
+
+/usr/include/c++/11/ratio:
 
 /usr/include/c++/11/sstream:
 
@@ -536,6 +541,8 @@ CMakeFiles/textProcessor.dir/textprocessor.cpp.o: ../textprocessor.cpp \
 /usr/include/python3.10/pystrtod.h:
 
 /usr/include/python3.10/codecs.h:
+
+/usr/include/c++/11/bits/parse_numbers.h:
 
 /usr/include/python3.10/cpython/pytime.h:
 
@@ -912,6 +919,8 @@ CMakeFiles/textProcessor.dir/textprocessor.cpp.o: ../textprocessor.cpp \
 /usr/include/python3.10/pystrcmp.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
+
+/usr/include/c++/11/chrono:
 
 /usr/include/x86_64-linux-gnu/bits/wordsize.h:
 
