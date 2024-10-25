@@ -10,10 +10,12 @@
 #include <codecvt>
 #include <locale>
 #include <sstream>
+#include <chrono>
 
 namespace plt=matplotlibcpp;
 
 using namespace std;
+using namespace chrono;
 
 class TextProcessor
 {
@@ -29,6 +31,7 @@ private:
     wstring word;
 
 public:
+    map<string, double> processingTimes;
     map<wchar_t, int> mapCharacter;
     map<wstring, int> mapWord;
 
@@ -234,14 +237,80 @@ public:
         plotFrequencies(nGramsmap, title, "N-Grams");
     }
 
+    void measureAndPlotProcessingTime(const string &filename) {
+        processingTimes.clear();  // Clear previous measurements
+
+        // Measure readFile
+        auto start = high_resolution_clock::now();
+        readFile(filename);
+        auto end = high_resolution_clock::now();
+        processingTimes["readFile"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure applyTransformation
+        start = high_resolution_clock::now();
+        applyTransformation();
+        end = high_resolution_clock::now();
+        processingTimes["applyTransformation"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure countCharacterOccurrence
+        start = high_resolution_clock::now();
+        countCharacterOccurence();
+        end = high_resolution_clock::now();
+        processingTimes["countCharacterOccurrence"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure countWordOccurrence
+        start = high_resolution_clock::now();
+        countWordOccurrence();
+        end = high_resolution_clock::now();
+        processingTimes["countWordOccurrence"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure generateNGrams for bigrams (n=2)
+        start = high_resolution_clock::now();
+        generateNGrams(2);
+        end = high_resolution_clock::now();
+        processingTimes["generateNGrams (2)"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure generateNGrams for trigrams (n=3)
+        start = high_resolution_clock::now();
+        generateNGrams(3);
+        end = high_resolution_clock::now();
+        processingTimes["generateNGrams (3)"] = duration_cast<milliseconds>(end - start).count();
+
+        // Plot the processing times
+        plotProcessingTimes();
+    }
+
+    void plotProcessingTimes() {
+        vector<double> x_axis;   
+        vector<double> times;
+        vector<string> labels;
+
+        int index = 0;
+        for (const auto &[func, time] : processingTimes) {
+            labels.push_back(func);
+            times.push_back(time);
+            x_axis.push_back(static_cast<double>(index++));
+        }
+
+        plt::figure_size(1200, 800);
+        plt::bar(x_axis, times); 
+        plt::title("Processing Time for Each Function");
+        plt::xlabel("Function");
+        plt::ylabel("Time (ms)");
+
+        plt::xticks(x_axis, labels);
+        plt::show();
+    }
+
 };
 
 int main()
 {
     locale::global(locale(""));
+    string filename="textprocessor_files/de/ep-11-11-15-007-14.txt";
 
     TextProcessor processor;
-    if (processor.readFile("../textprocessor_files/en/ep-00-04-10.txt"))
+    if (processor.readFile(filename))
     {
         wcout << "\nFile read successfully!" << endl;
         processor.printContentInVector();
@@ -251,10 +320,11 @@ int main()
         processor.printContentInMap(processor.mapCharacter);
         processor.countWordOccurrence();
         processor.printContentInMap(processor.mapWord);
-        // processor.plotFrequencies(processor.mapCharacter, "Character Frequency", "Characters");
-        // processor.plotFrequencies(processor.mapWord, "Word Frequency", "Words");
-        processor.generateNGrams(2);
-        processor.generateNGrams(3);
+        processor.plotFrequencies(processor.mapCharacter, "Character Frequency", "Characters");
+        processor.plotFrequencies(processor.mapWord, "Word Frequency", "Words");
+        // processor.generateNGrams(2);
+        // processor.generateNGrams(3);
+        processor.measureAndPlotProcessingTime(filename);
     }
     return 0;
 }
