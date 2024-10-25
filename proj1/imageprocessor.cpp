@@ -13,7 +13,7 @@ class ImageProcessor
 {
   public:
 
-    Mat showImage(const string &filename)
+    Mat loadImage(const string &filename)
     {
       Mat image = imread(filename);
       imshow("Original image",image);
@@ -73,6 +73,8 @@ class ImageProcessor
       GaussianBlur(image, blurredImage7, Size(7, 7), 0);
       imshow("Blurred Image with 3x3 kernel", blurredImage3);
       imshow("Blurred Image with 7x7 kernel", blurredImage7);
+      imwrite("imageprocessor_files/blurredImage3.ppm", blurredImage3);
+      imwrite("imageprocessor_files/blurredImage7.ppm", blurredImage7);
       waitKey(0);
     }
 
@@ -138,18 +140,25 @@ int main(int argc, char const *argv[])
     return -1;
   }
   ImageProcessor processor;
-  Mat image = processor.showImage(argv[0]);
+  // Task 1
+  Mat image = processor.loadImage(argv[1]);
+  // Task 2
   vector<Mat> channels = processor.splitImage(image);
   Mat greyImage = processor.toGrayscale(image);
+  // Task 4
   processor.gaussianBlur(image);
-  Mat image2 = processor.showImage("imageprocessor_files/peppers.ppm");
+  Mat image2 = processor.loadImage("imageprocessor_files/peppers.ppm");
+  // Task 5
   processor.imageDifference(image,image2);
   processor.calculateMSE(image, image);
   processor.calculatePSNR(image, image2);
-
-  // Quantize the grayscale image to 4 levels
+  // Task 6 - Quantize the grayscale image
+  cout << "Quantization with 4 levels:  " << endl;
+  Mat quantizedImage = processor.quantizeImage(greyImage, 4); // Bigger number = better quality, less MSE and more PSNR
+  cout << "Quantization with 10 levels:  " << endl;
   Mat quantizedImage = processor.quantizeImage(greyImage, 10); // Bigger number = better quality, less MSE and more PSNR
   processor.calculatePSNR(greyImage, quantizedImage);
+  // Task 3
   processor.calculateHistogram(greyImage);
   return 0;
 }
