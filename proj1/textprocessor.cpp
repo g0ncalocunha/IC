@@ -241,7 +241,7 @@ int main()
     locale::global(locale(""));
 
     TextProcessor processor;
-    if (processor.readFile("textprocessor_files/en/ep-00-04-10.txt"))
+    if (processor.readFile("../textprocessor_files/en/ep-00-04-10.txt"))
     {
         wcout << "\nFile read successfully!" << endl;
         processor.printContentInVector();
