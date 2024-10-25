@@ -76,11 +76,13 @@ public:
         cout << "Channel count: " << buffer.getChannelCount() << endl;
     }
 
-    void plotAudioWaveform(bool quantized = false)
+    void plotAudioWaveform(const string &file, bool quantized = false)
     {
         const unsigned int GRAPH_HEIGHT = (WINDOW_HEIGHT - TOP_MARGIN - BOTTOM_MARGIN) / 2;
 
-        sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Audio Waveform");
+        sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Audio Waveform", sf::Style::None);
+        window.setVisible(false); // Hide the window
+
         sf::Font font;
         if (!font.loadFromFile("arial.ttf")) {
             cerr << "Error loading font!" << endl;
@@ -218,6 +220,23 @@ public:
             window.draw(xAxisLabel);
             window.draw(yAxisLabel);
             window.display();
+
+            // Capture the window content and save it as an image
+            sf::Texture texture;
+            texture.create(WINDOW_WIDTH, WINDOW_HEIGHT);
+            texture.update(window);
+            sf::Image screenshot = texture.copyToImage();
+            string outputFolder = "audioprocessor_files/plots/";
+            string outputFilename = quantized ? "quantized_waveform.png" : "original_waveform.png";
+            string fullPath = outputFolder + file.substr(file.find_last_of("/") + 1, file.find_last_of(".") - file.find_last_of("/") - 1) + "/" + outputFilename;
+
+            // Create the directory if it doesn't exist
+            string command = "mkdir -p " + fullPath.substr(0, fullPath.find_last_of("/"));
+            system(command.c_str());
+
+            screenshot.saveToFile(fullPath);
+
+            window.close(); // Close the window after saving the image
         }
     }
 
@@ -254,7 +273,7 @@ public:
     }
 
 
-    void plotHistogram(string title)
+    void plotHistogram(const string &file, string title)
     {
         channelCount = buffer.getChannelCount();
 
@@ -308,6 +327,7 @@ public:
         }
 
         sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), title + " Histogram");
+        window.setVisible(false); // Hide the window
 
         for (auto sample : targetChannel)
         {
@@ -439,6 +459,23 @@ public:
             window.draw(yLabel);
 
             window.display();
+
+            // Capture the window content and save it as an image
+            sf::Texture texture;
+            texture.create(windowWidth, windowHeight);
+            texture.update(window);
+            sf::Image screenshot = texture.copyToImage();
+            string outputFolder = "audioprocessor_files/plots/";
+            string outputFilename = title + "_histogram.png";
+            string fullPath = outputFolder + file.substr(file.find_last_of("/") + 1, file.find_last_of(".") - file.find_last_of("/") - 1) + "/" + outputFilename;
+
+            // Create the directory if it doesn't exist
+            string command = "mkdir -p " + fullPath.substr(0, fullPath.find_last_of("/"));
+            system(command.c_str());
+
+            screenshot.saveToFile(fullPath);
+
+            window.close(); // Close the window after saving the image
         }
     }
 
@@ -473,7 +510,7 @@ public:
         }
     }
 
-    void plotBothWaveforms() 
+    void plotBothWaveforms(const string &file) 
     {
         const unsigned int WINDOW_WIDTH = 1850;
         const unsigned int WINDOW_HEIGHT = 800;
@@ -491,6 +528,8 @@ public:
         const sf::Int16 MIN_AMPLITUDE = -32768;
 
         sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Original vs Quantized Audio Waveforms");
+        window.setVisible(false); // Hide the window
+
         sf::Font font;
         if (!font.loadFromFile("arial.ttf")) {
             cerr << "Error loading font!" << endl;
@@ -628,6 +667,23 @@ public:
                 window.draw(tick);
 
             window.display();
+
+            // Capture the window content and save it as an image
+            sf::Texture texture;
+            texture.create(WINDOW_WIDTH, WINDOW_HEIGHT);
+            texture.update(window);
+            sf::Image screenshot = texture.copyToImage();
+            string outputFolder = "audioprocessor_files/plots/";
+            string outputFilename = "original_vs_quantized_waveforms.png";
+            string fullPath = outputFolder + file.substr(file.find_last_of("/") + 1, file.find_last_of(".") - file.find_last_of("/") - 1) + "/" + outputFilename;
+
+            // Create the directory if it doesn't exist
+            string command = "mkdir -p " + fullPath.substr(0, fullPath.find_last_of("/"));
+            system(command.c_str());
+
+            screenshot.saveToFile(fullPath);
+
+            window.close(); // Close the window after saving the image
         }
     }
 
@@ -656,7 +712,7 @@ public:
 
     }
 
-    void frequencyAnalyser()
+    void frequencyAnalyser(const string &file)
     {
         // Fourier Transform
         samples = buffer.getSamples();
@@ -698,6 +754,8 @@ public:
         fftw_free(out);
 
         sf::RenderWindow window(sf::VideoMode(1200, 600), "Frequency Spectrum");
+        window.setVisible(false); // Hide the window
+
         float leftPadding = 100.0f;  
         float rightPadding = 50.0f;
         float topPadding = 50.0f;
@@ -711,7 +769,7 @@ public:
         {
             float x = i * scaleX;
             float y = magnitude[i] * scaleY;
-            spectrum[i].position = sf::Vector2f(x + leftPadding +2, window.getSize().y - bottomPadding - y);
+            spectrum[i].position = sf::Vector2f(x + leftPadding + 2, window.getSize().y - bottomPadding - y);
             spectrum[i].color = sf::Color::Green;
         }
 
@@ -769,7 +827,7 @@ public:
             tickLabel.setString(labelText);
             
             float textWidth = labelText.length() * (tickLabelSize * 0.6f);
-            tickLabel.setPosition(x - textWidth/2, window.getSize().y - bottomPadding + 8);
+            tickLabel.setPosition(x - textWidth / 2, window.getSize().y - bottomPadding + 8);
             xTickLabels.push_back(tickLabel);
         }
 
@@ -798,7 +856,7 @@ public:
             tickLabel.setString(labelText);
             
             float textWidth = labelText.length() * (tickLabelSize * 0.6f);
-            tickLabel.setPosition(leftPadding - textWidth - 10, y - tickLabelSize/2);
+            tickLabel.setPosition(leftPadding - textWidth - 10, y - tickLabelSize / 2);
             yTickLabels.push_back(tickLabel);
         }
 
@@ -831,6 +889,23 @@ public:
             window.draw(yAxisLabel);
 
             window.display();
+
+            // Capture the window content and save it as an image
+            sf::Texture texture;
+            texture.create(window.getSize().x, window.getSize().y);
+            texture.update(window);
+            sf::Image screenshot = texture.copyToImage();
+            string outputFolder = "audioprocessor_files/plots/";
+            string outputFilename = "frequency_spectrum.png";
+            string fullPath = outputFolder + file.substr(file.find_last_of("/") + 1, file.find_last_of(".") - file.find_last_of("/") - 1) + "/" + outputFilename;
+
+            // Create the directory if it doesn't exist
+            string command = "mkdir -p " + fullPath.substr(0, fullPath.find_last_of("/"));
+            system(command.c_str());
+
+            screenshot.saveToFile(fullPath);
+
+            window.close(); // Close the window after saving the image
         }
     }
 
@@ -885,7 +960,7 @@ int main(int argc, char *argv[])
 
     if (argc != 2)
     {
-        filename = "../audioprocessor_files/sample04.wav";
+        filename = "audioprocessor_files/sample04.wav";
     }
     else
     {
@@ -898,17 +973,17 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    p.playAudio();
+    // p.playAudio();
     p.getAudioInfo();
-    p.plotAudioWaveform();
-    p.plotHistogram("Right Channel");
-    p.plotHistogram("Left Channel");
-    p.plotHistogram("Mid Channel");
-    p.plotHistogram("Side Channel");
+    p.plotAudioWaveform(filename);
+    p.plotHistogram(filename, "Right Channel");
+    p.plotHistogram(filename, "Left Channel");
+    p.plotHistogram(filename, "Mid Channel");
+    p.plotHistogram(filename, "Side Channel");
     p.quantization(16);
-    p.plotBothWaveforms();
+    p.plotBothWaveforms(filename);
     p.compareAudios();
-    p.frequencyAnalyser();
+    p.frequencyAnalyser(filename);
     p.noiseAdder(filename);
 
     return 0;
