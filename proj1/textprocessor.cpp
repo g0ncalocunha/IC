@@ -251,8 +251,8 @@ int main()
         processor.printContentInMap(processor.mapCharacter);
         processor.countWordOccurrence();
         processor.printContentInMap(processor.mapWord);
-        // processor.plotFrequencies(processor.mapCharacter, "Character Frequency", "Characters");
-        // processor.plotFrequencies(processor.mapWord, "Word Frequency", "Words");
+        processor.plotFrequencies(processor.mapCharacter, "Character Frequency", "Characters");
+        processor.plotFrequencies(processor.mapWord, "Word Frequency", "Words");
         processor.generateNGrams(2);
         processor.generateNGrams(3);
     }
