@@ -84,7 +84,7 @@ public:
         window.setVisible(false); // Hide the window
 
         sf::Font font;
-        if (!font.loadFromFile("arial.ttf")) {
+        if (!font.loadFromFile("../arial.ttf")) {
             cerr << "Error loading font!" << endl;
             return;
         }
@@ -226,7 +226,7 @@ public:
             texture.create(WINDOW_WIDTH, WINDOW_HEIGHT);
             texture.update(window);
             sf::Image screenshot = texture.copyToImage();
-            string outputFolder = "audioprocessor_files/plots/";
+            string outputFolder = "../audioprocessor_files/plots/";
             string outputFilename = quantized ? "quantized_waveform.png" : "original_waveform.png";
             string fullPath = outputFolder + file.substr(file.find_last_of("/") + 1, file.find_last_of(".") - file.find_last_of("/") - 1) + "/" + outputFilename;
 
@@ -321,7 +321,7 @@ public:
         int maxHeight = 400;
 
         sf::Font font;
-        if (!font.loadFromFile("arial.ttf"))
+        if (!font.loadFromFile("../arial.ttf"))
         {
             cerr << "Error loading font." << endl;
         }
@@ -465,7 +465,7 @@ public:
             texture.create(windowWidth, windowHeight);
             texture.update(window);
             sf::Image screenshot = texture.copyToImage();
-            string outputFolder = "audioprocessor_files/plots/";
+            string outputFolder = "../audioprocessor_files/plots/";
             string outputFilename = title + "_histogram.png";
             string fullPath = outputFolder + file.substr(file.find_last_of("/") + 1, file.find_last_of(".") - file.find_last_of("/") - 1) + "/" + outputFilename;
 
@@ -531,7 +531,7 @@ public:
         window.setVisible(false); // Hide the window
 
         sf::Font font;
-        if (!font.loadFromFile("arial.ttf")) {
+        if (!font.loadFromFile("../arial.ttf")) {
             cerr << "Error loading font!" << endl;
             return;
         }
@@ -673,7 +673,7 @@ public:
             texture.create(WINDOW_WIDTH, WINDOW_HEIGHT);
             texture.update(window);
             sf::Image screenshot = texture.copyToImage();
-            string outputFolder = "audioprocessor_files/plots/";
+            string outputFolder = "../audioprocessor_files/plots/";
             string outputFilename = "original_vs_quantized_waveforms.png";
             string fullPath = outputFolder + file.substr(file.find_last_of("/") + 1, file.find_last_of(".") - file.find_last_of("/") - 1) + "/" + outputFilename;
 
@@ -774,7 +774,7 @@ public:
         }
 
         sf::Font font;
-        if (!font.loadFromFile("arial.ttf"))
+        if (!font.loadFromFile("../arial.ttf"))
         {
             cerr << "Error loading font!" << endl;
             return;
@@ -895,7 +895,7 @@ public:
             texture.create(window.getSize().x, window.getSize().y);
             texture.update(window);
             sf::Image screenshot = texture.copyToImage();
-            string outputFolder = "audioprocessor_files/plots/";
+            string outputFolder = "../audioprocessor_files/plots/";
             string outputFilename = "frequency_spectrum.png";
             string fullPath = outputFolder + file.substr(file.find_last_of("/") + 1, file.find_last_of(".") - file.find_last_of("/") - 1) + "/" + outputFilename;
 
@@ -960,7 +960,7 @@ int main(int argc, char *argv[])
 
     if (argc != 2)
     {
-        filename = "audioprocessor_files/sample04.wav";
+        filename = "../audioprocessor_files/sample04.wav";
     }
     else
     {
