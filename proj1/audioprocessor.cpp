@@ -885,7 +885,7 @@ int main(int argc, char *argv[])
 
     if (argc != 2)
     {
-        filename = "audioprocessor_files/sample04.wav";
+        filename = "../audioprocessor_files/sample04.wav";
     }
     else
     {
