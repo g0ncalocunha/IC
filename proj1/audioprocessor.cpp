@@ -15,8 +15,12 @@
 #include <cmath>
 #include <iomanip>
 #include <sstream>
+#include <matplotlibcpp.h>
 
 using namespace std;
+namespace plt=matplotlibcpp;
+using namespace chrono;
+
 
 class AudioProcessor
 {
@@ -39,6 +43,8 @@ private:
     const unsigned int BOTTOM_MARGIN = 100;
 
 public:
+    map<string, double> processingTimes;
+
     bool readFile(const string &file)
     {
         // open autf file
@@ -950,6 +956,144 @@ public:
         cout << "Signal to Noise Ratio: " << snr << endl;
         
     }
+
+    void measureAndPlotProcessingTime(const string &filename) {
+        processingTimes.clear();  // Clear previous measurements
+
+        // Measure readFile
+        auto start = high_resolution_clock::now();
+        readFile(filename);
+        auto end = high_resolution_clock::now();
+        processingTimes["readFile"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure playAudio
+        start = high_resolution_clock::now();
+        playAudio();
+        end = high_resolution_clock::now();
+        processingTimes["playAudio"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure getAudioInfo
+        start = high_resolution_clock::now();
+        getAudioInfo();
+        end = high_resolution_clock::now();
+        processingTimes["getAudioInfo"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure plotAudioWaveform
+        start = high_resolution_clock::now();
+        plotAudioWaveform();
+        end = high_resolution_clock::now();
+        processingTimes["plotAudioWaveform"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure getLeftRightMidSideChannels Right Channel
+        start = high_resolution_clock::now();
+        getLeftRightMidSideChannels("Right Channel");
+        end = high_resolution_clock::now();
+        processingTimes["getLeftRightMidSideChannels Right Channel"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure getLeftRightMidSideChannels Left Channel
+        start = high_resolution_clock::now();
+        getLeftRightMidSideChannels("Left Channel");
+        end = high_resolution_clock::now();
+        processingTimes["getLeftRightMidSideChannels Left Channel"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure getLeftRightMidSideChannels Mid Channel
+        start = high_resolution_clock::now();
+        getLeftRightMidSideChannels("Mid Channel");
+        end = high_resolution_clock::now();
+        processingTimes["getLeftRightMidSideChannels Mid Channel"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure getLeftRightMidSideChannels Side Channel
+        start = high_resolution_clock::now();
+        getLeftRightMidSideChannels("Side Channel");
+        end = high_resolution_clock::now();
+        processingTimes["getLeftRightMidSideChannels Side Channel"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure plotHistogram Right Channel
+        start = high_resolution_clock::now();
+        plotHistogram("Right Channel");
+        end = high_resolution_clock::now();
+        processingTimes["plotHistogram (Right Channel)"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure plotHistogram Left Channel
+        start = high_resolution_clock::now();
+        plotHistogram("Left Channel");
+        end = high_resolution_clock::now();
+        processingTimes["plotHistogram (Left Channel)"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure plotHistogram Mid Channel
+        start = high_resolution_clock::now();
+        plotHistogram("Mid Channel");
+        end = high_resolution_clock::now();
+        processingTimes["plotHistogram (Mid Channel)"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure plotHistogram Side Channel
+        start = high_resolution_clock::now();
+        plotHistogram("Mid Channel");
+        end = high_resolution_clock::now();
+        processingTimes["plotHistogram (Side Channel)"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure quantization (n=8)
+        start = high_resolution_clock::now();
+        quantization(8);
+        end = high_resolution_clock::now();
+        processingTimes["quantization (n=8)"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure quantization (n=16)
+        start = high_resolution_clock::now();
+        quantization(16);
+        end = high_resolution_clock::now();
+        processingTimes["quantization (n=16)"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure plotBothWaveforms
+        start = high_resolution_clock::now();
+        plotBothWaveforms();
+        end = high_resolution_clock::now();
+        processingTimes["plotBothWaveforms"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure compareAudios
+        start = high_resolution_clock::now();
+        compareAudios();
+        end = high_resolution_clock::now();
+        processingTimes["compareAudios"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure frequencyAnalyser
+        start = high_resolution_clock::now();
+        frequencyAnalyser();
+        end = high_resolution_clock::now();
+        processingTimes["frequencyAnalyser"] = duration_cast<milliseconds>(end - start).count();
+
+        // Measure noiseAdder
+        start = high_resolution_clock::now();
+        noiseAdder(filename);
+        end = high_resolution_clock::now();
+        processingTimes["noiseAdder"] = duration_cast<milliseconds>(end - start).count();
+
+        plotProcessingTimes();
+    }
+
+    void plotProcessingTimes() {
+        vector<double> x_axis;   
+        vector<double> times;
+        vector<string> labels;
+
+        int index = 0;
+        for (const auto &[func, time] : processingTimes) {
+            labels.push_back(func);
+            times.push_back(time);
+            x_axis.push_back(static_cast<double>(index++));
+        }
+
+        plt::figure_size(1200, 800);
+        plt::bar(x_axis, times); 
+        plt::title("Processing Time for Each Function");
+        plt::xlabel("Function");
+        plt::ylabel("Time (ms)");
+
+        plt::xticks(x_axis, labels);
+        plt::show();
+    }
+
+
 };
 
 int main(int argc, char *argv[])
@@ -973,18 +1117,19 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    // p.playAudio();
+    p.playAudio();
     p.getAudioInfo();
-    p.plotAudioWaveform(filename);
-    p.plotHistogram(filename, "Right Channel");
-    p.plotHistogram(filename, "Left Channel");
-    p.plotHistogram(filename, "Mid Channel");
-    p.plotHistogram(filename, "Side Channel");
+    p.plotAudioWaveform();
+    p.plotHistogram("Right Channel");
+    p.plotHistogram("Left Channel");
+    p.plotHistogram("Mid Channel");
+    p.plotHistogram("Side Channel");
     p.quantization(16);
-    p.plotBothWaveforms(filename);
+    p.plotBothWaveforms();
     p.compareAudios();
-    p.frequencyAnalyser(filename);
+    p.frequencyAnalyser();
     p.noiseAdder(filename);
+    p.measureAndPlotProcessingTime(filename);
 
     return 0;
 }

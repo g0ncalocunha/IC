@@ -3,7 +3,7 @@ project(Processor)
 
 include_directories(/usr/include)
 
-find_package(Python3 COMPONENTS Development REQUIRED)
+find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 include_directories(${Python3_INCLUDE_DIRS})
 include_directories(matplotlib-cpp)
 
@@ -23,5 +23,5 @@ add_executable(imageProcessor imageprocessor.cpp)
 target_link_libraries(audioProcessor fftw3)
 
 target_link_libraries(textProcessor ${Python3_LIBRARIES})
-target_link_libraries(audioProcessor sfml-graphics sfml-window sfml-system sfml-audio ${FFTW_LIBRARIES})
+target_link_libraries(audioProcessor ${Python3_LIBRARIES} sfml-graphics sfml-window sfml-system sfml-audio ${FFTW_LIBRARIES})
 target_link_libraries(imageProcessor ${OpenCV_LIBS} ${Python3_LIBRARIES})

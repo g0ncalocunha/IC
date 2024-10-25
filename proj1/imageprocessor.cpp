@@ -3,6 +3,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <matplotlibcpp.h>
+#include <chrono>
 
 
 namespace plt = matplotlibcpp;
@@ -12,6 +13,7 @@ using namespace std;
 class ImageProcessor
 {
   public:
+    map<string, double> processingTimes;
 
     Mat loadImage(const string &filename)
     {
@@ -93,44 +95,49 @@ class ImageProcessor
     }
 
     Mat imageDifference(const Mat &image1, const Mat &image2)
-    {
-      Mat diffImage;
-      absdiff(image1, image2, diffImage);
-      imshow("Difference between 2 images", diffImage);
-      imwrite("../imageprocessor_files/results/diffImage.png", diffImage);
-      waitKey(0);
-      return diffImage;
+  {
+    if (image1.size() != image2.size() || image1.type() != image2.type()) {
+        cerr << "Error: Images must have the same size and type for imageDifference." << endl;
+        return Mat();
     }
+    Mat diffImage;
+    absdiff(image1, image2, diffImage);
+    imshow("Difference between 2 images", diffImage);
+    imwrite("../imageprocessor_files/results/diffImage.png", diffImage);
+    waitKey(0);
+    return diffImage;
+  }
 
-    double calculateMSE(const Mat &image1, const Mat &image2)
-    {
-      Mat s1;
-      absdiff(image1, image2, s1);       // |image1 - image2|
-      s1.convertTo(s1, CV_32F);  // convert to float
-      s1 = s1.mul(s1);           // |image1 - image2|^2
-
-      Scalar s = sum(s1);        // sum elements per channel
-
-      double sse = s.val[0] + s.val[1] + s.val[2]; // sum channels
-
-      double mse = sse / (double)(image1.channels() * image1.total());
-      cout << "MSE: " << mse << endl;
-      return mse;
+  double calculateMSE(const Mat &image1, const Mat &image2)
+  {
+    if (image1.size() != image2.size() || image1.type() != image2.type()) {
+        cerr << "Error: Images must have the same size and type for MSE calculation." << endl;
+        return -1.0;
     }
+    Mat s1;
+    absdiff(image1, image2, s1);
+    s1.convertTo(s1, CV_32F);
+    s1 = s1.mul(s1);
 
-    double calculatePSNR(const Mat &image1, const Mat &image2)
-    {
-      double mse = calculateMSE(image1, image2);
-      if (mse == 0) 
-      {
-        cout << "MSE is zero: there is no noise in the signal";
-        return 100;
-      }
-      double max_pixel = 255.0;
-      double psnr = 20 * log10(max_pixel / sqrt(mse));
-      cout << "PSNR: " << psnr << endl;
-      return psnr;
+    Scalar s = sum(s1);
+    double sse = s.val[0] + s.val[1] + s.val[2];
+    double mse = sse / (double)(image1.channels() * image1.total());
+    cout << "MSE: " << mse << endl;
+    return mse;
+  }
+
+  double calculatePSNR(const Mat &image1, const Mat &image2)
+  {
+    double mse = calculateMSE(image1, image2);
+    if (mse <= 0) {
+        cerr << "PSNR calculation not possible: MSE is zero or images are incompatible." << endl;
+        return -1.0;
     }
+    double max_pixel = 255.0;
+    double psnr = 20 * log10(max_pixel / sqrt(mse));
+    cout << "PSNR: " << psnr << endl;
+    return psnr;
+  }
 
     Mat quantizeImage(const Mat &image, int levels)
     {
@@ -146,6 +153,72 @@ class ImageProcessor
       return quantizedImage;
     }
 
+    void measureAndPlotProcessingTime(const string &filename)
+    {
+        processingTimes.clear();  // Clear previous measurements
+
+        // Helper lambda function to measure and store times
+        auto measure = [&](const string &label, auto &&func) {
+            auto start = chrono::high_resolution_clock::now();
+            func();
+            auto end = chrono::high_resolution_clock::now();
+            processingTimes[label] = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+        };
+
+        // Measure each function in the ImageProcessor class
+        measure("loadImage", [&]() { loadImage(filename); });
+
+        // Load the image once to use as input for other functions
+        Mat image = loadImage(filename);
+
+        measure("splitImage", [&]() { splitImage(image); });
+        measure("toGrayscale", [&]() { toGrayscale(image); });
+        measure("gaussianBlur", [&]() { gaussianBlur(image); });
+
+        // Load another image to test image difference
+        Mat image2 = loadImage("../imageprocessor_files/peppers.ppm");
+        measure("imageDifference", [&]() { imageDifference(image, image2); });
+
+        // Measure MSE and PSNR on the loaded images
+        measure("calculateMSE", [&]() { calculateMSE(image, image2); });
+        measure("calculatePSNR", [&]() { calculatePSNR(image, image2); });
+
+        // Quantize the grayscale image at different levels
+        Mat greyImage = toGrayscale(image);
+        measure("quantization (n=4)", [&]() { quantizeImage(greyImage, 4); });
+        measure("quantization (n=10)", [&]() { quantizeImage(greyImage, 10); });
+
+        // Plot histogram for the grayscale image
+        measure("calculateHistogram", [&]() { calculateHistogram(greyImage); });
+
+        plotProcessingTimes();
+    }
+
+
+    void plotProcessingTimes()
+    {
+      vector<double> x_axis;
+      vector<double> times;
+      vector<string> labels;
+
+      int index = 0;
+      for (const auto &[func, time] : processingTimes)
+      {
+          labels.push_back(func);
+          times.push_back(time);
+          x_axis.push_back(static_cast<double>(index++));
+      }
+
+      plt::figure_size(1200, 800);
+      plt::bar(x_axis, times);
+      plt::title("Processing Time for Each Function");
+      plt::xlabel("Function");
+      plt::ylabel("Time (ms)");
+      plt::xticks(x_axis, labels);
+      plt::show();
+    }
+
+
 };
 
 int main(int argc, char const *argv[])
@@ -155,8 +228,9 @@ int main(int argc, char const *argv[])
     return -1;
   }
   ImageProcessor processor;
+  string title=argv[1];
   // Task 1
-  Mat image = processor.loadImage(argv[1]);
+  Mat image = processor.loadImage(title);
   // Task 2
   vector<Mat> channels = processor.splitImage(image);
   Mat greyImage = processor.toGrayscale(image);
@@ -169,17 +243,13 @@ int main(int argc, char const *argv[])
   processor.calculatePSNR(image, image2);
   // Task 6 - Quantize the grayscale image
   cout << "Quantization with 4 levels:  " << endl;
-  Mat quantizedImage4 = processor.quantizeImage(greyImage, 4); // Bigger number = better quality, less MSE and more PSNR
-  processor.calculatePSNR(greyImage, quantizedImage4);
+  Mat quantizedImage = processor.quantizeImage(greyImage, 4); // Bigger number = better quality, less MSE and more PSNR
   cout << "Quantization with 10 levels:  " << endl;
   Mat quantizedImage10 = processor.quantizeImage(greyImage, 10); // Bigger number = better quality, less MSE and more PSNR
   processor.calculatePSNR(greyImage, quantizedImage10);
-  Mat quantizedImage4BGR, quantizedImage10BGR;
-  cvtColor(quantizedImage4, quantizedImage4BGR, COLOR_GRAY2BGR);
-  cvtColor(quantizedImage10, quantizedImage10BGR, COLOR_GRAY2BGR);
-  imwrite("../imageprocessor_files/results/quantizedImage4.png", quantizedImage4BGR);
-  imwrite("../imageprocessor_files/results/quantizedImage10.png", quantizedImage10BGR);
   // Task 3
   processor.calculateHistogram(greyImage);
+  // Time
+  processor.measureAndPlotProcessingTime(title);
   return 0;
 }
