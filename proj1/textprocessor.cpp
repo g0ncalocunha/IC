@@ -195,10 +195,12 @@ public:
     void generateNGrams(int n){
         string title = (n == 2) ? "Bigram Frequency"
                             : "Trigram Frequency";
+        nGramsmap.clear();
         
         for (const auto& line : textContent)
         {
             wstringstream wss(line);
+            vector<wstring> words;
 
             while (wss >> word) {
                 words.push_back(word);
@@ -239,7 +241,7 @@ int main()
     locale::global(locale(""));
 
     TextProcessor processor;
-    if (processor.readFile("textprocessor_files/a.txt"))
+    if (processor.readFile("textprocessor_files/en/ep-00-04-10.txt"))
     {
         wcout << "\nFile read successfully!" << endl;
         processor.printContentInVector();
@@ -249,8 +251,8 @@ int main()
         processor.printContentInMap(processor.mapCharacter);
         processor.countWordOccurrence();
         processor.printContentInMap(processor.mapWord);
-        processor.plotFrequencies(processor.mapCharacter, "Character Frequency", "Characters");
-        processor.plotFrequencies(processor.mapWord, "Word Frequency", "Words");
+        // processor.plotFrequencies(processor.mapCharacter, "Character Frequency", "Characters");
+        // processor.plotFrequencies(processor.mapWord, "Word Frequency", "Words");
         processor.generateNGrams(2);
         processor.generateNGrams(3);
     }
