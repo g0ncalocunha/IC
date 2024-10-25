@@ -16,4 +16,16 @@ make
 
 ## Audio Processor
 
+```
+./audioProcessor
+```
 ## Image Processor
+
+```
+./imageProcessor <path_to_input_image>
+```
+
+# Cleaning build files
+```
+cmake --build ./build/ --target clean
+```

@@ -29,17 +29,31 @@ class ImageProcessor
       imshow("Blue",channels[0]);
       imshow("Red",channels[1]);
       imshow("Green",channels[2]);
+      
+      Mat blueBGR, redBGR, greenBGR;
+      cvtColor(channels[0], blueBGR, COLOR_GRAY2BGR);
+      cvtColor(channels[1], redBGR, COLOR_GRAY2BGR);
+      cvtColor(channels[2], greenBGR, COLOR_GRAY2BGR);
+
+      imwrite("../imageprocessor_files/results/blueImage.png", blueBGR);
+      imwrite("../imageprocessor_files/results/redImage.png", redBGR);
+      imwrite("../imageprocessor_files/results/greenImage.png", greenBGR);
       waitKey(0);
       return channels;
     }
 
     Mat toGrayscale(const Mat image)
     {
-      Mat greyMat;
-      cvtColor(image, greyMat, COLOR_BGR2GRAY);
-      imshow("Grey", greyMat);
+      Mat grayMat;
+      cvtColor(image, grayMat, COLOR_BGR2GRAY);
+      imshow("Grey", grayMat);
+
+      Mat grayMatBGR;
+      cvtColor(grayMat, grayMatBGR, COLOR_GRAY2BGR);
+
+      imwrite("../imageprocessor_files/results/grayMat.png", grayMatBGR);
       waitKey(0);
-      return greyMat;
+      return grayMat;
     }
 
     void calculateHistogram(const Mat &image)
@@ -68,13 +82,13 @@ class ImageProcessor
 
     void gaussianBlur(const Mat &image)
     {
-      Mat blurredImage3, blurredImage7;
-      GaussianBlur(image, blurredImage3, Size(3, 3), 0);
+      Mat blurredImage13, blurredImage7;
+      GaussianBlur(image, blurredImage13, Size(13, 13), 0);
       GaussianBlur(image, blurredImage7, Size(7, 7), 0);
-      imshow("Blurred Image with 3x3 kernel", blurredImage3);
       imshow("Blurred Image with 7x7 kernel", blurredImage7);
-      imwrite("imageprocessor_files/blurredImage3.ppm", blurredImage3);
-      imwrite("imageprocessor_files/blurredImage7.ppm", blurredImage7);
+      imshow("Blurred Image with 13x13 kernel", blurredImage13);
+      imwrite("../imageprocessor_files/results/blurredImage13.png", blurredImage13);
+      imwrite("../imageprocessor_files/results/blurredImage7.png", blurredImage7);
       waitKey(0);
     }
 
@@ -83,6 +97,7 @@ class ImageProcessor
       Mat diffImage;
       absdiff(image1, image2, diffImage);
       imshow("Difference between 2 images", diffImage);
+      imwrite("../imageprocessor_files/results/diffImage.png", diffImage);
       waitKey(0);
       return diffImage;
     }
@@ -147,7 +162,7 @@ int main(int argc, char const *argv[])
   Mat greyImage = processor.toGrayscale(image);
   // Task 4
   processor.gaussianBlur(image);
-  Mat image2 = processor.loadImage("imageprocessor_files/peppers.ppm");
+  Mat image2 = processor.loadImage("../imageprocessor_files/peppers.ppm");
   // Task 5
   processor.imageDifference(image,image2);
   processor.calculateMSE(image, image);
@@ -159,6 +174,11 @@ int main(int argc, char const *argv[])
   cout << "Quantization with 10 levels:  " << endl;
   Mat quantizedImage10 = processor.quantizeImage(greyImage, 10); // Bigger number = better quality, less MSE and more PSNR
   processor.calculatePSNR(greyImage, quantizedImage10);
+  Mat quantizedImage4BGR, quantizedImage10BGR;
+  cvtColor(quantizedImage4, quantizedImage4BGR, COLOR_GRAY2BGR);
+  cvtColor(quantizedImage10, quantizedImage10BGR, COLOR_GRAY2BGR);
+  imwrite("../imageprocessor_files/results/quantizedImage4.png", quantizedImage4BGR);
+  imwrite("../imageprocessor_files/results/quantizedImage10.png", quantizedImage10BGR);
   // Task 3
   processor.calculateHistogram(greyImage);
   return 0;
