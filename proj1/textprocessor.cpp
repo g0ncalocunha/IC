@@ -13,10 +13,9 @@
 #include <chrono>
 
 namespace plt=matplotlibcpp;
-using namespace std::chrono;
-
 
 using namespace std;
+using namespace chrono;
 
 class TextProcessor
 {
