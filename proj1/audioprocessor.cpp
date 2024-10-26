@@ -90,7 +90,7 @@ public:
         window.setVisible(false); // Hide the window
 
         sf::Font font;
-        if (!font.loadFromFile("../arial.ttf")) {
+        if (!font.loadFromFile("arial.ttf")) {
             cerr << "Error loading font!" << endl;
             return;
         }
@@ -327,7 +327,7 @@ public:
         int maxHeight = 400;
 
         sf::Font font;
-        if (!font.loadFromFile("../arial.ttf"))
+        if (!font.loadFromFile("arial.ttf"))
         {
             cerr << "Error loading font." << endl;
         }
@@ -537,7 +537,7 @@ public:
         window.setVisible(false); // Hide the window
 
         sf::Font font;
-        if (!font.loadFromFile("../arial.ttf")) {
+        if (!font.loadFromFile("arial.ttf")) {
             cerr << "Error loading font!" << endl;
             return;
         }
@@ -780,7 +780,7 @@ public:
         }
 
         sf::Font font;
-        if (!font.loadFromFile("../arial.ttf"))
+        if (!font.loadFromFile("arial.ttf"))
         {
             cerr << "Error loading font!" << endl;
             return;
@@ -980,7 +980,7 @@ public:
 
         // Measure plotAudioWaveform
         start = high_resolution_clock::now();
-        plotAudioWaveform();
+        plotAudioWaveform(filename);
         end = high_resolution_clock::now();
         processingTimes["plotAudioWaveform"] = duration_cast<milliseconds>(end - start).count();
 
@@ -1010,25 +1010,25 @@ public:
 
         // Measure plotHistogram Right Channel
         start = high_resolution_clock::now();
-        plotHistogram("Right Channel");
+        plotHistogram(filename, "Right Channel");
         end = high_resolution_clock::now();
         processingTimes["plotHistogram (Right Channel)"] = duration_cast<milliseconds>(end - start).count();
 
         // Measure plotHistogram Left Channel
         start = high_resolution_clock::now();
-        plotHistogram("Left Channel");
+        plotHistogram(filename, "Left Channel");
         end = high_resolution_clock::now();
         processingTimes["plotHistogram (Left Channel)"] = duration_cast<milliseconds>(end - start).count();
 
         // Measure plotHistogram Mid Channel
         start = high_resolution_clock::now();
-        plotHistogram("Mid Channel");
+        plotHistogram(filename, "Mid Channel");
         end = high_resolution_clock::now();
         processingTimes["plotHistogram (Mid Channel)"] = duration_cast<milliseconds>(end - start).count();
 
         // Measure plotHistogram Side Channel
         start = high_resolution_clock::now();
-        plotHistogram("Mid Channel");
+        plotHistogram(filename, "Side Channel");
         end = high_resolution_clock::now();
         processingTimes["plotHistogram (Side Channel)"] = duration_cast<milliseconds>(end - start).count();
 
@@ -1046,7 +1046,7 @@ public:
 
         // Measure plotBothWaveforms
         start = high_resolution_clock::now();
-        plotBothWaveforms();
+        plotBothWaveforms(filename);
         end = high_resolution_clock::now();
         processingTimes["plotBothWaveforms"] = duration_cast<milliseconds>(end - start).count();
 
@@ -1058,7 +1058,7 @@ public:
 
         // Measure frequencyAnalyser
         start = high_resolution_clock::now();
-        frequencyAnalyser();
+        frequencyAnalyser(filename);
         end = high_resolution_clock::now();
         processingTimes["frequencyAnalyser"] = duration_cast<milliseconds>(end - start).count();
 
@@ -1104,7 +1104,7 @@ int main(int argc, char *argv[])
 
     if (argc != 2)
     {
-        filename = "../audioprocessor_files/sample04.wav";
+        filename = "audioprocessor_files/sample04.wav";
     }
     else
     {
@@ -1119,15 +1119,15 @@ int main(int argc, char *argv[])
 
     p.playAudio();
     p.getAudioInfo();
-    p.plotAudioWaveform();
-    p.plotHistogram("Right Channel");
-    p.plotHistogram("Left Channel");
-    p.plotHistogram("Mid Channel");
-    p.plotHistogram("Side Channel");
+    p.plotAudioWaveform(filename);
+    p.plotHistogram(filename, "Right Channel");
+    p.plotHistogram(filename, "Left Channel");
+    p.plotHistogram(filename, "Mid Channel");
+    p.plotHistogram(filename, "Side Channel");
     p.quantization(16);
-    p.plotBothWaveforms();
+    p.plotBothWaveforms(filename);
     p.compareAudios();
-    p.frequencyAnalyser();
+    p.frequencyAnalyser(filename);
     p.noiseAdder(filename);
     p.measureAndPlotProcessingTime(filename);
 
