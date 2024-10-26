@@ -1,0 +1,5 @@
+/home/goncalo/MECT1-1/IC/proj1/build/CMakeFiles/textProcessor.dir
+/home/goncalo/MECT1-1/IC/proj1/build/CMakeFiles/audioProcessor.dir
+/home/goncalo/MECT1-1/IC/proj1/build/CMakeFiles/imageProcessor.dir
+/home/goncalo/MECT1-1/IC/proj1/build/CMakeFiles/edit_cache.dir
+/home/goncalo/MECT1-1/IC/proj1/build/CMakeFiles/rebuild_cache.dir

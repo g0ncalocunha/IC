@@ -90,7 +90,7 @@ public:
         window.setVisible(false); // Hide the window
 
         sf::Font font;
-        if (!font.loadFromFile("arial.ttf")) {
+        if (!font.loadFromFile("../arial.ttf")) {
             cerr << "Error loading font!" << endl;
             return;
         }
@@ -327,7 +327,7 @@ public:
         int maxHeight = 400;
 
         sf::Font font;
-        if (!font.loadFromFile("arial.ttf"))
+        if (!font.loadFromFile("../arial.ttf"))
         {
             cerr << "Error loading font." << endl;
         }
@@ -537,7 +537,7 @@ public:
         window.setVisible(false); // Hide the window
 
         sf::Font font;
-        if (!font.loadFromFile("arial.ttf")) {
+        if (!font.loadFromFile("../arial.ttf")) {
             cerr << "Error loading font!" << endl;
             return;
         }
@@ -780,7 +780,7 @@ public:
         }
 
         sf::Font font;
-        if (!font.loadFromFile("arial.ttf"))
+        if (!font.loadFromFile("../arial.ttf"))
         {
             cerr << "Error loading font!" << endl;
             return;
@@ -1104,7 +1104,7 @@ int main(int argc, char *argv[])
 
     if (argc != 2)
     {
-        filename = "audioprocessor_files/sample04.wav";
+        filename = "../audioprocessor_files/sample04.wav";
     }
     else
     {
