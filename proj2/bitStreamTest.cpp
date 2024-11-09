@@ -1,6 +1,9 @@
 #include "bitStream.cpp"
 #include <cassert>
 #include <iostream>
+#include <vector>
+
+using namespace std;
 
 void testOpenFile()
 {
@@ -8,11 +11,11 @@ void testOpenFile()
     try
     {
         bs.openFile("test");
-        std::cout << "testOpenFile passed\n";
+        cout << "testOpenFile passed\n";
     }
-    catch (const std::exception &e)
+    catch (const exception &e)
     {
-        std::cerr << "testOpenFile failed: " << e.what() << '\n';
+        cerr << "testOpenFile failed: " << e.what() << '\n';
     }
 }
 
@@ -22,29 +25,140 @@ void testWriteReadBit()
     bs.openFile("test");
     bs.writeBit(1, 0);
     int bit = bs.readBit(0);
-    std::cout << "Expected bit: 1, Read bit: " << bit << std::endl;
     assert(bit == 1);
-    std::cout << "testWriteReadBit passed\n";
+    cout << "testWriteReadBit passed\n";
 }
 
 void testWriteReadBits()
 {
-    bitStream bs;
-    bs.openFile("test");
-    bs.writeBits(0b10101010, 8);
-    int bits = bs.readBits(8, 0);
-    std::cout << "Expected bits: 0b10101010, Read bits: " << bits << std::endl;
-    assert(bits == 0b10101010);
-    std::cout << "testWriteReadBits passed\n";
+    {
+        bitStream bs;
+        bs.fs.open("test", ios::out | ios::binary | ios::trunc);
+        if (!bs.fs.is_open()) {
+            throw runtime_error("Failed to open file for writing.");
+        }
+
+        uint64_t testValue = 0b11111011;
+        int n = 8;
+
+        bs.writeBits(testValue, n, 0);
+        bs.fs.close(); 
+    }
+
+    {
+        bitStream bs;
+        bs.fs.open("test", ios::in | ios::binary);
+        if (!bs.fs.is_open()) {
+            throw runtime_error("Failed to open file for reading.");
+        }
+
+        int n = 8;
+        uint64_t readValue = bs.readBits(0, n);
+
+        uint64_t expectedValue = 0b11111011;
+        cout << "Expected bits: " << expectedValue << ", Read bits: " << readValue << endl;
+        assert(readValue == expectedValue);
+        cout << "testWriteReadBits passed\n";
+
+        bs.fs.close();
+    }
+}
+
+void intensiveTestWriteReadBits()
+{
+    struct TestCase {
+        uint64_t value;
+        int bits;
+        int pos;
+        uint64_t expected;
+    };
+
+    vector<TestCase> testCases = {
+        {0b10101010, 8, 0, 0b10101010},
+        {0b1100, 4, 1, 0b1100},
+        {0xFF, 8, 2, 0xFF},
+        {0xABCD, 16, 4, 0xABCD},
+        {0x12345678, 32, 8, 0x12345678},
+        {0xFFFFFFFFFFFFFFFF, 64, 16, 0xFFFFFFFFFFFFFFFF},
+        {0b1, 1, 24, 0b1},
+        {0xFFFF, 16, 28, 0xFFFF},
+        {0xF0F0F0F0F0F0F0F0, 64, 32, 0xF0F0F0F0F0F0F0F0}
+    };
+
+    for (const auto& testCase : testCases) {
+        {
+            bitStream bs;
+            bs.fs.open("test", ios::out | ios::binary | ios::trunc);
+            if (!bs.fs.is_open()) {
+                throw runtime_error("Failed to open file for writing.");
+            }
+            bs.writeBits(testCase.value, testCase.bits, testCase.pos);
+            bs.fs.flush();
+            bs.fs.close();
+        }
+
+        uint64_t readValue = 0;
+        {
+            bitStream bs;
+            bs.fs.open("test", ios::in | ios::binary);
+            if (!bs.fs.is_open()) {
+                throw runtime_error("Failed to open file for reading.");
+            }
+            readValue = bs.readBits(testCase.pos, testCase.bits);
+            bs.fs.close();
+        }
+
+        cout << "Test case: Writing " << testCase.bits << " bits, value = " << testCase.value
+                << " at position " << testCase.pos << endl;
+        cout << "Expected: " << testCase.expected << ", Read: " << readValue << endl;
+
+        assert(readValue == testCase.expected && "Test case failed!");
+        cout << "Test case passed!\n" << endl;
+    }
+
+    cout << "All test cases passed in intensiveTestWriteReadBits!" << endl;
+}
+
+void testReadWriteStrings(){
+    string testString = "Hello, World!";
+    int position = 0;
+
+    {
+        bitStream bs;
+        bs.fs.open("test", ios::out | ios::binary | ios::trunc);
+        if (!bs.fs.is_open()) {
+            throw runtime_error("Failed to open file for writing.");
+        }
+        
+        bs.writeString(testString, position);
+        bs.fs.close();
+    }
+
+    string readStringResult;
+    {
+        bitStream bs;
+        bs.fs.open("test", ios::in | ios::binary);
+        if (!bs.fs.is_open()) {
+            throw runtime_error("Failed to open file for reading.");
+        }
+
+        readStringResult = bs.readString(position, testString.length());
+        bs.fs.close();
+    }
+
+    cout << "Expected: " << testString << ", Read: " << readStringResult << endl;
+    assert(readStringResult == testString && "Test case failed for writeString/readString");
+    cout << "testWriteReadString passed!\n";
 }
 
 int main()
 {
-    std::cout << "Running tests...\n";
+    cout << "Running tests...\n";
     testOpenFile();
     testWriteReadBit();
     testWriteReadBits();
-    std::cout << "All tests passed!\n";
+    intensiveTestWriteReadBits();
+    testReadWriteStrings();
+    cout << "All tests passed!\n";
     return 0;
 }
-

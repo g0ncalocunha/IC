@@ -1,8 +1,8 @@
 bitStream: bitStream.cpp
-	g++ -o bitStream bitStream.cpp
+	g++ -o bitStream.out bitStream.cpp
 
 bitStreamTest: bitStreamTest.cpp
-	g++ -o bitStreamTest bitStreamTest.cpp
+	g++ -o bitStreamTest.out bitStreamTest.cpp
 
 clean:
-	rm -f bitStream bitStreamTest
+	rm -f bitStream.out bitStreamTest

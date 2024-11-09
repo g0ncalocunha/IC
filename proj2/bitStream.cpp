@@ -2,76 +2,105 @@
 #include <fstream>
 #include <string>
 
+using namespace std;
+
 class bitStream
 {
 private:
     /* data */
     // file stream
-    std::fstream fs;
+    char bitChar;
+    char bitRead;
 
 public:
+    fstream fs;
     bitStream(/* args */);
     ~bitStream();
 
-    void openFile(const std::string &filename)
+    void openFile(const string &filename)
     {
-        fs.open(filename, fs.binary | fs.in | fs.out);
+        fs.open(filename, fs.binary | fs.in | fs.out | fs.trunc);
         if (!fs.is_open())
         {
-            throw std::runtime_error("Failed to open file: " + filename);
+            throw runtime_error("Failed to open file: " + filename);
         }
     }
 
     void writeBit(int bit, int pos)
     {
         fs.seekp(pos);
-        fs.write((char *)&bit, 1);
+        bitChar = static_cast<char>(bit);
+        fs.write(&bitChar, 1);
     }
 
     int readBit(int pos)
     {
         fs.seekg(pos);
-        int bit;
-        fs.read((char *)&bit, 1);
+        fs.read(&bitRead, 1);
+        int bit = static_cast<int>(bitRead);
         return bit;
     }
 
-    void writeBits(int bits, int n, int pos = 0)
+    void writeBits(uint64_t value, int n, int pos = 0)
     {
-        for (int i = 0; i < n; i++)
-        {
-            writeBit((bits >> i) & 1, pos + i);
+        if (n <= 0 || n > 64) {
+            throw invalid_argument("N must be between 0 and 64");
+        }        
+        
+        int byteCount = (n + 7) / 8;
+        fs.seekp(pos);
+        if (!fs) {
+            throw runtime_error("Failed to seek to position " + to_string(pos));
         }
+        fs.clear();
+        for (int i = 0; i < byteCount; i++){
+            unsigned char byte = (value >> (i * 8)) & 0xFF; // Extracts a byte
+            fs.write(reinterpret_cast<char*>(&byte), 1);
+        }
+        fs.flush();
     }
 
-    int readBits(int pos, int n)
+    uint64_t readBits(int pos, int n)
     {
-        int bits = 0;
-        for (int i = 0; i < n; i++)
+        if (n <= 0 || n > 64) {
+            throw invalid_argument("N must be between 0 and 64");
+        }
+        uint64_t bits = 0;
+        int byteCount = (n + 7) / 8; // byte number
+        fs.clear();
+        fs.seekg(pos);
+        if (!fs) {
+            throw runtime_error("Failed to seek to position " + to_string(pos));
+        }
+
+        for (int i = 0; i < byteCount; i++)
         {
-            bits |= readBit(pos + i) << i;
+            unsigned char byte;
+            fs.read(reinterpret_cast<char*>(&byte), 1);
+            if (!fs) {
+                cout << "Read failed at byte position: " << (pos + i) << endl;
+                break;
+            }
+            bits |= static_cast<uint64_t>(byte) << (i * 8);
+        }
+        if (n < 64) {
+            bits &= (1ULL << n) - 1;
         }
         return bits;
     }
 
-    void writeString(std::string s)
+    void writeString(string s, int pos)
     {
-        for (char c : s)
-        {
-            writeBits(c, 8);
+        for (size_t i = 0; i < s.size(); ++i) {
+            writeBits(static_cast<uint64_t>(s[i]), 8, pos + i * 8);
         }
     }
 
-    std::string readString(int pos = 0)
+    string readString(int pos, int length) 
     {
-        std::string s;
-        while (true)
-        {
-            char c = readBits(8, pos);
-            if (c == 0)
-            {
-                break;
-            }
+        string s;
+        for (size_t i = 0; i < length; ++i) {
+            char c = static_cast<char>(readBits(pos + i * 8, 8));
             s += c;
         }
         return s;
@@ -92,7 +121,7 @@ int main(int argc, char const *argv[])
     bs.openFile("test");
     bs.writeBit(1, 0);
     int bit = bs.readBit(0);
-    std::cout << "Expected bit: 1, Read bit: " << bit << std::endl;
+    cout << "Expected bit: 1, Read bit: " << bit << endl;
     return 0;
 }
 
