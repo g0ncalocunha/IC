@@ -115,13 +115,13 @@ bitStream::~bitStream()
 {
 }
 
-int main(int argc, char const *argv[])
-{
-    bitStream bs;
-    bs.openFile("test");
-    bs.writeBit(1, 0);
-    int bit = bs.readBit(0);
-    cout << "Expected bit: 1, Read bit: " << bit << endl;
-    return 0;
-}
+// int main(int argc, char const *argv[])
+// {
+//     bitStream bs;
+//     bs.openFile("test");
+//     bs.writeBit(1, 0);
+//     int bit = bs.readBit(0);
+//     cout << "Expected bit: 1, Read bit: " << bit << endl;
+//     return 0;
+// }
 

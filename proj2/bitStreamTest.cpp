@@ -150,6 +150,58 @@ void testReadWriteStrings(){
     assert(readStringResult == testString && "Test case failed for writeString/readString");
     cout << "testWriteReadString passed!\n";
 }
+void testBulkReadWriteStrings() {
+    struct TestCase {
+        string testString;
+        int position;
+    };
+
+    vector<TestCase> testCases = {
+        {"Hello, World!", 0},
+        {"A short string.", 50},
+        {"A bit longer string with more characters to test the functionality.", 100},
+        {string(1024, 'A'), 200},  // 1 KB of 'A'
+        {string(8192, 'B'), 1300}, // 8 KB of 'B'
+        {string(32768, 'C'), 9500} // 32 KB of 'C'
+    };
+
+    for (const auto& testCase : testCases) {
+        {
+            bitStream bs;
+            bs.fs.open("test", ios::out | ios::binary | ios::trunc);
+            if (!bs.fs.is_open()) {
+                throw runtime_error("Failed to open file for writing.");
+            }
+            
+            bs.writeString(testCase.testString, testCase.position);
+            bs.fs.close();
+        }
+
+        string readStringResult;
+        {
+            bitStream bs;
+            bs.fs.open("test", ios::in | ios::binary);
+            if (!bs.fs.is_open()) {
+                throw runtime_error("Failed to open file for reading.");
+            }
+
+            readStringResult = bs.readString(testCase.position, testCase.testString.length());
+            bs.fs.close();
+        }
+
+        // Output and Assertion
+        cout << "Test case - Expected: \"" << testCase.testString.substr(0, 20)
+                  << (testCase.testString.size() > 20 ? "..." : "")
+                  << "\", Read: \"" << readStringResult.substr(0, 20)
+                  << (readStringResult.size() > 20 ? "..." : "")
+                  << "\"\n";
+
+        assert(readStringResult == testCase.testString && "Test case failed for writeString/readString");
+        cout << "Test case passed for string length " << testCase.testString.size() << " at position " << testCase.position << "\n";
+    }
+
+    cout << "All bulk test cases passed in testReadWriteStrings!\n";
+}
 
 int main()
 {
@@ -159,6 +211,7 @@ int main()
     testWriteReadBits();
     intensiveTestWriteReadBits();
     testReadWriteStrings();
+    testBulkReadWriteStrings();
     cout << "All tests passed!\n";
     return 0;
 }
