@@ -38,6 +38,7 @@ public:
         fs.seekg(pos);
         fs.read(&bitRead, 1);
         int bit = static_cast<int>(bitRead);
+        pos++;
         return bit;
     }
 
@@ -105,6 +106,7 @@ public:
         }
         return s;
     }
+
 };
 
 bitStream::bitStream(/* args */)
@@ -114,6 +116,7 @@ bitStream::bitStream(/* args */)
 bitStream::~bitStream()
 {
 }
+
 
 // int main(int argc, char const *argv[])
 // {
