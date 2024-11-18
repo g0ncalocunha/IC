@@ -1,6 +1,7 @@
 #include "bitStream.cpp"
 #include <cassert>
 #include <iostream>
+#include <cstdint>
 #include <vector>
 
 using namespace std;

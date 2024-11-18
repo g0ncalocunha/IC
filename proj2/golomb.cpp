@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
+#include <cstdint>
 #include <vector>
 // #include "bitStream.cpp"
 

@@ -471,7 +471,7 @@ public:
             texture.create(windowWidth, windowHeight);
             texture.update(window);
             sf::Image screenshot = texture.copyToImage();
-            string outputFolder = "../audioprocessor_files/plots/";
+            string outputFolder = "../tessor_files/plots/";
             string outputFilename = title + "_histogram.png";
             string fullPath = outputFolder + file.substr(file.find_last_of("/") + 1, file.find_last_of(".") - file.find_last_of("/") - 1) + "/" + outputFilename;
 

@@ -1,5 +1,6 @@
 #include "bitStream.cpp"
 #include "golomb.cpp"
+#include <cstdint>
 #include <cassert>
 
 
@@ -39,16 +40,15 @@ void test_unary_codec() {
     // Step 1: Encode the value
     bs.fs.open("unary_test.bin", ios::out | ios::binary | ios::trunc); 
     int pos = 0;
-    int q_original = 5;
+    int q_original = 9;
 
     cout << "Testing Unary Codec (Encoding + Decoding)...\n";
     cout << "Original value to encode: " << q_original << endl;
     g.unary_encode(bs, q_original, pos); 
     bs.fs.flush();                       
-    bs.fs.close();                       
-
+    bs.fs.close();      
     // Step 2: Decode the value
-    bs.fs.open("unary_test.bin", ios::out | ios::binary);  
+    bs.fs.open("unary_test.bin", ios::in | ios::binary);  
 
     if (!bs.fs.is_open()) { 
         cout << "ERROR: Unable to open file for reading!" << endl;
