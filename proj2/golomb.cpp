@@ -93,7 +93,8 @@ public:
             for (int i = 0; i < 8; i++) {
                 int bit = (bits >> (7 - i)) & 1;  
                 if (bit == 1) {
-                    cout << "Decoded: 1, Position: " << pos << endl; 
+                    cout << "Decoded: 1, Position: " << pos << endl;
+                    pos++;
                     q++; 
                 } else {
                     cout << "Decoded: 0, Position: " << pos << endl; 
@@ -101,7 +102,6 @@ public:
                     return q;  
                 }
             }
-            pos += 8;
         }
     }
 
