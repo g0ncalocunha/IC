@@ -14,6 +14,8 @@ private:
     char bitRead;
     char buffer = 0x00;
     char bufSize = 0x00;
+    char rBuffer = 0x00;
+    char rBufSize = 0x00;
 
 public:
     fstream fs;
@@ -44,14 +46,14 @@ public:
         fs.put(buffer);
     }
 
-    int readBit(int pos){   
-        if (bufSize == 0) {
-            fs.get(buffer);
-            bufSize = 8;
+    int readBit() {   
+        if (rBufSize == 0) {
+            fs.get(rBuffer);
+            rBufSize = 8;
         }
 
-        int bit = (buffer >> (bufSize - 1)) & 1;
-        bufSize--;
+        int bit = (rBuffer >> (rBufSize - 1)) & 1;
+        rBufSize--;
         return bit;
     }
 
