@@ -13,6 +13,7 @@ private:
     char bitChar;
     char bitRead;
     char buffer = 0x00;
+    char bufSize = 0x00;
 
 public:
     fstream fs;
@@ -28,21 +29,29 @@ public:
         }
     }
 
-    void writeBit(int bit, int pos)
+    void writeBit(int bit)
     {
-        fs.seekp(pos / 8);
-        if (buffer == 0xff) buffer = 0x00 ;
-        buffer = buffer + (bit << (pos % 8));
-        bitChar = static_cast<char>(buffer);
-        fs.write(&bitChar, 1);
+        buffer = buffer | (bit << (bufSize % 8));
+        bufSize++;
+        if (bufSize == 8) {
+            fs.put(buffer);
+            buffer = 0x00;
+            bufSize = 0x00;
+        }
     }
 
-    int readBit(int pos)
-    {
-        fs.seekg(pos / 8);
-        fs.read(&bitRead, 1);
-        int bit = static_cast<int>((bitRead << (pos % 8))& 0x01);
-        pos++;
+    void flushBuffer() {
+        fs.put(buffer);
+    }
+
+    int readBit(int pos){   
+        if (bufSize == 0) {
+            fs.get(buffer);
+            bufSize = 8;
+        }
+
+        int bit = (buffer >> (bufSize - 1)) & 1;
+        bufSize--;
         return bit;
     }
 
