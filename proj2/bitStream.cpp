@@ -33,21 +33,32 @@ public:
 
     void writeBit(int bit)
     {
-        buffer = buffer | (bit << (bufSize % 8));
+        buffer = buffer | (bit << (7 - (bufSize % 8)));
         bufSize++;
-        if (bufSize == 8) {
+        if (bufSize == 8)
+        {
             fs.put(buffer);
             buffer = 0x00;
             bufSize = 0x00;
         }
     }
 
-    void flushBuffer() {
-        fs.put(buffer);
+    void flushBuffer()
+    {
+        if (bufSize > 0)
+        {
+            fs.put(buffer);
+            buffer = 0x00;
+            bufSize = 0x00;
+        }
     }
 
-    int readBit() {   
-        if (rBufSize == 0) {
+    int readBit()
+    {
+        if (rBufSize == 0)
+        {
+            fs.clear();  // Limpa qualquer flag de erro
+            fs.seekg(0); // Reposiciona o ponteiro de leitura no início do arquivo
             fs.get(rBuffer);
             rBufSize = 8;
         }
@@ -57,71 +68,54 @@ public:
         return bit;
     }
 
-    void writeBits(uint64_t value, int n, int pos = 0)
+    void writeBits(uint64_t value, int n)
     {
-        if (n <= 0 || n > 64) {
-            throw invalid_argument("N must be between 0 and 64");
-        }        
-        
-        int byteCount = (n + 7) / 8;
-        fs.seekp(pos);
-        if (!fs) {
-            throw runtime_error("Failed to seek to position " + to_string(pos));
-        }
-        fs.clear();
-        for (int i = 0; i < byteCount; i++){
-            unsigned char byte = (value >> (i * 8)) & 0xFF; // Extracts a byte
-            fs.write(reinterpret_cast<char*>(&byte), 1);
-        }
-        fs.flush();
-    }
-
-    uint64_t readBits(int pos, int n)
-    {
-        if (n <= 0 || n > 64) {
-            throw invalid_argument("N must be between 0 and 64");
-        }
-        uint64_t bits = 0;
-        int byteCount = (n + 7) / 8; // byte number
-        fs.clear();
-        fs.seekg(pos);
-        if (!fs) {
-            throw runtime_error("Failed to seek to position " + to_string(pos));
-        }
-
-        for (int i = 0; i < byteCount; i++)
+        if (n <= 0 || n > 64)
         {
-            unsigned char byte;
-            fs.read(reinterpret_cast<char*>(&byte), 1);
-            if (!fs) {
-                cout << "Read failed at byte position: " << (pos + i) << endl;
-                break;
-            }
-            bits |= static_cast<uint64_t>(byte) << (i * 8);
+            throw invalid_argument("N must be between 0 and 64");
         }
-        if (n < 64) {
-            bits &= (1ULL << n) - 1;
+        for (int i = n - 1; i >= 0; i--)
+        {
+            writeBit((value >> i) & 1);
         }
-        return bits;
     }
 
-    void writeString(string s, int pos)
+    uint64_t readBits(int n)
     {
-        for (size_t i = 0; i < s.size(); ++i) {
-            writeBits(static_cast<uint64_t>(s[i]), 8, pos + i * 8);
+        if (n <= 0 || n > 64)
+        {
+            throw invalid_argument("N must be between 0 and 64");
         }
+        uint64_t value = 0;
+        for (int i = 0; i < n; i++)
+        {
+            value = (value << 1) | readBit();
+            if (rBufSize == 0 && fs.peek() != EOF)
+            {
+                fs.get(rBuffer);
+                rBufSize = 8;
+            }
+        }
+        return value;
     }
 
-    string readString(int pos, int length) 
+    void writeString(const string &s)
+    {
+        for (size_t i = 0; i < s.size(); ++i)
+        {
+            writeBits(static_cast<uint64_t>(s[i]), 8);
+        }
+    }
+    string readString(int length)
     {
         string s;
-        for (size_t i = 0; i < length; ++i) {
-            char c = static_cast<char>(readBits(pos + i * 8, 8));
+        for (size_t i = 0; i < length; ++i)
+        {
+            char c = static_cast<char>(readBits(8));
             s += c;
         }
         return s;
     }
-
 };
 
 bitStream::bitStream(/* args */)
@@ -130,16 +124,42 @@ bitStream::bitStream(/* args */)
 
 bitStream::~bitStream()
 {
+    if (fs.is_open())
+    {
+        fs.close();
+    }
 }
-
 
 // int main(int argc, char const *argv[])
 // {
 //     bitStream bs;
 //     bs.openFile("test");
-//     bs.writeBit(1, 0);
-//     int bit = bs.readBit(0);
-//     cout << "Expected bit: 1, Read bit: " << bit << endl;
+
+//     bs.writeBit(0);
+//     bs.writeBit(0);
+//     bs.writeBit(1);
+//     bs.writeBit(1);
+//     bs.writeBit(0);
+//     bs.writeBit(0);
+//     bs.writeBit(0);
+//     bs.writeBit(1);
+//     bs.flushBuffer();
+//     int bit = bs.readBit();
+//     cout << "Read bit: " << bit << endl;
+
+//     bs.writeBits(0b0011000100110010, 16);
+//     bs.flushBuffer();
+//     uint64_t readValue = bs.readBits(8);
+//     uint64_t expectedValue = 0b00110001;
+//     cout << "Expected bits: " << expectedValue << ", Read bits: " << readValue << endl;
+//     readValue = bs.readBits(8);
+//     expectedValue = 0b00110010;
+//     cout << "Expected bits: " << expectedValue << ", Read bits: " << readValue << endl;
+
+//     // string testString = "Hello, World!";
+//     // bs.writeString(testString, 0);
+//     // string readString = bs.readString(0, testString.size());
+//     // cout << "Expected string: " << testString << ", Read string: " << readString << endl;
+
 //     return 0;
 // }
-
