@@ -11,4 +11,4 @@ golombTest: golombTest.cpp
 		g++ -o golombTest.out golombTest.cpp
 
 clean:
-	rm -f bitStream.out bitStreamTest
+	rm -f *.out

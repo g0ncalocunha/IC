@@ -1,77 +1,74 @@
-#include "bitStream.cpp"
-#include "golomb.cpp"
-#include <cstdint>
+#include <iostream>
+#include <fstream>
 #include <cassert>
+#include "golomb.cpp"
 
-
-using namespace std;
-
-void test_zigzag_encoder() {
-    golomb g;
-    vector<int> values = {-5, -2, 0, 1, 3};
-    vector<int> expected = {9, 3, 0, 2, 6};
-
-    cout << "\nTesting Zigzag Encoding...\n";
-    for (size_t i = 0; i < values.size(); i++) {
-        int encoded = g.zigzag_encode(values[i]);
-        assert(encoded == expected[i]);
-    }
-    cout << "Zigzag Encoding Test Passed!\n";
-}
-
-void test_zigzag_decoder() {
-    golomb g;
-    vector<int> encoded = {9, 3, 0, 2, 6};
-    vector<int> expected = {-5, -2, 0, 1, 3};
-
-    cout << "Testing Zigzag Decoding...\n";
-    for (size_t i = 0; i < encoded.size(); i++) {
-        int decoded = g.zigzag_decode(encoded[i]);
-        assert(decoded == expected[i]);
-    }
-    cout << "Zigzag Decoding Test Passed!\n\n";
-}
-
-
-void test_unary_codec() {
-    golomb g;
+void golombTest(const std::string &inputFile, const std::string &outputFile, int m, bool useInterleaving) {
+    golomb golomb(m, useInterleaving);
     bitStream bs;
 
-    // Step 1: Encode the value
-    bs.fs.open("unary_test.bin", ios::out | ios::binary | ios::trunc); 
-    int pos = 0;
-    int q_original = 9;
+    // Open input file and prepare bitStream for writing
+    std::ifstream input(inputFile);
+    assert(input.is_open() && "Failed to open input file");
+    bs.openFile(outputFile);
 
-    cout << "Testing Unary Codec (Encoding + Decoding)...\n";
-    cout << "Original value to encode: " << q_original << endl;
-    g.unary_encode(bs, q_original, pos); 
-    bs.fs.flush();                       
-    bs.fs.close();      
-    // Step 2: Decode the value
-    bs.fs.open("unary_test.bin", ios::in | ios::binary);  
-
-    if (!bs.fs.is_open()) { 
-        cout << "ERROR: Unable to open file for reading!" << endl;
-        return;  
+    // Encode integers
+    int number;
+    while (input >> number) {
+        golomb.encode(number, bs);
     }
-    
-    pos = 0;
-    int q_decoded = g.unary_decode(bs, pos); 
-    bs.fs.close();                          
+    bs.flushBuffer();
+    input.close();
 
-    // Step 3: Verify that decoded value matches the original
-    cout << "Q Original: " << q_original << ", Q Decoded: " << q_decoded << endl;
-    assert(q_original == q_decoded); 
-    cout << "Unary Codec Test Passed!\n";
+    // Rewind bitStream for reading
+    bs.fs.clear();
+    bs.fs.seekg(0);
+
+    // Decode integers and verify
+    std::ifstream inputVerify(inputFile);
+    assert(inputVerify.is_open() && "Failed to open input file for verification");
+
+    // std::cout << "Original -> Decoded:" << std::endl;
+    while (inputVerify >> number) {
+        int decoded = golomb.decode(bs);
+        std::cout << number << " -> " << decoded << std::endl;
+
+        assert(number == decoded && "Mismatch between original and decoded values");
+    }
+
+    inputVerify.close();
+    bs.fs.close();
 }
 
+int main() {
+    try {
+        std::cout << "Test 1: m = 2, interleaving = true" << std::endl;
+        golombTest("input.txt", "output2t.bin", 2, true);
 
-int main(){
-    cout << "Running tests...\n";
-    // test_zigzag_encoder();
-    // test_zigzag_decoder();
-    test_unary_codec();
-    cout << "All tests passed!\n";
+        std::cout << "Test 2: m = 2, interleaving = false" << std::endl;
+        golombTest("input.txt", "output2f.bin", 2, false);
+
+        std::cout << "Test 3: m = 5, interleaving = true" << std::endl;
+        golombTest("input.txt", "output5t.bin", 5, true);
+
+        std::cout << "Test 4: m = 5, interleaving = false" << std::endl;
+        golombTest("input.txt", "output5f.bin", 5, false);
+
+        std::cout << "Test 5: m = 10, interleaving = true" << std::endl;
+        golombTest("input.txt", "output10t.bin", 10, true);
+
+        std::cout << "Test 6: m = 10, interleaving = false" << std::endl;
+        golombTest("input.txt", "output10f.bin", 10, false);
+
+        std::cout << "Test 7: m = 16, interleaving = true" << std::endl;
+        golombTest("input.txt", "output16t.bin", 16, true);
+
+        std::cout << "Test 8: m = 16, interleaving = false" << std::endl;
+        golombTest("input.txt", "output16f.bin", 16, false);
+
+        std::cout << "All tests passed!" << std::endl;
+    } catch (const std::exception &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
     return 0;
 }
-
