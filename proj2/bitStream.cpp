@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstdint>
 #include <string>
+#include <bitset>
 
 using namespace std;
 
@@ -13,9 +14,10 @@ private:
     char bitChar;
     char bitRead;
     char buffer = 0x00;
-    char bufSize = 0x00;
+    int bufSize = 0;
     char rBuffer = 0x00;
-    char rBufSize = 0x00;
+    int rBufSize = 0;
+    int currentByte = 0;
 
 public:
     fstream fs;
@@ -39,7 +41,7 @@ public:
         {
             fs.put(buffer);
             buffer = 0x00;
-            bufSize = 0x00;
+            bufSize = 0;
         }
     }
 
@@ -49,7 +51,7 @@ public:
         {
             fs.put(buffer);
             buffer = 0x00;
-            bufSize = 0x00;
+            bufSize = 0;
         }
     }
 
@@ -58,13 +60,22 @@ public:
         if (rBufSize == 0)
         {
             fs.clear();  // Limpa qualquer flag de erro
-            fs.seekg(0); // Reposiciona o ponteiro de leitura no início do arquivo
+            fs.seekg(currentByte);
             fs.get(rBuffer);
+            // cout << "rBuffer: " << bitset<8>(rBuffer) << endl;
             rBufSize = 8;
+            // cout << "currentByte: " << currentByte << endl;
         }
 
+        
         int bit = (rBuffer >> (rBufSize - 1)) & 1;
+        // cout << "position: " << currentByte * 8 + 1<< " bit: " << bit << " rBufSize: " << rBufSize << endl;
         rBufSize--;
+        if (rBufSize == 0)
+        {
+            // cout << "BUFFER VAZIO" << endl;
+            currentByte++;
+        }
         return bit;
     }
 
@@ -134,32 +145,22 @@ bitStream::~bitStream()
 // {
 //     bitStream bs;
 //     bs.openFile("test");
+//     int n = 7;
+//     int quotient = 0;
 
-//     bs.writeBit(0);
-//     bs.writeBit(0);
-//     bs.writeBit(1);
-//     bs.writeBit(1);
-//     bs.writeBit(0);
-//     bs.writeBit(0);
-//     bs.writeBit(0);
-//     bs.writeBit(1);
+//     bs.writeBits(0b1111111000000000, 16);
 //     bs.flushBuffer();
-//     int bit = bs.readBit();
-//     cout << "Read bit: " << bit << endl;
+//     int tempBit = 1;
 
-//     bs.writeBits(0b0011000100110010, 16);
-//     bs.flushBuffer();
-//     uint64_t readValue = bs.readBits(8);
-//     uint64_t expectedValue = 0b00110001;
-//     cout << "Expected bits: " << expectedValue << ", Read bits: " << readValue << endl;
-//     readValue = bs.readBits(8);
-//     expectedValue = 0b00110010;
-//     cout << "Expected bits: " << expectedValue << ", Read bits: " << readValue << endl;
+//     while (bs.readBit() == 1)
+//     {
+//         quotient++;
+//     }
 
-//     // string testString = "Hello, World!";
-//     // bs.writeString(testString, 0);
-//     // string readString = bs.readString(0, testString.size());
-//     // cout << "Expected string: " << testString << ", Read string: " << readString << endl;
+//     cout << "Quotient: " << quotient << endl;
+
+//     uint64_t readValue = bs.readBits(n);
+//     cout << bitset<16>(readValue).to_string().substr(16 - n) << endl;
 
 //     return 0;
 // }

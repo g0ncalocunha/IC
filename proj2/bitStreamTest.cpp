@@ -73,6 +73,40 @@ void testWriteReadBits()
     }
 }
 
+void mixedWriteTest()
+{
+    bitStream bs;
+    bs.fs.open("test", ios::out | ios::binary | ios::trunc);
+    if (!bs.fs.is_open()) {
+        throw runtime_error("Failed to open file for writing.");
+    }
+
+    bs.writeBit(1);
+    bs.writeBit(1);
+    bs.writeBit(1);
+    bs.writeBit(1);
+    bs.writeBit(0);
+    bs.writeBits(0b010, 3);
+    bs.fs.close(); 
+
+    {
+        bitStream bs;
+        bs.fs.open("test", ios::in | ios::binary);
+        if (!bs.fs.is_open()) {
+            throw runtime_error("Failed to open file for reading.");
+        }
+
+        uint64_t readValue = bs.readBits(8);
+        uint64_t expectedValue = 0b11110010;
+        cout << "Expected bits: " << expectedValue << ", Read bits: " << readValue << endl;
+        assert(readValue == expectedValue);
+        cout << "mixedWriteTest passed\n";
+
+        bs.fs.close();
+    }
+
+}
+
 void intensiveTestWriteReadBits()
 {
     struct TestCase {
@@ -200,6 +234,7 @@ int main()
     intensiveTestWriteReadBits();
     testReadWriteStrings();
     testBulkReadWriteStrings();
+    mixedWriteTest();
     cout << "All tests passed!\n";
     return 0;
 }
