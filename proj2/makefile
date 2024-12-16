@@ -10,5 +10,9 @@ golomb: golomb.cpp
 golombTest: golombTest.cpp
 		g++ -o golombTest.out golombTest.cpp
 
+audioCoding: audioCoding.cpp
+		g++ -o audioCoding.out audioCoding.cpp -lsfml-audio -lsfml-system
+
+
 clean:
 	rm -f *.out
