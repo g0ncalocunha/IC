@@ -142,4 +142,8 @@ public:
 
         return decodedValue;
     }
+
+    void setM(int newM) {
+        m = newM;
+    }
 };
