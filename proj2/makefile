@@ -13,6 +13,7 @@ golombTest: golombTest.cpp
 audioCoding: audioCoding.cpp
 		g++ -o audioCoding.out audioCoding.cpp -lsfml-audio -lsfml-system
 
-
+imageCoder: imageCoder.cpp
+	g++ -o imageCoder.out imageCoder.cpp golomb.cpp predictors.cpp bitStream.cpp `pkg-config --cflags --libs opencv4`
 clean:
 	rm -f *.out
