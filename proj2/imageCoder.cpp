@@ -169,6 +169,9 @@ int main() {
     Mat reconstructedRGB;
     cvtColor(reconstructedYUV, reconstructedRGB, COLOR_YUV2BGR);
 
+    // Save the reconstructed image
+    imwrite("reconstructed_image.ppm", reconstructedRGB);
+
     // Display results
     Mat comparison;
     hconcat(image, reconstructedRGB, comparison);
