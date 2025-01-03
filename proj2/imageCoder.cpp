@@ -13,14 +13,13 @@ class ImageCoder {
 private:
     Predictors predictors;
     
-    // Helper function to map residuals to non-negative integers
+    // Modified mapping functions to preserve exact values
     int mapToNonNegative(int n) {
-        return (n >= 0) ? 2 * n : -2 * n - 1;
+        return (n >= 0) ? 2 * n : (-2 * n - 1);
     }
     
-    // Helper function to map back from non-negative to original integers
     int mapToSigned(int n) {
-        return (n % 2 == 0) ? n / 2 : -(n + 1) / 2;
+        return (n % 2 == 0) ? (n / 2) : (-(n + 1) / 2);
     }
 
 public:
@@ -31,25 +30,31 @@ public:
         int rows = image.rows;
         int cols = image.cols;
 
-        // Pre-allocate vectors to avoid reallocation
-        for (int c = 0; c < image.channels(); ++c) {
-            residuals[c].reserve(rows * cols);
-        }
+        // Store image dimensions in the beginning of first channel
+        residuals[0].push_back(rows);
+        residuals[0].push_back(cols);
 
         for (int c = 0; c < image.channels(); ++c) {
+            residuals[c].reserve(rows * cols + 2);  // +2 for dimensions
+            
+            // For channels other than first, also store dimensions
+            if (c > 0) {
+                residuals[c].push_back(rows);
+                residuals[c].push_back(cols);
+            }
+
             for (int i = 0; i < rows; ++i) {
                 for (int j = 0; j < cols; ++j) {
-                    int actual = image.at<Vec3b>(i, j)[c];
+                    uchar actual = image.at<Vec3b>(i, j)[c];
                     
-                    // Handle border cases
                     int left = (j > 0) ? image.at<Vec3b>(i, j-1)[c] : 0;
                     int above = (i > 0) ? image.at<Vec3b>(i-1, j)[c] : 0;
                     int diag = (i > 0 && j > 0) ? image.at<Vec3b>(i-1, j-1)[c] : 0;
 
                     int predicted = predictors.predictors(standard, left, above, diag);
-                    int residual = actual - predicted;
+                    int residual = static_cast<int>(actual) - predicted;
                     
-                    // Map residual to non-negative integer for Golomb coding
+                    // Ensure residual is exactly recoverable
                     residuals[c].push_back(mapToNonNegative(residual));
                 }
             }
@@ -61,15 +66,21 @@ public:
         bitStream bs;
         bs.openFile(filename, ios::out | ios::binary);
 
+        // Write header information
         int numChannels = residuals.size();
         bs.writeBits(numChannels, 8);  // Number of channels
 
         for (const auto& channelResiduals : residuals) {
+            // Write dimensions for each channel
+            bs.writeBits(channelResiduals[0], 16);  // rows
+            bs.writeBits(channelResiduals[1], 16);  // cols
+            
+            // Calculate mean excluding the header information
             double mean = 0.0;
-            for (int res : channelResiduals) {
-                mean += res;
+            for (size_t i = 2; i < channelResiduals.size(); ++i) {
+                mean += channelResiduals[i];
             }
-            mean /= channelResiduals.size();
+            mean /= (channelResiduals.size() - 2);
             
             // Calculate optimal m value
             m = max(1, (int)round(-1/log2(mean/(mean+1))));
@@ -77,17 +88,17 @@ public:
             
             bs.writeBits(m, 16);
             
-            // Write residuals
+            // Write residuals (skip first two values which are dimensions)
             golomb golombCoder(m);
-            for (int res : channelResiduals) {
-                golombCoder.encode(res, bs);
+            for (size_t i = 2; i < channelResiduals.size(); ++i) {
+                golombCoder.encode(channelResiduals[i], bs);
             }
         }
         
         bs.flushBuffer();
     }
 
-    vector<vector<int>> decodeWithGolomb(const string& filename, int rows, int cols) {
+    vector<vector<int>> decodeWithGolomb(const string& filename) {
         bitStream bs;
         bs.openFile(filename, ios::in | ios::binary);
 
@@ -95,17 +106,22 @@ public:
         vector<vector<int>> residuals(numChannels);
 
         for (int c = 0; c < numChannels; ++c) {
+            // Read dimensions
+            int rows = bs.readBits(16);
+            int cols = bs.readBits(16);
+            
             // Read m parameter
             m = bs.readBits(16);
             golomb golombCoder(m);
             
             vector<int> channelResiduals;
-            channelResiduals.reserve(rows * cols);
+            channelResiduals.push_back(rows);  // Store dimensions in residuals
+            channelResiduals.push_back(cols);
+            channelResiduals.reserve(rows * cols + 2);
             
             // Decode residuals
             for (int i = 0; i < rows * cols; ++i) {
                 int encoded = golombCoder.decode(bs);
-                // Map back to signed integer
                 channelResiduals.push_back(mapToSigned(encoded));
             }
             residuals[c] = move(channelResiduals);
@@ -114,13 +130,16 @@ public:
         return residuals;
     }
 
-    Mat reconstructImage(const vector<vector<int>>& residuals, Size imageSize, int type, Predictors::Standards standard) {
-        Mat reconstructed = Mat::zeros(imageSize, type);
-        int rows = reconstructed.rows;
-        int cols = reconstructed.cols;
+    Mat reconstructImage(const vector<vector<int>>& residuals, Predictors::Standards standard) {
+        // Get dimensions from the residuals
+        int rows = residuals[0][0];
+        int cols = residuals[0][1];
+        int channels = residuals.size();
+        
+        Mat reconstructed = Mat::zeros(rows, cols, CV_8UC3);
 
-        for (int c = 0; c < residuals.size(); ++c) {
-            int idx = 0;
+        for (int c = 0; c < channels; ++c) {
+            int idx = 2;  // Start after dimensions
             for (int i = 0; i < rows; ++i) {
                 for (int j = 0; j < cols; ++j) {
                     int left = (j > 0) ? reconstructed.at<Vec3b>(i, j-1)[c] : 0;
@@ -130,8 +149,9 @@ public:
                     int predicted = predictors.predictors(standard, left, above, diag);
                     int pixel = predicted + residuals[c][idx++];
                     
-                    // Ensure pixel values stay within valid range
-                    reconstructed.at<Vec3b>(i, j)[c] = saturate_cast<uchar>(pixel);
+                    // Use modulo arithmetic to handle overflow/underflow
+                    pixel = ((pixel % 256) + 256) % 256;
+                    reconstructed.at<Vec3b>(i, j)[c] = static_cast<uchar>(pixel);
                 }
             }
         }
@@ -143,38 +163,52 @@ int main() {
     string inputFile = "images/image.ppm";
     string encodedFile = "encoded_residuals.bin";
     
-    // Read input image
     Mat image = imread(inputFile, IMREAD_COLOR);
     if (image.empty()) {
         cerr << "Error: Could not load the image." << endl;
         return -1;
     }
 
-    // Convert to YUV color space
-    Mat imageYUV;
-    cvtColor(image, imageYUV, COLOR_BGR2YUV);
-
     ImageCoder coder;
     Predictors::Standards selectedPredictor = Predictors::JPEG_PL;
 
     // Encode
-    vector<vector<int>> residuals = coder.calculateResiduals(imageYUV, selectedPredictor);
+    vector<vector<int>> residuals = coder.calculateResiduals(image, selectedPredictor);
     coder.encodeWithGolomb(residuals, encodedFile);
 
     // Decode
-    vector<vector<int>> decodedResiduals = coder.decodeWithGolomb(encodedFile, imageYUV.rows, imageYUV.cols);
-    Mat reconstructedYUV = coder.reconstructImage(decodedResiduals, imageYUV.size(), imageYUV.type(), selectedPredictor);
+    vector<vector<int>> decodedResiduals = coder.decodeWithGolomb(encodedFile);
+    Mat reconstructed = coder.reconstructImage(decodedResiduals, selectedPredictor);
 
-    // Convert back to RGB
-    Mat reconstructedRGB;
-    cvtColor(reconstructedYUV, reconstructedRGB, COLOR_YUV2BGR);
+    // Save reconstructed image
+    imwrite("reconstructed_image.ppm", reconstructed);
+    
+    // Verify lossless compression
+    Mat diff;
+    absdiff(image, reconstructed, diff);
+    
+    // Check each channel separately
+    vector<Mat> diffChannels;
+    split(diff, diffChannels);
+    
+    int totalDiff = 0;
+    for (int i = 0; i < 3; i++) {
+        int channelDiff = countNonZero(diffChannels[i]);
+        totalDiff += channelDiff;
+        if (channelDiff > 0) {
+            cout << "Channel " << i << " has " << channelDiff << " different pixels" << endl;
+        }
+    }
+    
+    if (totalDiff == 0) {
+        cout << "Compression is lossless!" << endl;
+    } else {
+        cout << "Warning: Compression is lossy. Total different pixels: " << totalDiff << endl;
+    }
 
-    // Save the reconstructed image
-    imwrite("reconstructed_image.ppm", reconstructedRGB);
-
-    // Display results
+    // Display comparison
     Mat comparison;
-    hconcat(image, reconstructedRGB, comparison);
+    hconcat(image, reconstructed, comparison);
     imshow("Original (Left) vs Reconstructed (Right)", comparison);
     waitKey(0);
 
