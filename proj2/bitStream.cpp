@@ -17,6 +17,10 @@ void bitStream::openFile(const std::string &filename, std::ios::openmode mode) {
     }
 }
 
+bool bitStream::isEndOfFile() {
+    return fs.eof();
+}
+
 void bitStream::writeBit(int bit) {
     buffer = buffer | (bit << (7 - (bufSize % 8)));
     bufSize++;

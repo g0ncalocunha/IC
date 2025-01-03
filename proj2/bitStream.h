@@ -21,6 +21,7 @@ public:
     ~bitStream();
 
     void openFile(const std::string &filename, std::ios::openmode mode);
+    bool isEndOfFile();
     void writeBit(int bit);
     void flushBuffer();
     int readBit();
