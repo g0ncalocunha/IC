@@ -19,5 +19,11 @@ imageCoder: imageCoder.cpp
 imageTester: ImageTester.cpp
 	g++ -o imageTester.out ImageTester.cpp CompressionVerifier.cpp `pkg-config --cflags --libs opencv4`
 
+videoCoder: videoCoder.cpp
+	g++ -o videoCoder.out videoCoder.cpp imageCoder.cpp predictors.cpp golomb.cpp bitStream.cpp `pkg-config --cflags --libs opencv4`
+
+videoTester: VideoTester.cpp
+	g++ -o VideoTester.out VideoTester.cpp CompressionVerifier.cpp bitStream.cpp predictors.cpp golomb.cpp imageCoder.cpp `pkg-config --cflags --libs opencv4`
+
 clean:
 	rm -f *.out
