@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
-#include "bitStream.cpp"
+#include "bitStream.h"
+
 
 class golomb
 {
