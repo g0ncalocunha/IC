@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <thread>
 #include "imageCoder.h"
 #include "bitStream.h"
 
@@ -59,7 +60,6 @@ private:
                 }
             }
         }
-        
         return bestMotion;
     }
 
@@ -86,15 +86,15 @@ private:
     
     vector<vector<int>> matToVector(const Mat& frame) {
         vector<vector<int>> result(frame.channels());
-        for(int c = 0; c < frame.channels(); c++) {
+        for (int c = 0; c < frame.channels(); c++) {
             result[c].reserve(frame.rows * frame.cols + 2);
             result[c].push_back(frame.rows);
             result[c].push_back(frame.cols);
-            
-            for(int i = 0; i < frame.rows; i++) {
-                for(int j = 0; j < frame.cols; j++) {
+
+            for (int i = 0; i < frame.rows; i++) {
+                for (int j = 0; j < frame.cols; j++) {
                     int val = frame.at<Vec3b>(i, j)[c];
-                    result[c].push_back((val * 64) / 255);
+                    result[c].push_back(val);
                 }
             }
         }
@@ -108,69 +108,42 @@ private:
 
         int rows = vec[0][0];
         int cols = vec[0][1];
-        
-        if (rows <= 0 || cols <= 0) {
-            throw runtime_error("Invalid dimensions in vector");
-        }
 
-        Mat result;
-        if (vec.size() == 1) {
-            result = Mat::zeros(rows, cols, CV_8UC1);
-        } else if (vec.size() == 3) {
-            result = Mat::zeros(rows, cols, CV_8UC3);
-        } else {
-            throw runtime_error("Unsupported number of channels");
-        }
+        Mat result(rows, cols, CV_8UC3);
 
         for (size_t c = 0; c < vec.size(); c++) {
-            if (vec[c].size() != static_cast<size_t>(rows * cols + 2)) {
-                throw runtime_error("Inconsistent vector size");
-            }
-
             int idx = 2;
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
-                    if (vec.size() == 1) {
-                        result.at<uchar>(i, j) = saturate_cast<uchar>(vec[c][idx++] * 255 / 64);
-                    } else {
-                        result.at<Vec3b>(i, j)[c] = saturate_cast<uchar>(vec[c][idx++] * 255 / 64);
-                    }
+                    result.at<Vec3b>(i, j)[c] = saturate_cast<uchar>(vec[c][idx++]);
                 }
             }
         }
         return result;
     }
 
-    void writeFrame(ofstream& outFile, const vector<vector<int>>& frameData, const string& tempFile) {
-        imageCoder.encodeWithGolomb(frameData, tempFile);
-        
-        ifstream temp(tempFile, ios::binary | ios::ate);
-        size_t fileSize = temp.tellg();
-        temp.seekg(0);
-
-        outFile.write(reinterpret_cast<const char*>(&fileSize), sizeof(size_t));
-        
-        outFile << temp.rdbuf();
-        temp.close();
+    void writeFrame(ofstream& outFile, const vector<vector<int>>& frameData) {
+        for (const auto& channel : frameData) {
+            size_t size = channel.size();
+            outFile.write(reinterpret_cast<const char*>(&size), sizeof(size_t));
+            outFile.write(reinterpret_cast<const char*>(channel.data()), size * sizeof(int));
+        }
     }
 
-    vector<vector<int>> readFrame(ifstream& inFile, const string& tempFile) {
-        size_t fileSize;
-        inFile.read(reinterpret_cast<char*>(&fileSize), sizeof(size_t));
-        
-        vector<char> buffer(fileSize);
-        inFile.read(buffer.data(), fileSize);
-        
-        ofstream temp(tempFile, ios::binary);
-        temp.write(buffer.data(), fileSize);
-        temp.close();
-        
-        return imageCoder.decodeWithGolomb(tempFile);
+    vector<vector<int>> readFrame(ifstream& inFile) {
+        vector<vector<int>> frameData(3);
+        for (auto& channel : frameData) {
+            size_t size;
+            inFile.read(reinterpret_cast<char*>(&size), sizeof(size_t));
+            channel.resize(size);
+            inFile.read(reinterpret_cast<char*>(channel.data()), size * sizeof(int));
+        }
+        return frameData;
     }
 
 public:
-     void encodeVideo(const string& inputPath, const string& outputPath, 
-                    int iFrameInterval, int blockSize, int searchRange) {
+    void encodeVideo(const string& inputPath, const string& outputPath, 
+                 int iFrameInterval, int blockSize, int searchRange) {
         VideoCapture cap(inputPath);
         if (!cap.isOpened()) {
             throw runtime_error("Cannot open input video: " + inputPath);
@@ -186,132 +159,122 @@ public:
             static_cast<int>(cap.get(CAP_PROP_FRAME_COUNT))
         };
 
-        ofstream outFile(outputPath, ios::binary);
-        outFile.write(reinterpret_cast<const char*>(&header), sizeof(header));
+        bitStream bs;
+        bs.openFile(outputPath, std::ios::out | std::ios::binary);
 
-        Mat frame, yuv_frame, prevFrame;
+        bs.writeBits(header.width, 16);
+        bs.writeBits(header.height, 16);
+        bs.writeBits(static_cast<int>(header.fps), 16);
+        bs.writeBits(header.totalFrames, 32);
+
+        Mat frame, prevFrame;
         int frameCount = 0;
-        string tempFile = "temp_frame.bin";
 
         while (cap.read(frame)) {
             if (frame.empty()) break;
 
-            // Convert to YUV color space
-            cvtColor(frame, yuv_frame, COLOR_BGR2YUV);
-
             bool isIFrame = (frameCount % iFrameInterval == 0);
-            outFile.write(reinterpret_cast<const char*>(&isIFrame), sizeof(bool));
+            bs.writeBit(isIFrame);
 
             if (isIFrame) {
-                cout << "Encoding I-frame " << frameCount << "/" << header.totalFrames << endl;
-                vector<vector<int>> frameVector = matToVector(yuv_frame);
-                writeFrame(outFile, frameVector, tempFile);
-                yuv_frame.copyTo(prevFrame);
-            } else {
-                cout << "Encoding P-frame " << frameCount << endl;
-                for(int y = 0; y < yuv_frame.rows; y += blockSize) {
-                    for(int x = 0; x < yuv_frame.cols; x += blockSize) {
-                        Rect blockRect(x, y, 
-                                     min(blockSize, yuv_frame.cols - x),
-                                     min(blockSize, yuv_frame.rows - y));
-                        
-                        Mat currentBlock = yuv_frame(blockRect);
-                        Point2i mv = estimateMotion(yuv_frame, prevFrame, x, y, blockSize, searchRange);
-                        
-                        Rect predRect(x + mv.x, y + mv.y, blockRect.width, blockRect.height);
-                        
-                        // Check if prediction block is within bounds
-                        predRect.x = max(0, min(predRect.x, prevFrame.cols - predRect.width));
-                        predRect.y = max(0, min(predRect.y, prevFrame.rows - predRect.height));
-                        
-                        Mat predictedBlock = prevFrame(predRect);
-                        vector<vector<int>> residualVector = getResidualVector(currentBlock, predictedBlock);
-                        
-                        outFile.write(reinterpret_cast<const char*>(&mv), sizeof(Point2i));
-                        writeFrame(outFile, residualVector, tempFile);
+                // Write I-frame
+                for (int i = 0; i < frame.rows; i++) {
+                    for (int j = 0; j < frame.cols; j++) {
+                        Vec3b pixel = frame.at<Vec3b>(i, j);
+                        bs.writeBits(pixel[0], 8);
+                        bs.writeBits(pixel[1], 8);
+                        bs.writeBits(pixel[2], 8);
                     }
                 }
+                frame.copyTo(prevFrame);
+            } else {
+                // Write P-frame
+                for (int i = 0; i < frame.rows; i++) {
+                    for (int j = 0; j < frame.cols; j++) {
+                        Vec3b currPixel = frame.at<Vec3b>(i, j);
+                        Vec3b prevPixel = prevFrame.at<Vec3b>(i, j);
+
+                        for (int c = 0; c < 3; c++) {
+                            int diff = currPixel[c] - prevPixel[c];
+                            if (abs(diff) < 16) {
+                                bs.writeBit(0);
+                                bs.writeBits(abs(diff), 4);
+                                bs.writeBit(diff < 0);
+                            } else {
+                                bs.writeBit(1);
+                                bs.writeBits(currPixel[c], 8);
+                            }
+                        }
+                    }
+                }
+                frame.copyTo(prevFrame);
             }
-            
-            yuv_frame.copyTo(prevFrame);
+
             frameCount++;
         }
 
         cap.release();
-        outFile.close();
     }
 
+
     void decodeVideo(const string& inputPath, const string& outputPath) {
-        ifstream inFile(inputPath, ios::binary);
-        if (!inFile) {
-            throw runtime_error("Cannot open input file: " + inputPath);
-        }
+        bitStream bs;
+        bs.openFile(inputPath, std::ios::in | std::ios::binary);
 
-        VideoHeader header;
-        inFile.read(reinterpret_cast<char*>(&header), sizeof(header));
+        int width = bs.readBits(16);
+        int height = bs.readBits(16);
+        int fps = bs.readBits(16);
+        int totalFrames = bs.readBits(32);
 
-        VideoWriter writer(outputPath, VideoWriter::fourcc('a','v','c','1'), 
-                         header.fps, Size(header.width, header.height));
+        VideoWriter writer(outputPath, VideoWriter::fourcc('a', 'v', 'c', '1'),
+                        fps, Size(width, height));
 
-        Mat frame, prevFrame;
-        string tempFile = "temp_decode.bin";
+        Mat frame(height, width, CV_8UC3);
+        Mat prevFrame;
         int frameCount = 0;
 
-        while (inFile.peek() != EOF && frameCount < header.totalFrames) {
-            bool isIFrame;
-            inFile.read(reinterpret_cast<char*>(&isIFrame), sizeof(bool));
+        while (frameCount < totalFrames) {
+            bool isIFrame = bs.readBit();
 
             if (isIFrame) {
-                cout << "Decoding I-frame " << frameCount << "/" << header.totalFrames << endl;
-                
-                vector<vector<int>> frameVector = readFrame(inFile, tempFile);
-                Mat yuv_frame = vectorToMat(frameVector);
-                
-                if (!yuv_frame.empty()) {
-                    cvtColor(yuv_frame, frame, COLOR_YUV2BGR);
-                    writer.write(frame);
-                    yuv_frame.copyTo(prevFrame);
-                } else {
-                    throw runtime_error("Failed to decode I-frame");
-                }
-            } else {
-                cout << "Decoding P-frame " << frameCount << endl;
-                Mat currentFrame = Mat::zeros(header.height, header.width, CV_8UC3);
-                
-                for(int y = 0; y < header.height; y += header.blockSize) {
-                    for(int x = 0; x < header.width; x += header.blockSize) {
-                        Point2i mv;
-                        inFile.read(reinterpret_cast<char*>(&mv), sizeof(Point2i));
-                        
-                        Rect currentRect(x, y,
-                                       min(header.blockSize, header.width - x),
-                                       min(header.blockSize, header.height - y));
-                        
-                        Rect predRect(x + mv.x, y + mv.y, currentRect.width, currentRect.height);
-                        predRect.x = max(0, min(predRect.x, prevFrame.cols - predRect.width));
-                        predRect.y = max(0, min(predRect.y, prevFrame.rows - predRect.height));
-                        
-                        vector<vector<int>> residualVector = readFrame(inFile, tempFile);
-                        Mat residual = vectorToMat(residualVector);
-                        
-                        Mat predictedBlock = prevFrame(predRect);
-                        Mat reconstructedBlock;
-                        add(predictedBlock, residual, reconstructedBlock);
-                        reconstructedBlock.copyTo(currentFrame(currentRect));
+                // Decode I-frame
+                for (int i = 0; i < height; i++) {
+                    for (int j = 0; j < width; j++) {
+                        Vec3b& pixel = frame.at<Vec3b>(i, j);
+                        pixel[0] = bs.readBits(8);
+                        pixel[1] = bs.readBits(8);
+                        pixel[2] = bs.readBits(8);
                     }
                 }
-                
-                cvtColor(currentFrame, frame, COLOR_YUV2BGR);
-                writer.write(frame);
-                currentFrame.copyTo(prevFrame);
+                frame.copyTo(prevFrame);
+            } else {
+                // Decode P-frame
+                for (int i = 0; i < height; i++) {
+                    for (int j = 0; j < width; j++) {
+                        Vec3b& pixel = frame.at<Vec3b>(i, j);
+                        Vec3b prevPixel = prevFrame.at<Vec3b>(i, j);
+
+                        for (int c = 0; c < 3; c++) {
+                            if (bs.readBit() == 0) {
+                                int diff = bs.readBits(4);
+                                if (bs.readBit()) diff = -diff;
+                                pixel[c] = prevPixel[c] + diff;
+                            } else {
+                                pixel[c] = bs.readBits(8);
+                            }
+                        }
+                    }
+                }
+                frame.copyTo(prevFrame);
             }
-            
+
+            writer.write(frame);
             frameCount++;
         }
 
         writer.release();
-        inFile.close();
     }
+
 };
 
 int main() {
@@ -319,28 +282,81 @@ int main() {
         string inputPath = "videos/akiyo_cif.y4m";
         string encodedPath = "encoded.bin";
         string outputPath = "output.mp4";
-        int iFrameInterval = 10;  // I-frame every 10 frames
-        int blockSize = 16;       // 16x16 blocks
-        int searchRange = 16;     // Search range of ±16 pixels
+        int iFrameInterval = 10;
+        int blockSize = 16;
+        int searchRange = 16;
 
         VideoCoder coder;
-        
+
         cout << "Encoding video..." << endl;
-        cout << "I-frame interval: " << iFrameInterval << endl;
-        cout << "Block size: " << blockSize << endl;
-        cout << "Search range: " << searchRange << endl;
-        
         coder.encodeVideo(inputPath, encodedPath, iFrameInterval, blockSize, searchRange);
-        
+
         cout << "Decoding video..." << endl;
         coder.decodeVideo(encodedPath, outputPath);
-        
-        cout << "Complete! Output saved to: " << outputPath << endl;
-        
-    } catch(const exception& e) {
+
+        cout << "Verifying if compression is lossless..." << endl;
+
+        // Open original and reconstructed videos for comparison
+        VideoCapture originalVideo(inputPath);
+        VideoCapture reconstructedVideo(outputPath);
+
+        if (!originalVideo.isOpened() || !reconstructedVideo.isOpened()) {
+            throw runtime_error("Failed to open video files for verification.");
+        }
+
+        Mat originalFrame, reconstructedFrame;
+        int totalFrames = 0;
+        int mismatchedFrames = 0;
+
+        while (true) {
+            originalVideo >> originalFrame;
+            reconstructedVideo >> reconstructedFrame;
+
+            if (originalFrame.empty() || reconstructedFrame.empty()) {
+                break; // End of video
+            }
+
+            totalFrames++;
+
+            // Check if the frames are identical
+            if (originalFrame.size() != reconstructedFrame.size() ||
+                originalFrame.type() != reconstructedFrame.type()) {
+                cerr << "Frame size or type mismatch at frame " << totalFrames << endl;
+                mismatchedFrames++;
+                continue;
+            }
+
+            Mat diff;
+            absdiff(originalFrame, reconstructedFrame, diff);
+
+            // Convert difference to grayscale
+            Mat grayDiff;
+            cvtColor(diff, grayDiff, COLOR_BGR2GRAY);
+
+            if (countNonZero(grayDiff) > 0) {
+                cout << "Mismatch detected in frame " << totalFrames << endl;
+                mismatchedFrames++;
+            }
+        }
+
+
+        cout << "\n=== Compression Verification ===\n";
+        cout << "Total frames: " << totalFrames << endl;
+        cout << "Mismatched frames: " << mismatchedFrames << endl;
+
+        if (mismatchedFrames == 0) {
+            cout << "Compression is lossless." << endl;
+        } else {
+            cout << "Compression is not lossless. " << mismatchedFrames 
+                 << " frames have mismatches." << endl;
+        }
+
+        cout << "================================\n";
+
+    } catch (const exception& e) {
         cerr << "Error: " << e.what() << endl;
         return 1;
     }
-    
+
     return 0;
 }
