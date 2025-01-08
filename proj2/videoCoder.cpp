@@ -3,11 +3,33 @@
 #include <vector>
 #include <fstream>
 #include <thread>
+#include <chrono>
 #include "imageCoder.h"
 #include "bitStream.h"
 
 using namespace std;
 using namespace cv;
+using namespace std::chrono;
+
+struct EncodingMetrics {
+    double psnr;
+    double mse;
+    double compressionRatio;
+    double encodingTime;
+    
+    void calculatePSNR(const Mat& original, const Mat& reconstructed) {
+        Mat diff;
+        absdiff(original, reconstructed, diff);
+        diff.convertTo(diff, CV_32F);
+        diff = diff.mul(diff);
+        mse = sum(diff)[0] / (diff.total() * 255.0 * 255.0);
+        psnr = 10.0 * log10(1.0 / mse);
+    }
+
+    void calculateCompressionRatio(size_t originalSize, size_t compressedSize) {
+        compressionRatio = static_cast<double>(originalSize) / compressedSize;
+    }
+};
 
 struct VideoHeader {
     int width;
@@ -17,33 +39,191 @@ struct VideoHeader {
     int searchRange;
     double fps;
     int totalFrames;
+    bool isLossy;
+    int quantizationLevel;
+    int targetBitrate;
 };
 
 class VideoCoder {
 private:
-    ImageCoder imageCoder;  
+    ImageCoder imageCoder;
+    int blockSize;
+    int quantizationLevel;
+    int targetBitrate;
+    bool isLossy;
+    EncodingMetrics metrics;
+
+    size_t totalBits = 0;
+    unsigned char buffer = 0x00;
+    int bufSize = 0;
+    ofstream fs;
+
+    Mat reconstructBlock(const Mat& predicted, const Mat& residual) {
+        Mat reconstructed;
+        add(predicted, residual, reconstructed, noArray(), CV_8UC3);
+        return reconstructed;
+    }
     
-    int mapValue(int value) {
-        value = max(-255, min(255, value));
-        return value + 255;  
+    void dct2D(Mat& block) {
+        Mat floatBlock;
+        block.convertTo(floatBlock, CV_32F);
+        dct(floatBlock, floatBlock);
+        floatBlock.copyTo(block);
     }
 
-     Mat calculateResidual(const Mat& current, const Mat& predicted) {
+    void idct2D(Mat& block) {
+        Mat floatBlock;
+        block.convertTo(floatBlock, CV_32F);
+        idct(floatBlock, floatBlock);
+        floatBlock.copyTo(block);
+    }
+
+    vector<int> zigZagOrder(const Mat& block) {
+        static const int zigZagPattern[64] = {
+            0,  1,  5,  6,  14, 15, 27, 28,
+            2,  4,  7,  13, 16, 26, 29, 42,
+            3,  8,  12, 17, 25, 30, 41, 43,
+            9,  11, 18, 24, 31, 40, 44, 53,
+            10, 19, 23, 32, 39, 45, 52, 54,
+            20, 22, 33, 38, 46, 51, 55, 60,
+            21, 34, 37, 47, 50, 56, 59, 61,
+            35, 36, 48, 49, 57, 58, 62, 63
+        };
+        
+        vector<int> result;
+        result.reserve(64);
+        
+        for (int i = 0; i < 64; i++) {
+            int row = zigZagPattern[i] / 8;
+            int col = zigZagPattern[i] % 8;
+            result.push_back(block.at<float>(row, col));
+        }
+        return result;
+    }
+
+    Mat inverseZigZag(const vector<int>& coeffs) {
+        Mat block = Mat::zeros(8, 8, CV_32F);
+        static const int zigZagPattern[64] = {
+            0,  1,  5,  6,  14, 15, 27, 28,
+            2,  4,  7,  13, 16, 26, 29, 42,
+            3,  8,  12, 17, 25, 30, 41, 43,
+            9,  11, 18, 24, 31, 40, 44, 53,
+            10, 19, 23, 32, 39, 45, 52, 54,
+            20, 22, 33, 38, 46, 51, 55, 60,
+            21, 34, 37, 47, 50, 56, 59, 61,
+            35, 36, 48, 49, 57, 58, 62, 63
+        };
+        
+        for (int i = 0; i < 64; i++) {
+            int row = zigZagPattern[i] / 8;
+            int col = zigZagPattern[i] % 8;
+            block.at<float>(row, col) = coeffs[i];
+        }
+        return block;
+    }
+
+    void quantizeBlock(Mat& block, bool isLuma) {
+        static const Mat lumaMatrix = (Mat_<float>(8, 8) <<
+            16, 11, 10, 16, 24, 40, 51, 61,
+            12, 12, 14, 19, 26, 58, 60, 55,
+            14, 13, 16, 24, 40, 57, 69, 56,
+            14, 17, 22, 29, 51, 87, 80, 62,
+            18, 22, 37, 56, 68, 109, 103, 77,
+            24, 35, 55, 64, 81, 104, 113, 92,
+            49, 64, 78, 87, 103, 121, 120, 101,
+            72, 92, 95, 98, 112, 100, 103, 99);
+            
+        static const Mat chromaMatrix = (Mat_<float>(8, 8) <<
+            17, 18, 24, 47, 99, 99, 99, 99,
+            18, 21, 26, 66, 99, 99, 99, 99,
+            24, 26, 56, 99, 99, 99, 99, 99,
+            47, 66, 99, 99, 99, 99, 99, 99,
+            99, 99, 99, 99, 99, 99, 99, 99,
+            99, 99, 99, 99, 99, 99, 99, 99,
+            99, 99, 99, 99, 99, 99, 99, 99,
+            99, 99, 99, 99, 99, 99, 99, 99);
+            
+        const Mat& qMatrix = isLuma ? lumaMatrix : chromaMatrix;
+        divide(block, qMatrix * quantizationLevel, block);
+        roundMat(block);
+    }
+
+    void dequantizeBlock(Mat& block, bool isLuma) {
+        static const Mat lumaMatrix = (Mat_<float>(8, 8) <<
+            16, 11, 10, 16, 24, 40, 51, 61,
+            12, 12, 14, 19, 26, 58, 60, 55,
+            14, 13, 16, 24, 40, 57, 69, 56,
+            14, 17, 22, 29, 51, 87, 80, 62,
+            18, 22, 37, 56, 68, 109, 103, 77,
+            24, 35, 55, 64, 81, 104, 113, 92,
+            49, 64, 78, 87, 103, 121, 120, 101,
+            72, 92, 95, 98, 112, 100, 103, 99);
+            
+        static const Mat chromaMatrix = (Mat_<float>(8, 8) <<
+            17, 18, 24, 47, 99, 99, 99, 99,
+            18, 21, 26, 66, 99, 99, 99, 99,
+            24, 26, 56, 99, 99, 99, 99, 99,
+            47, 66, 99, 99, 99, 99, 99, 99,
+            99, 99, 99, 99, 99, 99, 99, 99,
+            99, 99, 99, 99, 99, 99, 99, 99,
+            99, 99, 99, 99, 99, 99, 99, 99,
+            99, 99, 99, 99, 99, 99, 99, 99);
+            
+        const Mat& qMatrix = isLuma ? lumaMatrix : chromaMatrix;
+        multiply(block, qMatrix * quantizationLevel, block);
+    }
+
+    int calculateOptimalM(const vector<int>& values) {
+        double mean = 0.0;
+        for (int val : values) {
+            mean += val;
+        }
+        mean /= values.size();
+        return max(1, (int)round(-1.0 / log2(mean / (mean + 1.0))));
+    }
+
+    bool decideMode(const Mat& currentBlock, const Mat& predictedBlock, 
+                    const Point2i& motionVector) {
+        int intraBits = calculateIntraBitrate(currentBlock);
+        Mat residual = calculateResidual(currentBlock, predictedBlock);
+        int interBits = calculateInterBitrate(residual, motionVector);
+        return intraBits < interBits;
+    }
+
+    void adjustQuantizationLevel(double currentBitrate) {
+        if (currentBitrate > targetBitrate) {
+            quantizationLevel = min(51, quantizationLevel + 1);
+        } else if (currentBitrate < targetBitrate * 0.9) {
+            quantizationLevel = max(1, quantizationLevel - 1);
+        }
+    }
+
+    void roundMat(Mat& block) {
+        block.forEach<float>([](float& pixel, const int* position) -> void {
+            pixel = std::round(pixel);
+        });
+    }
+
+    size_t getTotalBits() const { return totalBits; }
+    void writeBit(int bit) {
+        buffer = buffer | (bit << (7 - (bufSize % 8)));
+        bufSize++;
+        totalBits++;
+        if (bufSize == 8) {
+            fs.put(buffer);
+            buffer = 0x00;
+            bufSize = 0;
+        }
+    }
+    
+    Mat calculateResidual(const Mat& current, const Mat& predicted) {
         Mat residual;
         subtract(current, predicted, residual, noArray(), CV_16SC3);
         return residual;
     }
 
-    Mat reconstructBlock(const Mat& predicted, const Mat& residual) {
-        Mat result;
-        add(predicted, residual, result, noArray(), CV_8UC3);
-        // Range válido
-        result.convertTo(result, CV_8UC3, 1.0, 0.0);
-        return result;
-    }
-
     Point2i estimateMotion(const Mat& currentFrame, const Mat& referenceFrame, 
-                          int blockX, int blockY, int blockSize, int searchRange) {
+                        int blockX, int blockY, int blockSize, int searchRange) {
         Point2i bestMotion(0, 0);
         double minSAD = numeric_limits<double>::max();
         
@@ -76,124 +256,108 @@ private:
         return bestMotion;
     }
 
-    vector<vector<int>> getResidualVector(const Mat& currentBlock, const Mat& predictedBlock) {
-        Mat residual;
-        absdiff(currentBlock, predictedBlock, residual);
-        
-        vector<vector<int>> result(residual.channels());
-        for(int c = 0; c < residual.channels(); c++) {
-            result[c].reserve(residual.rows * residual.cols + 2);
-            result[c].push_back(residual.rows);
-            result[c].push_back(residual.cols);
-            
-            for(int i = 0; i < residual.rows; i++) {
-                for(int j = 0; j < residual.cols; j++) {
-                    int val = currentBlock.at<Vec3b>(i, j)[c] - 
-                             predictedBlock.at<Vec3b>(i, j)[c];
-                    result[c].push_back(mapValue(val));
+    void decodeIFrame(bitStream& bs, Mat& frame, const VideoHeader& header) {
+        if (header.isLossy) {
+            // Decode lossy I-frame
+            for (int y = 0; y < frame.rows; y += 8) {
+                for (int x = 0; x < frame.cols; x += 8) {
+                    for (int c = 0; c < 3; c++) {
+                        Mat block(8, 8, CV_32F);
+                        vector<int> zigZag;
+                        for (int i = 0; i < 64; i++) {
+                            zigZag.push_back(bs.readBits(8) - 128);
+                        }
+                        block = inverseZigZag(zigZag);
+                        dequantizeBlock(block, c == 0);
+                        idct2D(block);
+                        block.copyTo(frame(Rect(x, y, 8, 8)));
+                    }
+                }
+            }
+        } else {
+            // Decode lossless I-frame
+            vector<Mat> channels(3);
+            for (int c = 0; c < 3; c++) {
+                channels[c] = Mat(frame.rows, frame.cols, CV_8UC1);
+                for (int i = 0; i < frame.rows; i++) {
+                    for (int j = 0; j < frame.cols; j++) {
+                        channels[c].at<uchar>(i,j) = bs.readBits(8);
+                    }
+                }
+            }
+            merge(channels, frame);
+        }
+    }
+
+    void decodePFrame(bitStream& bs, Mat& frame, const Mat& prevFrame, 
+                     const VideoHeader& header) {
+        for (int y = 0; y < frame.rows; y += header.blockSize) {
+            for (int x = 0; x < frame.cols; x += header.blockSize) {
+                int mvX = bs.readBits(8) - 128;
+                int mvY = bs.readBits(8) - 128;
+                
+                Rect currBlock(x, y, 
+                             min(header.blockSize, frame.cols - x),
+                             min(header.blockSize, frame.rows - y));
+                
+                int predX = max(0, min(frame.cols - currBlock.width, x + mvX));
+                int predY = max(0, min(frame.rows - currBlock.height, y + mvY));
+                
+                Mat predictedBlock = prevFrame(Rect(predX, predY, 
+                                                  currBlock.width, currBlock.height));
+                
+                if (header.isLossy) {
+                    // Decode lossy residual
+                    Mat residual = decodeLossyResidual(bs, currBlock.size());
+                    Mat reconstructed = reconstructBlock(predictedBlock, residual);
+                    reconstructed.copyTo(frame(currBlock));
+                } else {
+                    // Decode lossless residual
+                    Mat residual = decodeLosslessResidual(bs, currBlock.size());
+                    Mat reconstructed = reconstructBlock(predictedBlock, residual);
+                    reconstructed.copyTo(frame(currBlock));
                 }
             }
         }
-        return result;
+    }
+
+    Mat decodeLossyResidual(bitStream& bs, const Size& blockSize) {
+        Mat residual(blockSize, CV_16SC3);
+        vector<Mat> channels(3);
+        for (int c = 0; c < 3; c++) {
+            channels[c] = Mat(blockSize, CV_16SC1);
+            for (int i = 0; i < blockSize.height; i++) {
+                for (int j = 0; j < blockSize.width; j++) {
+                    channels[c].at<short>(i,j) = bs.readBits(8) - 128;
+                }
+            }
+        }
+        merge(channels, residual);
+        return residual;
     }
     
-    vector<vector<int>> matToVector(const Mat& frame) {
-        vector<vector<int>> result(frame.channels());
-        for (int c = 0; c < frame.channels(); c++) {
-            result[c].reserve(frame.rows * frame.cols + 2);
-            result[c].push_back(frame.rows);
-            result[c].push_back(frame.cols);
-
-            for (int i = 0; i < frame.rows; i++) {
-                for (int j = 0; j < frame.cols; j++) {
-                    int val = frame.at<Vec3b>(i, j)[c];
-                    result[c].push_back(val);
-                }
-            }
-        }
-        return result;
-    }
-
-    Mat vectorToMat(const vector<vector<int>>& vec) {
-        if (vec.empty() || vec[0].size() < 2) {
-            throw runtime_error("Invalid vector format");
-        }
-
-        int rows = vec[0][0];
-        int cols = vec[0][1];
-        Mat result(rows, cols, CV_8UC3);
-
-        int idx = 2; 
-        for (int c = 0; c < 3; c++) {  //3 canais (RGB ou YUV)
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    result.at<Vec3b>(i, j)[c] = vec[c][idx++];
-                }
-            }
-        }
-        return result;
-    }
-
-
-    void writeFrame(ofstream& outFile, const vector<vector<int>>& frameData) {
-        for (const auto& channel : frameData) {
-            size_t size = channel.size();
-            outFile.write(reinterpret_cast<const char*>(&size), sizeof(size_t));
-            outFile.write(reinterpret_cast<const char*>(channel.data()), size * sizeof(int));
-        }
-    }
-
-    vector<vector<int>> readFrame(ifstream& inFile) {
-        vector<vector<int>> frameData(3);
-        for (auto& channel : frameData) {
-            size_t size;
-            inFile.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-            channel.resize(size);
-            inFile.read(reinterpret_cast<char*>(channel.data()), size * sizeof(int));
-        }
-        return frameData;
-    }
-
-private:
-    int blockSize;
-
-    void encodeIntraBlock(const Mat& block, bitStream& bs) {
-        auto residuals = imageCoder.calculateResiduals(block, Predictors::JPEG_LS);
-        for (const auto& channel : residuals) {
-            for (size_t i = 2; i < channel.size(); i++) {
-                bs.writeBits(channel[i], 8);
-            }
-        }
-    }
-
-    void encodeInterBlock(const Mat& residual, const Point2i& motionVector, bitStream& bs) {
-        bs.writeBits(motionVector.x + 32768, 16);  
-        bs.writeBits(motionVector.y + 32768, 16);
-        
-        for (int i = 0; i < residual.rows; i++) {
-            for (int j = 0; j < residual.cols; j++) {
-                for (int c = 0; c < residual.channels(); c++) {
-                    bs.writeBits(residual.at<Vec3b>(i, j)[c], 8);
-                }
-            }
-        }
+    Mat decodeLosslessResidual(bitStream& bs, const Size& blockSize) {
+        return decodeLossyResidual(bs, blockSize); // Same process for now
     }
 
     int calculateIntraBitrate(const Mat& block) {
         auto residuals = imageCoder.calculateResiduals(block, Predictors::JPEG_LS);
-        return residuals[0].size() * 8;  // Total de bits = número de pixels * 8 bits/pixel
+        return residuals[0].size() * 8;
     }
 
     int calculateInterBitrate(const Mat& residual, const Point2i& motionVector) {
-        return (residual.total() * residual.channels() * 8) + (2 * 16);  // Residual + motion vector
+        return (residual.total() * residual.channels() * 8) + (2 * 16);
     }
 
-
 public:
-    VideoCoder(int bs = 16) : blockSize(bs), imageCoder() {}
+     VideoCoder(int bs = 16, bool lossy = false, int qLevel = 1, int tBitrate = 0) 
+        : blockSize(bs), isLossy(lossy), quantizationLevel(qLevel), 
+          targetBitrate(tBitrate), imageCoder() {}
 
-    void encodeVideo(const string& inputPath, const string& outputPath, 
-                    int iFrameInterval, int blockSize, int searchRange) {
+    EncodingMetrics encodeVideo(const string& inputPath, const string& outputPath, 
+                               int iFrameInterval, int blockSize, int searchRange) {
+        auto startTime = high_resolution_clock::now();
+        
         VideoCapture cap(inputPath);
         if (!cap.isOpened()) throw runtime_error("Cannot open input video");
 
@@ -204,13 +368,18 @@ public:
             iFrameInterval,
             searchRange,
             cap.get(CAP_PROP_FPS),
-            static_cast<int>(cap.get(CAP_PROP_FRAME_COUNT))
+            static_cast<int>(cap.get(CAP_PROP_FRAME_COUNT)),
+            isLossy,
+            quantizationLevel,
+            targetBitrate
         };
+
+        size_t originalSize = header.width * header.height * 3 * header.totalFrames;
+        size_t compressedSize = 0;
 
         bitStream bs;
         bs.openFile(outputPath, ios::out | ios::binary);
 
-        // Header
         bs.writeBits(header.width, 16);
         bs.writeBits(header.height, 16);
         bs.writeBits(header.blockSize, 8);
@@ -218,28 +387,66 @@ public:
         bs.writeBits(header.searchRange, 8);
         bs.writeBits(static_cast<int>(header.fps), 16);
         bs.writeBits(header.totalFrames, 32);
+        bs.writeBit(header.isLossy);
+        if (header.isLossy) {
+            bs.writeBits(header.quantizationLevel, 8);
+            bs.writeBits(header.targetBitrate, 32);
+        }
 
         Mat frame, prevFrame;
         int frameCount = 0;
+        vector<Mat> originalFrames; // PSNR calculation
 
         while (cap.read(frame)) {
             if (frame.empty()) break;
+            
+            Mat originalFrame = frame.clone();
+            originalFrames.push_back(originalFrame);
 
             bool isIFrame = (frameCount % iFrameInterval == 0);
             bs.writeBit(isIFrame);
 
             if (isIFrame) {
-                vector<Mat> channels;
-                split(frame, channels);
-                for (int c = 0; c < 3; c++) {
-                    for (int i = 0; i < frame.rows; i++) {
-                        for (int j = 0; j < frame.cols; j++) {
-                            bs.writeBits(channels[c].at<uchar>(i,j), 8);
+                if (isLossy) {
+                    // Apply DCT and quantization for I-frames in lossy mode
+                    for (int y = 0; y < frame.rows; y += 8) {
+                        for (int x = 0; x < frame.cols; x += 8) {
+                            Rect blockRect(x, y, min(8, frame.cols - x), 
+                                         min(8, frame.rows - y));
+                            Mat block = frame(blockRect).clone();
+                            
+                            // Process each channel
+                            vector<Mat> channels;
+                            split(block, channels);
+                            
+                            for (int c = 0; c < 3; c++) {
+                                Mat padded;
+                                copyMakeBorder(channels[c], padded, 0, 8 - blockRect.height,
+                                             0, 8 - blockRect.width, BORDER_CONSTANT, 0);
+                                
+                                dct2D(padded);
+                                quantizeBlock(padded, c == 0);
+                                
+                                vector<int> zigZag = zigZagOrder(padded);
+                                for (int coeff : zigZag) {
+                                    bs.writeBits(coeff + 128, 8);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    vector<Mat> channels;
+                    split(frame, channels);
+                    for (int c = 0; c < 3; c++) {
+                        for (int i = 0; i < frame.rows; i++) {
+                            for (int j = 0; j < frame.cols; j++) {
+                                bs.writeBits(channels[c].at<uchar>(i,j), 8);
+                            }
                         }
                     }
                 }
                 frame.copyTo(prevFrame);
-            } else {
+            } else {// P-frames
                 for (int y = 0; y < frame.rows; y += blockSize) {
                     for (int x = 0; x < frame.cols; x += blockSize) {
                         int currBlockWidth = min(blockSize, frame.cols - x);
@@ -247,26 +454,67 @@ public:
                         Rect blockRect(x, y, currBlockWidth, currBlockHeight);
                         
                         Mat currentBlock = frame(blockRect);
-                        Point2i mv = estimateMotion(frame, prevFrame, x, y, blockSize, searchRange);
-                        
-                        int predX = max(0, min(frame.cols - currBlockWidth, x + mv.x));
-                        int predY = max(0, min(frame.rows - currBlockHeight, y + mv.y));
-                        
-                        bs.writeBits(mv.x + 128, 8);
-                        bs.writeBits(mv.y + 128, 8);
-                        
-                        Mat predictedBlock = prevFrame(Rect(predX, predY, currBlockWidth, currBlockHeight));
-                        Mat residual = calculateResidual(currentBlock, predictedBlock);
-                        
-                        vector<Mat> channels;
-                        split(residual, channels);
-                        for (int c = 0; c < 3; c++) {
-                            for (int i = 0; i < currBlockHeight; i++) {
-                                for (int j = 0; j < currBlockWidth; j++) {
-                                    short value = channels[c].at<short>(i,j);
-                                    // Garantir que o valor está no range -128 a 127
-                                    value = static_cast<short>(std::max(-128, std::min(127, static_cast<int>(value))));
-                                    bs.writeBits(value + 128, 8);
+                        Mat predictedBlock;
+                        Point2i mv;
+
+                        if (!isLossy) {
+                            // Lossless mode - standard motion estimation
+                            mv = estimateMotion(frame, prevFrame, x, y, blockSize, searchRange);
+                            
+                            int predX = max(0, min(frame.cols - currBlockWidth, x + mv.x));
+                            int predY = max(0, min(frame.rows - currBlockHeight, y + mv.y));
+                            predictedBlock = prevFrame(Rect(predX, predY, currBlockWidth, currBlockHeight));
+                            
+                            // Write motion vector
+                            bs.writeBits(mv.x + 128, 8);
+                            bs.writeBits(mv.y + 128, 8);
+                            
+                            // Calculate and encode residuals
+                            Mat residual = calculateResidual(currentBlock, predictedBlock);
+                            vector<Mat> channels;
+                            split(residual, channels);
+                            
+                            for (int c = 0; c < 3; c++) {
+                                for (int i = 0; i < currBlockHeight; i++) {
+                                    for (int j = 0; j < currBlockWidth; j++) {
+                                        short value = channels[c].at<short>(i,j);
+                                        value = static_cast<short>(max(-128, min(127, static_cast<int>(value))));
+                                        bs.writeBits(value + 128, 8);
+                                    }
+                                }
+                            }
+                        } else {
+                            // Lossy mode - DCT-based coding
+                            mv = estimateMotion(frame, prevFrame, x, y, blockSize, searchRange);
+                            
+                            // Write motion vector
+                            bs.writeBits(mv.x + 128, 8);
+                            bs.writeBits(mv.y + 128, 8);
+                            
+                            int predX = max(0, min(frame.cols - currBlockWidth, x + mv.x));
+                            int predY = max(0, min(frame.rows - currBlockHeight, y + mv.y));
+                            predictedBlock = prevFrame(Rect(predX, predY, currBlockWidth, currBlockHeight));
+                            
+                            Mat residual = calculateResidual(currentBlock, predictedBlock);
+                            vector<Mat> channels;
+                            split(residual, channels);
+                            
+                            for (int c = 0; c < 3; c++) {
+                                Mat padded;
+                                copyMakeBorder(channels[c], padded, 0, 8 - channels[c].rows % 8,
+                                             0, 8 - channels[c].cols % 8, BORDER_CONSTANT, 0);
+                                
+                                for (int by = 0; by < padded.rows; by += 8) {
+                                    for (int bx = 0; bx < padded.cols; bx += 8) {
+                                        Mat block = padded(Rect(bx, by, 8, 8));
+                                        dct2D(block);
+                                        quantizeBlock(block, c == 0);
+                                        
+                                        vector<int> zigZag = zigZagOrder(block);
+                                        for (int coeff : zigZag) {
+                                            bs.writeBits(coeff + 128, 8);
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -275,86 +523,72 @@ public:
                 frame.copyTo(prevFrame);
             }
             frameCount++;
+            
+            // Rate control for lossy mode
+            if (isLossy && targetBitrate > 0) {
+                double currentBitrate = getTotalBits() / frameCount;
+                adjustQuantizationLevel(currentBitrate);
+            }
         }
+        
+        auto endTime = high_resolution_clock::now();
+        metrics.encodingTime = duration_cast<milliseconds>(endTime - startTime).count() / 1000.0;
+        
+        if (!originalFrames.empty()) {
+            metrics.calculatePSNR(originalFrames.back(), prevFrame);
+        }
+        
+        size_t compressed_Size = getTotalBits() / 8;
+        metrics.calculateCompressionRatio(originalSize, compressed_Size);
+        
         cap.release();
+        bs.flushBuffer();
+        
+        return metrics;
     }
 
     void decodeVideo(const string& inputPath, const string& outputPath) {
         bitStream bs;
         bs.openFile(inputPath, ios::in | ios::binary);
 
-        int width = bs.readBits(16);
-        int height = bs.readBits(16);
-        int blockSize = bs.readBits(8);
-        int iFrameInterval = bs.readBits(8);
-        int searchRange = bs.readBits(8);
-        int fps = bs.readBits(16);
-        int totalFrames = bs.readBits(32);
-
-        VideoWriter writer(outputPath, VideoWriter::fourcc('a','v','c','1'), fps, Size(width, height));
+        VideoHeader header;
+        header.width = bs.readBits(16);
+        header.height = bs.readBits(16);
+        header.blockSize = bs.readBits(8);
+        header.iFrameInterval = bs.readBits(8);
+        header.searchRange = bs.readBits(8);
+        header.fps = bs.readBits(16);
+        header.totalFrames = bs.readBits(32);
+        header.isLossy = bs.readBit();
         
-        Mat frame(height, width, CV_8UC3);
-        Mat prevFrame(height, width, CV_8UC3);
-        int frameCount = 0;
+        if (header.isLossy) {
+            header.quantizationLevel = bs.readBits(8);
+            header.targetBitrate = bs.readBits(32);
+        }
 
-        while (frameCount < totalFrames) {
+        VideoWriter writer(outputPath, VideoWriter::fourcc('a','v','c','1'), 
+                         header.fps, Size(header.width, header.height));
+        
+        Mat frame(header.height, header.width, CV_8UC3);
+        Mat prevFrame(header.height, header.width, CV_8UC3);
+
+        for (int frameCount = 0; frameCount < header.totalFrames; frameCount++) {
             bool isIFrame = bs.readBit();
 
             if (isIFrame) {
-                vector<Mat> channels(3);
-                for (int c = 0; c < 3; c++) {
-                    channels[c] = Mat(height, width, CV_8UC1);
-                    for (int i = 0; i < height; i++) {
-                        for (int j = 0; j < width; j++) {
-                            channels[c].at<uchar>(i,j) = bs.readBits(8);
-                        }
-                    }
-                }
-                merge(channels, frame);
-                frame.copyTo(prevFrame);
+                decodeIFrame(bs, frame, header);
             } else {
-                for (int y = 0; y < height; y += blockSize) {
-                    for (int x = 0; x < width; x += blockSize) {
-                        int currBlockWidth = min(blockSize, width - x);
-                        int currBlockHeight = min(blockSize, height - y);
-                        
-                        int mvX = bs.readBits(8) - 128;
-                        int mvY = bs.readBits(8) - 128;
-                        
-                        int predX = max(0, min(width - currBlockWidth, x + mvX));
-                        int predY = max(0, min(height - currBlockHeight, y + mvY));
-                        
-                        Mat predictedBlock = prevFrame(Rect(predX, predY, currBlockWidth, currBlockHeight));
-                        Mat residual(currBlockHeight, currBlockWidth, CV_16SC3);
-                        
-                        vector<Mat> channels(3);
-                        for (int c = 0; c < 3; c++) {
-                            channels[c] = Mat(currBlockHeight, currBlockWidth, CV_16SC1);
-                            for (int i = 0; i < currBlockHeight; i++) {
-                                for (int j = 0; j < currBlockWidth; j++) {
-                                    int value = bs.readBits(8);
-                                    channels[c].at<short>(i,j) = value - 128;
-                                }
-                            }
-                        }
-                        merge(channels, residual);
-                        
-                        Mat reconstructedBlock = reconstructBlock(predictedBlock, residual);
-                        reconstructedBlock.copyTo(frame(Rect(x, y, currBlockWidth, currBlockHeight)));
-                    }
-                }
-                frame.copyTo(prevFrame);
+                decodePFrame(bs, frame, prevFrame, header);
             }
             
             writer.write(frame);
-            frameCount++;
+            frame.copyTo(prevFrame);
         }
         
         writer.release();
     }
 
 };
-
 int main() {
     try {
         string inputPath = "videos/akiyo_cif.y4m";
