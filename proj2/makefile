@@ -16,8 +16,8 @@ audioCoding: audioCoding.cpp
 imageCoder: imageCoder.cpp
 	g++ -o imageCoder.out imageCoder.cpp predictors.cpp golomb.cpp bitStream.cpp `pkg-config --cflags --libs opencv4`
 
-imageTester: ImageTester.cpp
-	g++ -o imageTester.out ImageTester.cpp CompressionVerifier.cpp `pkg-config --cflags --libs opencv4`
+imageTester: tests/ImageTester.cpp
+	g++ -o tests/imageTester.out tests/ImageTester.cpp tests/CompressionVerifier.cpp `pkg-config --cflags --libs opencv4`
 
 videoCoder: videoCoder.cpp
 	g++ -o videoCoder.out videoCoder.cpp imageCoder.cpp predictors.cpp golomb.cpp bitStream.cpp `pkg-config --cflags --libs opencv4`
