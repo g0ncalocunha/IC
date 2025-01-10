@@ -225,6 +225,42 @@ void testBulkReadWriteStrings() {
     cout << "testBulkReadWriteStrings passed!\n";
 }
 
+//performance tests
+void testPerformance(){
+    string testString = "Hello, World!";
+    int position = 0;
+
+    {
+        bitStream bs;
+        bs.fs.open("test.txt",  ios::binary | ios::in | ios::out | ios::trunc);
+        if (!bs.fs.is_open()) {
+            throw runtime_error("Failed to open file for writing.");
+        }
+        clock_t start = clock();
+        for(int i = 0; i < 1000000; i++){
+            bs.writeString(testString);
+        }
+        clock_t end = clock();
+        cout << "Time elapsed for writing 1,000,000 strings: " << end - start << "ms" << endl;
+        bs.fs.close();
+    }
+
+    {
+        bitStream bs;
+        bs.fs.open("test.txt", ios::in | ios::binary);
+        if (!bs.fs.is_open()) {
+            throw runtime_error("Failed to open file for reading.");
+        }
+        clock_t start = clock();
+        for(int i = 0; i < 1000000; i++){
+            bs.readString(testString.length());
+        }
+        clock_t end = clock();
+        cout << "Time elapsed for reading 1,000,000 strings: " << end - start << "ms" << endl;
+        bs.fs.close();
+    }
+}
+
 int main()
 {
     cout << "Running tests...\n";
@@ -235,6 +271,7 @@ int main()
     testReadWriteStrings();
     testBulkReadWriteStrings();
     mixedWriteTest();
+    testPerformance();
     cout << "All tests passed!\n";
     return 0;
 }

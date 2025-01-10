@@ -5,10 +5,10 @@ bitStreamTest: tests/bitStreamTest.cpp
 	g++ -o tests/bitStreamTest.out tests/bitStreamTest.cpp
 
 golomb: golomb.cpp
-		g++ -o golomb.out golomb.cpp
+	g++ -o golomb.out golomb.cpp
 
-golombTest: golombTest.cpp
-		g++ -o golombTest.out golombTest.cpp
+golombTest: tests/golombTest.cpp
+	g++ -o tests/golombTest.out tests/golombTest.cpp golomb.cpp bitStream.cpp
 
 audioCoding: audioCoding.cpp
 	g++ -o audioCoding.out audioCoding.cpp bitStream.cpp -lsfml-audio -lsfml-system -fsanitize=address
