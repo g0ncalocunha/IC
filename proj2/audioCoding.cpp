@@ -21,32 +21,41 @@ private:
     golomb golombEncoder;
     golomb golombDecoder;
     sf::SoundBuffer buffer;
-    bitStream bs;
 
-    void updateM(const vector<int>& residuals, int windowSize = 1000) {
-        if (residuals.empty()) return;
-        
-        int start = max(0, static_cast<int>(residuals.size()) - windowSize);
-        double sum = 0.0;
-        
-        for (int i = start; i < residuals.size(); i++) {
-            sum += abs(residuals[i]);
-        }
-        
-        double mean = sum / (residuals.size() - start);
-        m = max(1, static_cast<int>(ceil(-1.0/log2(mean/(mean+1.0)))));
-        
-        golombEncoder.setM(m);
-        golombDecoder.setM(m);
+    int16_t clampSample(int value) {
+        if (value > 32767) return 32767;
+        if (value < -32768) return -32768;
+        return static_cast<int16_t>(value);
     }
 
-    int16_t quantizeSample(int16_t sample) {
-        if (!lossy || quantizationLevel <= 1) return sample;
-        return (sample / quantizationLevel) * quantizationLevel;
+    void updateM(const vector<int>& residuals) {
+        if (residuals.empty()) return;
+        
+        double sum = 0.0;
+        int count = 0;
+        
+        for (int residual : residuals) {
+            sum += abs(residual);
+            count++;
+        }
+        
+        if (count == 0) return;
+        
+        double mean = sum / count;
+        
+        // Ensure M stays within reasonable bounds for Golomb coding
+        if (mean > 0) {
+            int newM = max(2, min(8, static_cast<int>(round(log2(mean + 1)))));
+            if (abs(newM - m) > 1) {
+                m = newM;
+                golombEncoder.setM(m);
+                golombDecoder.setM(m);
+            }
+        }
     }
 
 public:
-    AudioCodec(int initialM = 10, bool isAdaptive = false, bool isLossy = false, double targetBitrate = 0.0) 
+    AudioCodec(int initialM = 4, bool isAdaptive = false, bool isLossy = false, double targetBitrate = 0.0) 
         : m(initialM), adaptive(isAdaptive), lossy(isLossy), 
           targetBitrate(targetBitrate), quantizationLevel(1),
           golombEncoder(initialM), golombDecoder(initialM) {}
@@ -55,125 +64,102 @@ public:
         if (!buffer.loadFromFile(inputFile)) {
             throw runtime_error("Failed to load: " + inputFile);
         }
-        cerr << "Loaded input file successfully." << endl;
 
         bitStream encodeBs;
         encodeBs.openFile(outputFile, ios::out | ios::binary);
-        cerr << "Opened output file successfully." << endl;
 
         const sf::Int16* samples = buffer.getSamples();
         const uint32_t sampleCount = buffer.getSampleCount();
         const uint8_t channelCount = buffer.getChannelCount();
         const uint32_t sampleRate = buffer.getSampleRate();
 
-        cerr << "Audio parameters: " 
-                << "Channels=" << static_cast<int>(channelCount) << ", "
-                << "SampleCount=" << sampleCount << ", "
-                << "SampleRate=" << sampleRate << endl;
-
-        if (samples == nullptr || sampleCount == 0 || channelCount == 0 || sampleRate == 0) {
-            throw runtime_error("Invalid audio file parameters!");
-        }
-
+        // Write header with 32-bit chunks
         encodeBs.writeBits(channelCount, 8);
-        encodeBs.writeBits(sampleCount, 32);
-        encodeBs.writeBits(sampleRate, 32);
-        encodeBs.writeBits(lossy ? 1 : 0, 1);
-        encodeBs.writeBits(quantizationLevel, 8);
-        encodeBs.flushBuffer();  // Flush after writing header
+        encodeBs.writeBits((sampleCount >> 16) & 0xFFFF, 16);
+        encodeBs.writeBits(sampleCount & 0xFFFF, 16);
+        encodeBs.writeBits((sampleRate >> 16) & 0xFFFF, 16);
+        encodeBs.writeBits(sampleRate & 0xFFFF, 16);
+        encodeBs.writeBits(adaptive ? 1 : 0, 1);
+        encodeBs.writeBits(m, 4);  // M is now bounded to 2-8
+        encodeBs.flushBuffer();
 
-        cerr << "Header written to the output file." << endl;
-
-        vector<vector<int>> residuals(channelCount);
         vector<int16_t> prevSamples(channelCount, 0);
+        vector<int> recentResiduals;
+        const int WINDOW_SIZE = 16;  // Smaller window for stability
 
-        // Process samples
-        for (size_t i = 0; i < sampleCount; i++) {
+        for (uint32_t i = 0; i < sampleCount; i++) {
             uint8_t currentChannel = i % channelCount;
             int16_t currentSample = samples[i];
+            
+            // Calculate residual
             int residual = currentSample - prevSamples[currentChannel];
-
-            if (lossy) {
-                residual = quantizeSample(residual);
-            }
-
-            golombEncoder.encode(residual, encodeBs);
-
+            
             if (adaptive) {
-                residuals[currentChannel].push_back(residual);
-                if (residuals[currentChannel].size() >= 1000) {
-                    updateM(residuals[currentChannel]);
-                    residuals[currentChannel].clear();
+                recentResiduals.push_back(residual);
+                if (recentResiduals.size() >= WINDOW_SIZE) {
+                    int oldM = m;
+                    updateM(recentResiduals);
+                    
+                    if (m != oldM) {
+                        encodeBs.writeBits(1, 1);
+                        encodeBs.writeBits(m, 4);
+                    } else {
+                        encodeBs.writeBits(0, 1);
+                    }
+                    
+                    recentResiduals.clear();
                 }
             }
 
+            golombEncoder.encode(residual, encodeBs);
             prevSamples[currentChannel] = currentSample;
         }
 
         encodeBs.flushBuffer();
-        cerr << "Encoding completed successfully." << endl;
     }
 
     void decode(const string& inputFile, const string& outputFile) {
         bitStream decodeBs;
-        try {
-            decodeBs.openFile(inputFile, ios::in | ios::binary);
-        } catch (const exception& e) {
-            throw runtime_error("Failed to open encoded file: " + inputFile + " - " + e.what());
-        }
+        decodeBs.openFile(inputFile, ios::in | ios::binary);
 
-        uint8_t channelCount;
-        uint32_t totalSamples;
-        uint32_t sampleRate;
-        bool isLossyFile;
-        int fileQuantizationLevel;
-
-        try {
-            channelCount = decodeBs.readBits(8);
-            totalSamples = decodeBs.readBits(32);
-            sampleRate = decodeBs.readBits(32);
-            isLossyFile = decodeBs.readBits(1);
-            fileQuantizationLevel = decodeBs.readBits(8);
-        } catch (const exception& e) {
-            throw runtime_error("Failed to read header: " + string(e.what()));
-        }
-
-        cerr << "Decoding parameters: Channels=" << (int)channelCount 
-                  << ", Total samples=" << totalSamples 
-                  << ", Sample rate=" << sampleRate << endl;
-
-        if (channelCount == 0 || totalSamples == 0 || sampleRate == 0) {
-            throw runtime_error("Invalid header data in encoded file");
-        }
+        // Read header in chunks
+        uint8_t channelCount = decodeBs.readBits(8);
+        uint32_t sampleCount = (decodeBs.readBits(16) << 16) | decodeBs.readBits(16);
+        uint32_t sampleRate = (decodeBs.readBits(16) << 16) | decodeBs.readBits(16);
+        bool isAdaptive = decodeBs.readBits(1);
+        m = decodeBs.readBits(4);
+        golombDecoder.setM(m);
 
         vector<sf::Int16> decodedSamples;
-        decodedSamples.reserve(totalSamples);
+        decodedSamples.reserve(sampleCount);
         vector<int16_t> prevSamples(channelCount, 0);
-        vector<vector<int>> residuals(channelCount);
+        vector<int> recentResiduals;
+        const int WINDOW_SIZE = 16;
 
-        try {
-            for (uint32_t i = 0; i < totalSamples; i++) {
-                uint8_t currentChannel = i % channelCount;
-                int residual = golombDecoder.decode(decodeBs);
-                int16_t reconstructedSample = prevSamples[currentChannel] + residual;
-                
-                decodedSamples.push_back(reconstructedSample);
-                
-                if (adaptive) {
-                    residuals[currentChannel].push_back(residual);
-                    if (residuals[currentChannel].size() >= 1000) {
-                        updateM(residuals[currentChannel]);
-                        residuals[currentChannel].clear();
-                    }
+        for (uint32_t i = 0; i < sampleCount; i++) {
+            uint8_t currentChannel = i % channelCount;
+            
+            if (isAdaptive && i > 0 && i % WINDOW_SIZE == 0) {
+                bool mChanged = decodeBs.readBits(1);
+                if (mChanged) {
+                    m = decodeBs.readBits(4);
+                    golombDecoder.setM(m);
                 }
-
-                prevSamples[currentChannel] = reconstructedSample;
             }
-        } catch (const exception& e) {
-            throw runtime_error("Error during sample decoding: " + string(e.what()));
-        }
 
-        cerr << "Decoded " << decodedSamples.size() << " samples." << endl;
+            int residual = golombDecoder.decode(decodeBs);
+            int16_t reconstructedSample = clampSample(prevSamples[currentChannel] + residual);
+            decodedSamples.push_back(reconstructedSample);
+            
+            prevSamples[currentChannel] = reconstructedSample;
+            
+            if (isAdaptive) {
+                recentResiduals.push_back(residual);
+                if (recentResiduals.size() >= WINDOW_SIZE) {
+                    recentResiduals.clear();
+                }
+            }
+        }
 
         if (!buffer.loadFromSamples(decodedSamples.data(), decodedSamples.size(), 
                                   channelCount, sampleRate)) {
@@ -183,8 +169,6 @@ public:
         if (!buffer.saveToFile(outputFile)) {
             throw runtime_error("Failed to save: " + outputFile);
         }
-
-        cerr << "Decoding completed successfully." << endl;
     }
 };
 
