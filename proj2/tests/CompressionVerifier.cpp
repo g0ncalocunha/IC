@@ -4,7 +4,7 @@
 #include <vector>
 #include <iomanip>
 #include <cmath>
-#include "../bitStream.h"
+#include "../header/bitStream.h"
 
 using namespace std;
 using namespace cv;

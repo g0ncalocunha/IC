@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <SFML/Audio.hpp>
 #include "golomb.cpp"
-#include "bitStream.h"
+#include "header/bitStream.h"
 
 using namespace std;
 

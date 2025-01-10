@@ -4,8 +4,8 @@
 #include <fstream>
 #include <thread>
 #include <chrono>
-#include "imageCoder.h"
-#include "bitStream.h"
+#include "header/imageCoder.h"
+#include "header/bitStream.h"
 
 using namespace std;
 using namespace cv;

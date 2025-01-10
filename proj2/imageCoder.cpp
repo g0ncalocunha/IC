@@ -1,4 +1,4 @@
-#include "imageCoder.h"
+#include "header/imageCoder.h"
 #include <cmath>
 #include <algorithm>
 

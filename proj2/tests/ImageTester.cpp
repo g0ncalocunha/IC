@@ -4,7 +4,7 @@
 #include <vector>
 #include <cmath>
 #include <iomanip>
-#include "../bitStream.h"
+#include "../header/bitStream.h"
 
 #include "CompressionVerifier.cpp"
 
