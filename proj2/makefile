@@ -1,8 +1,8 @@
 bitStream: bitStream.cpp
 	g++ -o bitStream.out bitStream.cpp
 
-bitStreamTest: bitStreamTest.cpp
-	g++ -o bitStreamTest.out bitStreamTest.cpp
+bitStreamTest: tests/bitStreamTest.cpp
+	g++ -o tests/bitStreamTest.out tests/bitStreamTest.cpp
 
 golomb: golomb.cpp
 		g++ -o golomb.out golomb.cpp
