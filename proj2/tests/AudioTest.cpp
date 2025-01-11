@@ -60,7 +60,6 @@ void testCodec(bool lossy, bool adaptive, double targetBitrate = 0.0) {
     string decodedFile = "audios/results/output.wav";
     string resultFile = "audios/results/test_results.txt";
 
-    // Ensure directories exist
     fs::create_directories("audios/results/encoded");
 
     generateSampleAudio(inputFile, 44100, 2, 440);

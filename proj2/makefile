@@ -13,6 +13,9 @@ golombTest: tests/golombTest.cpp
 audioCoding: audioCoding.cpp
 	g++ -o audioCoding.out audioCoding.cpp bitStream.cpp -lsfml-audio -lsfml-system -fsanitize=address
 
+audioTester: tests/AudioTest.cpp
+	g++ -o tests/AudioTest.out tests/AudioTest.cpp audioCoding.cpp bitStream.cpp -lsfml-audio -lsfml-system -fsanitize=address
+
 imageCoder: imageCoder.cpp
 	g++ -o imageCoder.out imageCoder.cpp predictors.cpp golomb.cpp bitStream.cpp `pkg-config --cflags --libs opencv4`
 
@@ -22,8 +25,8 @@ imageTester: tests/ImageTester.cpp
 videoCoder: videoCoder.cpp
 	g++ -o videoCoder.out videoCoder.cpp imageCoder.cpp predictors.cpp golomb.cpp bitStream.cpp `pkg-config --cflags --libs opencv4`
 
-videoTester: VideoTester.cpp
-	g++ -o VideoTester.out VideoTester.cpp CompressionVerifier.cpp bitStream.cpp predictors.cpp golomb.cpp imageCoder.cpp `pkg-config --cflags --libs opencv4`
+videoTester: tests/VideoTester.cpp
+	g++ -o tests/VideoTester.out tests/VideoTester.cpp tests/CompressionVerifier.cpp bitStream.cpp predictors.cpp golomb.cpp imageCoder.cpp `pkg-config --cflags --libs opencv4`
 
 clean:
 	rm -f *.out
