@@ -1,215 +1,288 @@
-#include <iostream>
+#include <string>
 #include <vector>
 #include <cstdint>
 #include <cmath>
+#include <stdexcept>
 #include <fstream>
-#include <string>
+#include <iostream>
 #include <algorithm>
+#include <memory>
 #include <SFML/Audio.hpp>
-#include "golomb.cpp"
 #include "header/bitStream.h"
-
-using namespace std;
+#include "golomb.cpp"
 
 class AudioCodec {
 private:
-    int m;
+    static constexpr int BLOCK_SIZE = 1024;
+    static constexpr int MAX_QUANT_LEVEL = 255;
+    static constexpr int MIN_QUANT_LEVEL = 1;
+    static constexpr double PI = 3.14159265358979323846;
+    
+    int quantizationLevel;
     bool adaptive;
     bool lossy;
     double targetBitrate;
-    int quantizationLevel;
-    golomb golombEncoder;
-    golomb golombDecoder;
     sf::SoundBuffer buffer;
+    std::unique_ptr<golomb> coder;
 
-    int16_t clampSample(int value) {
-        if (value > 32767) return 32767;
-        if (value < -32768) return -32768;
-        return static_cast<int16_t>(value);
+    int calculateOptimalM(const std::vector<int16_t>& deltas) {
+        if (deltas.empty()) return 8;
+        
+        // Calculate mean absolute value
+        double sum = 0;
+        for (const auto& delta : deltas) {
+            sum += std::abs(delta);
+        }
+        double mean = sum / deltas.size();
+        
+        // Choose M based on mean value
+        if (mean < 4) return 4;
+        if (mean < 8) return 8;
+        if (mean < 16) return 16;
+        return 32;
     }
 
-    void updateM(const vector<int>& residuals) {
-        if (residuals.empty()) return;
+    void dct(const std::vector<double>& input, std::vector<double>& output) {
+        const size_t N = input.size();
+        output.resize(N);
         
-        double sum = 0.0;
-        int count = 0;
+        for (size_t k = 0; k < N; k++) {
+            double sum = 0.0;
+            const double scale = (k == 0) ? std::sqrt(1.0/N) : std::sqrt(2.0/N);
+            
+            for (size_t n = 0; n < N; n++) {
+                sum += input[n] * std::cos(PI * k * (2.0 * n + 1) / (2.0 * N));
+            }
+            
+            output[k] = scale * sum;
+        }
+    }
+
+    void idct(const std::vector<double>& input, std::vector<double>& output) {
+        const size_t N = input.size();
+        output.resize(N);
         
-        for (int residual : residuals) {
-            sum += abs(residual);
-            count++;
+        for (size_t n = 0; n < N; n++) {
+            double sum = input[0] / std::sqrt(N);
+            
+            for (size_t k = 1; k < N; k++) {
+                sum += std::sqrt(2.0/N) * input[k] * 
+                       std::cos(PI * k * (2.0 * n + 1) / (2.0 * N));
+            }
+            
+            output[n] = sum;
+        }
+    }
+
+    void encodeLossless(const sf::Int16* samples, size_t blockSize, bitStream& bs) {
+        if (blockSize == 0) return;
+        
+        // Write first sample directly
+        bs.writeBits(static_cast<uint16_t>(samples[0] + 32768), 16);
+        
+        // Calculate deltas
+        std::vector<int16_t> deltas(blockSize - 1);
+        for (size_t i = 1; i < blockSize; i++) {
+            deltas[i - 1] = samples[i] - samples[i - 1];
         }
         
-        if (count == 0) return;
+        // Update Golomb parameter if needed
+        if (adaptive && !deltas.empty()) {
+            int m = calculateOptimalM(deltas);
+            coder->setM(m);
+            bs.writeBits(m, 6);
+        }
         
-        double mean = sum / count;
+        // Encode deltas with Golomb coding
+        for (const auto& delta : deltas) {
+            coder->encode(delta, bs);
+        }
+    }
+
+    void decodeLossless(bitStream& bs, size_t blockSize, std::vector<sf::Int16>& decodedSamples, size_t offset) {
+        if (blockSize == 0) return;
         
-        // Ensure M stays within reasonable bounds for Golomb coding
-        if (mean > 0) {
-            int newM = max(2, min(8, static_cast<int>(round(log2(mean + 1)))));
-            if (abs(newM - m) > 1) {
-                m = newM;
-                golombEncoder.setM(m);
-                golombDecoder.setM(m);
-            }
+        // Read first sample directly
+        decodedSamples[offset] = static_cast<int16_t>(bs.readBits(16) - 32768);
+        
+        // Read adaptive parameter if needed
+        if (adaptive && blockSize > 1) {
+            int m = bs.readBits(6);
+            coder->setM(m);
+        }
+        
+        // Decode remaining samples using deltas
+        for (size_t i = 1; i < blockSize; i++) {
+            int16_t delta = coder->decode(bs);
+            decodedSamples[offset + i] = decodedSamples[offset + i - 1] + delta;
         }
     }
 
 public:
-    AudioCodec(int initialM = 4, bool isAdaptive = false, bool isLossy = false, double targetBitrate = 0.0) 
-        : m(initialM), adaptive(isAdaptive), lossy(isLossy), 
-          targetBitrate(targetBitrate), quantizationLevel(1),
-          golombEncoder(initialM), golombDecoder(initialM) {}
+    AudioCodec(int quantLevel = 64, bool isAdaptive = false, 
+               bool isLossy = false, double bitrate = 0.0)
+        : quantizationLevel(quantLevel)
+        , adaptive(isAdaptive)
+        , lossy(isLossy)
+        , targetBitrate(bitrate)
+        , coder(std::make_unique<golomb>(8, true)) {}
 
-    void encode(const string& inputFile, const string& outputFile) {
+    AudioCodec(const AudioCodec& other)
+        : quantizationLevel(other.quantizationLevel)
+        , adaptive(other.adaptive)
+        , lossy(other.lossy)
+        , targetBitrate(other.targetBitrate)
+        , buffer(other.buffer)
+        , coder(std::make_unique<golomb>(*other.coder)) {}
+
+    AudioCodec(AudioCodec&& other) noexcept = default;
+
+    void encode(const std::string& inputFile, const std::string& outputFile) {
         if (!buffer.loadFromFile(inputFile)) {
-            throw runtime_error("Failed to load: " + inputFile);
+            throw std::runtime_error("Failed to load input file");
         }
-
-        bitStream encodeBs;
-        encodeBs.openFile(outputFile, ios::out | ios::binary);
 
         const sf::Int16* samples = buffer.getSamples();
         const uint32_t sampleCount = buffer.getSampleCount();
         const uint8_t channelCount = buffer.getChannelCount();
         const uint32_t sampleRate = buffer.getSampleRate();
 
-        // Write header with 32-bit chunks
-        encodeBs.writeBits(channelCount, 8);
-        encodeBs.writeBits((sampleCount >> 16) & 0xFFFF, 16);
-        encodeBs.writeBits(sampleCount & 0xFFFF, 16);
-        encodeBs.writeBits((sampleRate >> 16) & 0xFFFF, 16);
-        encodeBs.writeBits(sampleRate & 0xFFFF, 16);
-        encodeBs.writeBits(adaptive ? 1 : 0, 1);
-        encodeBs.writeBits(m, 4);  // M is now bounded to 2-8
-        encodeBs.flushBuffer();
+        bitStream bs;
+        bs.openFile(outputFile, std::ios::binary | std::ios::out);
 
-        vector<int16_t> prevSamples(channelCount, 0);
-        vector<int> recentResiduals;
-        const int WINDOW_SIZE = 16;  // Smaller window for stability
+        // Write header
+        bs.writeBits(channelCount, 8);
+        bs.writeBits(sampleCount & 0xFFFF, 16);
+        bs.writeBits(sampleCount >> 16, 16);
+        bs.writeBits(sampleRate & 0xFFFF, 16);
+        bs.writeBits(sampleRate >> 16, 16);
+        bs.writeBits(quantizationLevel, 8);
+        bs.writeBit(adaptive);
+        bs.writeBit(lossy);
 
-        for (uint32_t i = 0; i < sampleCount; i++) {
-            uint8_t currentChannel = i % channelCount;
-            int16_t currentSample = samples[i];
-            
-            // Calculate residual
-            int residual = currentSample - prevSamples[currentChannel];
-            
-            if (adaptive) {
-                recentResiduals.push_back(residual);
-                if (recentResiduals.size() >= WINDOW_SIZE) {
-                    int oldM = m;
-                    updateM(recentResiduals);
-                    
-                    if (m != oldM) {
-                        encodeBs.writeBits(1, 1);
-                        encodeBs.writeBits(m, 4);
-                    } else {
-                        encodeBs.writeBits(0, 1);
-                    }
-                    
-                    recentResiduals.clear();
+        // Process blocks
+        for (uint32_t i = 0; i < sampleCount; i += BLOCK_SIZE) {
+            const size_t blockSize = std::min(
+                static_cast<size_t>(BLOCK_SIZE),
+                static_cast<size_t>(sampleCount - i));
+
+            bs.writeBits(blockSize, 16);
+
+            if (lossy) {
+                // Convert to doubles [-1,1]
+                std::vector<double> blockData(blockSize);
+                for (size_t j = 0; j < blockSize; j++) {
+                    blockData[j] = samples[i + j] / 32767.0;
                 }
-            }
 
-            golombEncoder.encode(residual, encodeBs);
-            prevSamples[currentChannel] = currentSample;
+                std::vector<double> dctCoeffs;
+                dct(blockData, dctCoeffs);
+
+                // Quantize and encode DCT coefficients
+                for (size_t j = 0; j < blockSize; j++) {
+                    const double step = (1.0 / quantizationLevel) * (1.0 + j * j / (blockSize * blockSize));
+                    const int16_t quantized = static_cast<int16_t>(std::round(dctCoeffs[j] / step));
+                    coder->encode(quantized, bs);
+                }
+            } else {
+                encodeLossless(samples + i, blockSize, bs);
+            }
         }
 
-        encodeBs.flushBuffer();
+        bs.flushBuffer();
     }
 
-    void decode(const string& inputFile, const string& outputFile) {
-        bitStream decodeBs;
-        decodeBs.openFile(inputFile, ios::in | ios::binary);
+    void decode(const std::string& inputFile, const std::string& outputFile) {
+        bitStream bs;
+        bs.openFile(inputFile, std::ios::binary | std::ios::in);
 
-        // Read header in chunks
-        uint8_t channelCount = decodeBs.readBits(8);
-        uint32_t sampleCount = (decodeBs.readBits(16) << 16) | decodeBs.readBits(16);
-        uint32_t sampleRate = (decodeBs.readBits(16) << 16) | decodeBs.readBits(16);
-        bool isAdaptive = decodeBs.readBits(1);
-        m = decodeBs.readBits(4);
-        golombDecoder.setM(m);
+        // Read header
+        const uint8_t channelCount = bs.readBits(8);
+        const uint32_t sampleCount = bs.readBits(16) | (bs.readBits(16) << 16);
+        const uint32_t sampleRate = bs.readBits(16) | (bs.readBits(16) << 16);
+        quantizationLevel = bs.readBits(8);
+        adaptive = bs.readBit();
+        lossy = bs.readBit();
 
-        vector<sf::Int16> decodedSamples;
-        decodedSamples.reserve(sampleCount);
-        vector<int16_t> prevSamples(channelCount, 0);
-        vector<int> recentResiduals;
-        const int WINDOW_SIZE = 16;
+        std::vector<sf::Int16> decodedSamples(sampleCount);
+        size_t currentSample = 0;
 
-        for (uint32_t i = 0; i < sampleCount; i++) {
-            uint8_t currentChannel = i % channelCount;
-            
-            if (isAdaptive && i > 0 && i % WINDOW_SIZE == 0) {
-                bool mChanged = decodeBs.readBits(1);
-                if (mChanged) {
-                    m = decodeBs.readBits(4);
-                    golombDecoder.setM(m);
+        while (currentSample < sampleCount) {
+            const size_t blockSize = std::min(
+                bs.readBits(16),
+                static_cast<size_t>(sampleCount - currentSample));
+
+            if (lossy) {
+                // Decode and dequantize DCT coefficients
+                std::vector<double> dctCoeffs(blockSize);
+                for (size_t j = 0; j < blockSize; j++) {
+                    const double step = (1.0 / quantizationLevel) * (1.0 + j * j / (blockSize * blockSize));
+                    const int16_t quantized = coder->decode(bs);
+                    dctCoeffs[j] = quantized * step;
                 }
+
+                // Apply IDCT
+                std::vector<double> output;
+                idct(dctCoeffs, output);
+
+                // Convert back to samples
+                for (size_t j = 0; j < blockSize; j++) {
+                    decodedSamples[currentSample + j] = static_cast<sf::Int16>(
+                        std::clamp(std::round(output[j] * 32767.0), -32768.0, 32767.0));
+                }
+            } else {
+                decodeLossless(bs, blockSize, decodedSamples, currentSample);
             }
 
-            int residual = golombDecoder.decode(decodeBs);
-            int16_t reconstructedSample = clampSample(prevSamples[currentChannel] + residual);
-            decodedSamples.push_back(reconstructedSample);
-            
-            prevSamples[currentChannel] = reconstructedSample;
-            
-            if (isAdaptive) {
-                recentResiduals.push_back(residual);
-                if (recentResiduals.size() >= WINDOW_SIZE) {
-                    recentResiduals.clear();
-                }
-            }
+            currentSample += blockSize;
         }
 
-        if (!buffer.loadFromSamples(decodedSamples.data(), decodedSamples.size(), 
+        if (!buffer.loadFromSamples(decodedSamples.data(), sampleCount, 
                                   channelCount, sampleRate)) {
-            throw runtime_error("Failed to create output buffer");
+            throw std::runtime_error("Failed to create output buffer");
         }
-        
+
         if (!buffer.saveToFile(outputFile)) {
-            throw runtime_error("Failed to save: " + outputFile);
+            throw std::runtime_error("Failed to save output file");
         }
     }
 };
+// int main(int argc, char const *argv[]) {
+//     if (argc < 4) {
+//         cout << "Usage: " << argv[0] << " <input.wav> <output.encoded> <output.decoded> [--lossy <target_bitrate>] [--adaptive]\n";
+//         return 1;
+//     }
 
-int main(int argc, char const *argv[]) {
-    if (argc < 4) {
-        cout << "Usage: " << argv[0] << " <input.wav> <output.encoded> <output.decoded> "
-                  << "[--lossy <target_bitrate>] [--adaptive]" << endl;
-        return 1;
-    }
+//     string inputFile = argv[1];
+//     string encodedFile = argv[2];
+//     string decodedFile = argv[3];
+//     bool isLossy = false;
+//     double targetBitrate = 0;
+//     bool isAdaptive = false;
 
-    string inputFile = argv[1];
-    string encodedFile = argv[2];
-    string decodedFile = argv[3];
-    bool isLossy = false;
-    double targetBitrate = 0;
-    bool isAdaptive = false;
+//     for (int i = 4; i < argc; i++) {
+//         if (string(argv[i]) == "--lossy" && i + 1 < argc) {
+//             isLossy = true;
+//             targetBitrate = stod(argv[++i]);
+//         } else if (string(argv[i]) == "--adaptive") {
+//             isAdaptive = true;
+//         }
+//     }
 
-    for (int i = 4; i < argc; i++) {
-        string arg = argv[i];
-        if (arg == "--lossy" && i + 1 < argc) {
-            isLossy = true;
-            targetBitrate = stod(argv[++i]);
-        } else if (arg == "--adaptive") {
-            isAdaptive = true;
-        }
-    }
+//     AudioCodec codec(4, isAdaptive, isLossy, targetBitrate);
 
-    AudioCodec codec(10, isAdaptive, isLossy, targetBitrate);
-    
-    try {
-        cout << "Encoding..." << endl;
-        codec.encode(inputFile, encodedFile);
-        
-        cout << "Decoding..." << endl;
-        codec.decode(encodedFile, decodedFile);
-        
-        cout << "Done!" << endl;
-    } catch (const exception& e) {
-        cerr << "Error: " << e.what() << endl;
-        return 1;
-    }
+//     try {
+//         cout << "Encoding..." << endl;
+//         codec.encode(inputFile, encodedFile);
 
-    return 0;
-}
+//         cout << "Decoding..." << endl;
+//         codec.decode(encodedFile, decodedFile);
+
+//         cout << "Done!" << endl;
+//     } catch (const exception& e) {
+//         cerr << "Error: " << e.what() << endl;
+//         return 1;
+//     }
+
+//     return 0;
+// }
