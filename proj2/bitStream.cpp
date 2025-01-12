@@ -1,4 +1,4 @@
-#include "bitStream.h"
+#include "header/bitStream.h"
 #include <stdexcept>
 #include <bitset>
 

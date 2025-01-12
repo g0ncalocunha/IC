@@ -4,9 +4,7 @@
 #include <vector>
 #include <iomanip>
 #include <cmath>
-
-
-#include "bitStream.h"
+#include "../header/bitStream.h"
 
 using namespace std;
 using namespace cv;
@@ -82,6 +80,6 @@ public:
         
         cout << "Compression ratio: " << results.compressionRatio << ":1\n";
         cout << "Space saving: " << ((1 - 1/results.compressionRatio) * 100) << "%\n";
-        cout << "=====================================\n";
+        cout << "========================================\n";
     }
 };

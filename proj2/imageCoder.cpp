@@ -1,9 +1,6 @@
-#include "imageCoder.h"
+#include "header/imageCoder.h"
 #include <cmath>
 #include <algorithm>
-#include <chrono>
-#include <filesystem> // For file size
-#include <numeric>    // For residual mean calculation
 
 int ImageCoder::mapToNonNegative(int n) {
     return (n >= 0) ? 2 * n : (-2 * n - 1);
@@ -130,8 +127,6 @@ Mat ImageCoder::reconstructImage(const vector<vector<int>>& residuals, Predictor
 }
 
 // int main() {
-//     using namespace std::chrono;
-    
 //     string inputFile = "images/image.ppm";
 //     string encodedFile = "encoded_residuals.bin";
     
@@ -145,58 +140,44 @@ Mat ImageCoder::reconstructImage(const vector<vector<int>>& residuals, Predictor
 //     Predictors::Standards selectedPredictor = Predictors::JPEG_PL;
 
 //     // Encode
-//     auto start = high_resolution_clock::now();
 //     vector<vector<int>> residuals = coder.calculateResiduals(image, selectedPredictor);
 //     coder.encodeWithGolomb(residuals, encodedFile);
-//     auto encodeEnd = high_resolution_clock::now();
 
 //     // Decode
-//     auto decodeStart = high_resolution_clock::now();
 //     vector<vector<int>> decodedResiduals = coder.decodeWithGolomb(encodedFile);
 //     Mat reconstructed = coder.reconstructImage(decodedResiduals, selectedPredictor);
-//     auto end = high_resolution_clock::now();
 
 //     // Save reconstructed image
 //     imwrite("reconstructed_image.ppm", reconstructed);
-
-//     // Convert images to grayscale for comparison
-//     Mat grayImage, grayReconstructed;
-//     cvtColor(image, grayImage, COLOR_BGR2GRAY);
-//     cvtColor(reconstructed, grayReconstructed, COLOR_BGR2GRAY);
-
+    
 //     // Verify lossless compression
 //     Mat diff;
-//     absdiff(grayImage, grayReconstructed, diff);
-//     int totalDiff = countNonZero(diff);
-
+//     absdiff(image, reconstructed, diff);
+    
+//     // Check each channel separately
+//     vector<Mat> diffChannels;
+//     split(diff, diffChannels);
+    
+//     int totalDiff = 0;
+//     for (int i = 0; i < 3; i++) {
+//         int channelDiff = countNonZero(diffChannels[i]);
+//         totalDiff += channelDiff;
+//         if (channelDiff > 0) {
+//             cout << "Channel " << i << " has " << channelDiff << " different pixels" << endl;
+//         }
+//     }
+    
 //     if (totalDiff == 0) {
 //         cout << "Compression is lossless!" << endl;
 //     } else {
 //         cout << "Warning: Compression is lossy. Total different pixels: " << totalDiff << endl;
 //     }
 
-//     // Performance metrics
-//     auto encodeDuration = duration_cast<milliseconds>(encodeEnd - start).count();
-//     auto decodeDuration = duration_cast<milliseconds>(end - decodeStart).count();
-//     auto totalDuration = duration_cast<milliseconds>(end - start).count();
-
-//     cout << "Encoding Time: " << encodeDuration << " ms" << endl;
-//     cout << "Decoding Time: " << decodeDuration << " ms" << endl;
-//     cout << "Total Time: " << totalDuration << " ms" << endl;
-
-//     // Compression ratio
-//     auto inputSize = filesystem::file_size(inputFile);
-//     auto encodedSize = filesystem::file_size(encodedFile);
-//     double compressionRatio = static_cast<double>(inputSize) / encodedSize;
-
-//     cout << "Compression Ratio: " << compressionRatio << endl;
-
-//     // Residual analysis
-//     for (size_t c = 0; c < residuals.size(); ++c) {
-//         auto &channel = residuals[c];
-//         double meanResidual = accumulate(channel.begin() + 2, channel.end(), 0.0) / (channel.size() - 2);
-//         cout << "Channel " << c << " Mean Residual: " << meanResidual << endl;
-//     }
+//     // Display comparison
+//     Mat comparison;
+//     hconcat(image, reconstructed, comparison);
+//     imshow("Original (Left) vs Reconstructed (Right)", comparison);
+//     waitKey(0);
 
 //     return 0;
 // }

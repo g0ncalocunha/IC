@@ -1,4 +1,4 @@
-#include "bitStream.cpp"
+#include "../bitStream.cpp"
 #include <cassert>
 #include <iostream>
 #include <cstdint>
@@ -11,7 +11,7 @@ void testOpenFile()
     bitStream bs;
     try
     {
-        bs.openFile("test");
+        bs.openFile("test.txt",  ios::binary | ios::in | ios::out | ios::trunc);
         cout << "testOpenFile passed\n";
     }
     catch (const exception &e)
@@ -23,7 +23,7 @@ void testOpenFile()
 void testWriteReadBit()
 {
     bitStream bs;
-    bs.openFile("test");
+    bs.openFile("test.txt", ios::binary | ios::in | ios::out | ios::trunc);
     bs.writeBit(1);
     bs.writeBit(1);
     bs.writeBit(1);
@@ -42,7 +42,7 @@ void testWriteReadBits()
 {
     {
         bitStream bs;
-        bs.fs.open("test", ios::out | ios::binary | ios::trunc);
+        bs.fs.open("test.txt",  ios::binary | ios::in | ios::out | ios::trunc);
         if (!bs.fs.is_open()) {
             throw runtime_error("Failed to open file for writing.");
         }
@@ -56,7 +56,7 @@ void testWriteReadBits()
 
     {
         bitStream bs;
-        bs.fs.open("test", ios::in | ios::binary);
+        bs.fs.open("test.txt", ios::in | ios::binary);
         if (!bs.fs.is_open()) {
             throw runtime_error("Failed to open file for reading.");
         }
@@ -76,7 +76,7 @@ void testWriteReadBits()
 void mixedWriteTest()
 {
     bitStream bs;
-    bs.fs.open("test", ios::out | ios::binary | ios::trunc);
+    bs.fs.open("test.txt",  ios::binary | ios::in | ios::out | ios::trunc);
     if (!bs.fs.is_open()) {
         throw runtime_error("Failed to open file for writing.");
     }
@@ -91,7 +91,7 @@ void mixedWriteTest()
 
     {
         bitStream bs;
-        bs.fs.open("test", ios::in | ios::binary);
+        bs.fs.open("test.txt", ios::in | ios::binary);
         if (!bs.fs.is_open()) {
             throw runtime_error("Failed to open file for reading.");
         }
@@ -124,7 +124,7 @@ void intensiveTestWriteReadBits()
     for (const auto& testCase : testCases) {
         {
             bitStream bs;
-            bs.fs.open("test", ios::out | ios::binary | ios::trunc);
+            bs.fs.open("test.txt",  ios::binary | ios::in | ios::out | ios::trunc);
             if (!bs.fs.is_open()) {
                 throw runtime_error("Failed to open file for writing.");
             }
@@ -135,7 +135,7 @@ void intensiveTestWriteReadBits()
 
         {
             bitStream bs;
-            bs.fs.open("test", ios::in | ios::binary);
+            bs.fs.open("test.txt", ios::in | ios::binary);
             if (!bs.fs.is_open()) {
                 throw runtime_error("Failed to open file for reading.");
             }
@@ -157,7 +157,7 @@ void testReadWriteStrings(){
 
     {
         bitStream bs;
-        bs.fs.open("test", ios::out | ios::binary | ios::trunc);
+        bs.fs.open("test.txt",  ios::binary | ios::in | ios::out | ios::trunc);
         if (!bs.fs.is_open()) {
             throw runtime_error("Failed to open file for writing.");
         }
@@ -169,7 +169,7 @@ void testReadWriteStrings(){
     string readStringResult;
     {
         bitStream bs;
-        bs.fs.open("test", ios::in | ios::binary);
+        bs.fs.open("test.txt", ios::in | ios::binary);
         if (!bs.fs.is_open()) {
             throw runtime_error("Failed to open file for reading.");
         }
@@ -192,7 +192,7 @@ void testBulkReadWriteStrings() {
 
     {
         bitStream bs;
-        bs.fs.open("test", ios::out | ios::binary | ios::trunc);
+        bs.fs.open("test.txt",  ios::binary | ios::in | ios::out | ios::trunc);
         if (!bs.fs.is_open()) {
             throw runtime_error("Failed to open file for writing.");
         }
@@ -206,7 +206,7 @@ void testBulkReadWriteStrings() {
     vector<string> readStrings;
     {
         bitStream bs;
-        bs.fs.open("test", ios::in | ios::binary);
+        bs.fs.open("test.txt", ios::in | ios::binary);
         if (!bs.fs.is_open()) {
             throw runtime_error("Failed to open file for reading.");
         }
@@ -225,6 +225,42 @@ void testBulkReadWriteStrings() {
     cout << "testBulkReadWriteStrings passed!\n";
 }
 
+//performance tests
+void testPerformance(){
+    string testString = "Hello, World!";
+    int position = 0;
+
+    {
+        bitStream bs;
+        bs.fs.open("test.txt",  ios::binary | ios::in | ios::out | ios::trunc);
+        if (!bs.fs.is_open()) {
+            throw runtime_error("Failed to open file for writing.");
+        }
+        clock_t start = clock();
+        for(int i = 0; i < 1000000; i++){
+            bs.writeString(testString);
+        }
+        clock_t end = clock();
+        cout << "Time elapsed for writing 1,000,000 strings: " << end - start << "ms" << endl;
+        bs.fs.close();
+    }
+
+    {
+        bitStream bs;
+        bs.fs.open("test.txt", ios::in | ios::binary);
+        if (!bs.fs.is_open()) {
+            throw runtime_error("Failed to open file for reading.");
+        }
+        clock_t start = clock();
+        for(int i = 0; i < 1000000; i++){
+            bs.readString(testString.length());
+        }
+        clock_t end = clock();
+        cout << "Time elapsed for reading 1,000,000 strings: " << end - start << "ms" << endl;
+        bs.fs.close();
+    }
+}
+
 int main()
 {
     cout << "Running tests...\n";
@@ -235,6 +271,7 @@ int main()
     testReadWriteStrings();
     testBulkReadWriteStrings();
     mixedWriteTest();
+    testPerformance();
     cout << "All tests passed!\n";
     return 0;
 }
