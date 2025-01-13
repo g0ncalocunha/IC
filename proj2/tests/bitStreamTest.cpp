@@ -1,4 +1,4 @@
-#include "../bitStream.cpp"
+#include "../util/bitStream.cpp"
 #include <cassert>
 #include <iostream>
 #include <cstdint>

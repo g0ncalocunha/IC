@@ -4,8 +4,8 @@
 #include <fstream>
 #include <thread>
 #include <chrono>
-#include "header/imageCoder.h"
-#include "header/bitStream.h"
+#include "../image/imageCoder.h"
+#include "../util/bitStream.h"
 
 using namespace std;
 using namespace cv;
@@ -597,9 +597,9 @@ public:
 };
 // int main() {
 //     try {
-//         string inputPath = "videos/bus_cif.y4m";
-//         string encodedPath = "encoded_bus.bin";
-//         string outputPath = "decoded_bus.mp4";
+//         string inputPath = "../proj2/input/videos/bus_cif.y4m";
+//         string encodedPath = "../proj2/output/encoded_bus.bin";
+//         string outputPath = "../proj2/output/decoded_bus.mp4";
 //         int iFrameInterval = 10;
 //         int blockSize = 16;
 //         int searchRange = 16;
@@ -620,7 +620,7 @@ public:
 //         auto decodeEndTime = chrono::high_resolution_clock::now();
 //         double decodeTime = chrono::duration_cast<chrono::milliseconds>(decodeEndTime - decodeStartTime).count() / 1000.0;
 
-//         cout << "Decoding completed." << endl;
+//         cout << "Decoding completed." << endl;       
 //         cout << "Decoding Time: " << decodeTime << " seconds" << endl;
 //     } catch (const exception& e) {
 //         cerr << "Error: " << e.what() << endl;

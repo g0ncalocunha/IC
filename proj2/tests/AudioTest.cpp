@@ -5,8 +5,8 @@
 #include <vector>
 #include <iomanip>
 #include <filesystem>
-#include "../audioCoding.cpp"
-#include "../header/bitStream.h"
+#include "../audio/audioCoding.cpp"
+#include "../util/bitStream.h"
 #include <SFML/Audio.hpp>
 
 using namespace std;

@@ -4,9 +4,9 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <string>
-#include "predictors.cpp"
-#include "golomb.cpp"
-#include "bitStream.h"
+#include "../util/predictors.cpp"
+#include "../util/golomb.cpp"
+#include "../util/bitStream.h"
 
 using namespace std;
 using namespace cv;

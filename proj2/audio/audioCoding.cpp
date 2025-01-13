@@ -8,8 +8,8 @@
 #include <algorithm>
 #include <memory>
 #include <SFML/Audio.hpp>
-#include "header/bitStream.h"
-#include "golomb.cpp"
+#include "../util/bitStream.h"
+#include "../util/golomb.cpp"
 
 class AudioCodec {
 private:

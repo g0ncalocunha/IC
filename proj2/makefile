@@ -1,47 +1,46 @@
-bitStream: bitStream.cpp
-	g++ -o bitStream.out bitStream.cpp
+bitStream: util/bitStream.cpp
+	g++ -o output/bitStream.out util/bitStream.cpp
+	./output/bitStream.out
 
 bitStreamTest: tests/bitStreamTest.cpp
-	g++ -o tests/bitStreamTest.out tests/bitStreamTest.cpp
+	g++ -o output/bitStreamTest.out tests/bitStreamTest.cpp
+	./output/bitStreamTest.out
 
-golomb: golomb.cpp
-	g++ -o golomb.out golomb.cpp
+golomb: util/golomb.cpp
+	g++ -o output/golomb.out util/golomb.cpp
+	./output/golomb.out
 
 golombTest: tests/golombTest.cpp
-	g++ -o tests/golombTest.out tests/golombTest.cpp golomb.cpp bitStream.cpp
+	g++ -o output/golombTest.out tests/golombTest.cpp util/golomb.cpp util/bitStream.cpp
+	./output/golombTest.out
 
-audioCoding: audioCoding.cpp
-	g++ -o audioCoding.out audioCoding.cpp bitStream.cpp -lsfml-audio -lsfml-system -fsanitize=address
+audioCoding: audio/audioCoding.cpp
+	g++ -o output/audioCoding.out audio/audioCoding.cpp util/bitStream.cpp -lsfml-audio -lsfml-system -fsanitize=address
+	./output/audioCoding.out
 
 audioTester: tests/AudioTest.cpp
-	g++ -o tests/AudioTest.out tests/AudioTest.cpp audioCoding.cpp bitStream.cpp -lsfml-audio -lsfml-system -fsanitize=address
+	g++ -o output/AudioTest.out tests/AudioTest.cpp audio/audioCoding.cpp util/bitStream.cpp -lsfml-audio -lsfml-system -fsanitize=address
+	./output/AudioTest.out
 
-imageCoder: imageCoder.cpp
-	g++ -o imageCoder.out imageCoder.cpp predictors.cpp golomb.cpp bitStream.cpp `pkg-config --cflags --libs opencv4`
+imageCoder: image/imageCoder.cpp
+	g++ -o output/imageCoder.out image/imageCoder.cpp util/predictors.cpp util/golomb.cpp util/bitStream.cpp `pkg-config --cflags --libs opencv4`
+	./output/imageCoder.out
 
 imageTester: tests/ImageTester.cpp
-	g++ -o tests/imageTester.out tests/ImageTester.cpp tests/CompressionVerifier.cpp `pkg-config --cflags --libs opencv4`
+	g++ -o output/imageTester.out tests/ImageTester.cpp tests/CompressionVerifier.cpp `pkg-config --cflags --libs opencv4`
+	./output/imageTester.out
 
-videoCoder: videoCoder.cpp
-	g++ -o videoCoder.out videoCoder.cpp imageCoder.cpp predictors.cpp golomb.cpp bitStream.cpp `pkg-config --cflags --libs opencv4`
-
-videoTester: tests/VideoTester.cpp
-	g++ -o tests/VideoTester.out tests/VideoTester.cpp tests/CompressionVerifier.cpp bitStream.cpp predictors.cpp golomb.cpp imageCoder.cpp `pkg-config --cflags --libs opencv4`
-
-audioCoding: audioCoding.cpp
-		g++ -o audioCoding.out audioCoding.cpp -lsfml-audio -lsfml-system
-
-imageCoder: imageCoder.cpp
-	g++ -o imageCoder.out imageCoder.cpp predictors.cpp golomb.cpp bitStream.cpp `pkg-config --cflags --libs opencv4`
-
-imageTester: ImageTester.cpp
-	g++ -o imageTester.out ImageTester.cpp CompressionVerifier.cpp `pkg-config --cflags --libs opencv4`
-
-videoCoder: videoCoder.cpp
-	g++ -o videoCoder.out videoCoder.cpp imageCoder.cpp predictors.cpp golomb.cpp bitStream.cpp `pkg-config --cflags --libs opencv4`
+videoCoder: video/videoCoder.cpp
+	g++ -o output/videoCoder.out video/videoCoder.cpp image/imageCoder.cpp util/predictors.cpp util/golomb.cpp util/bitStream.cpp `pkg-config --cflags --libs opencv4`
+	./output/videoCoder.out
 
 videoTester: VideoTester.cpp
-	g++ -o VideoTester.out VideoTester.cpp CompressionVerifier.cpp bitStream.cpp predictors.cpp golomb.cpp imageCoder.cpp `pkg-config --cflags --libs opencv4`
+	g++ -o output/VideoTester.out video/VideoTester.cpp tests/CompressionVerifier.cpp util/bitStream.cpp util/predictors.cpp util/golomb.cpp image/imageCoder.cpp `pkg-config --cflags --libs opencv4`
+	./output/VideoTester.out
 
+demo:	demo.cpp
+	g++ -o output/demo.out demo.cpp  -lsfml-audio -lsfml-system -fsanitize=address `pkg-config --cflags --libs opencv4`
+	./output/demo.out
 clean:
-	rm -f *.out
+	rm -f output/*.out
+	rm -f output/*.bin

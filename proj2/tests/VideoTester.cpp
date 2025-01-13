@@ -4,7 +4,7 @@
 #include <chrono>
 #include <fstream>
 #include <iomanip>
-#include "../videoCoder.cpp"
+#include "../video/videoCoder.cpp"
 
 using namespace std;
 using namespace std::chrono;
