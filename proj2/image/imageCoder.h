@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 #include "../util/predictors.cpp"
-#include "../util/golomb.cpp"
+#include "../util/golomb.h"
 #include "../util/bitStream.h"
 
 using namespace std;

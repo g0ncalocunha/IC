@@ -9,7 +9,7 @@
 #include <memory>
 #include <SFML/Audio.hpp>
 #include "../util/bitStream.h"
-#include "../util/golomb.cpp"
+#include "../util/golomb.h"
 
 class AudioCodec {
 private:

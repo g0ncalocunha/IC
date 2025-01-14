@@ -589,23 +589,35 @@ public:
     }
 
 };
+
+
 // int main() {
 //     try {
 //         string inputPath = "../proj2/input/videos/bus_cif.y4m";
-//         string encodedPath = "../proj2/output/encoded.bin";
-//         string outputPath = "../proj2/output/output.mp4";
+//         string encodedPath = "../proj2/output/encoded_bus_cif.bin";
+//         string outputPath = "../proj2/output/decoded_bus_cif.mp4";
 //         int iFrameInterval = 10;
 //         int blockSize = 16;
 //         int searchRange = 16;
 
 //         VideoCoder coder;
-
 //         cout << "Encoding video..." << endl;
-//         coder.encodeVideo(inputPath, encodedPath, iFrameInterval, blockSize, searchRange);
+//         EncodingMetrics metrics = coder.encodeVideo(inputPath, encodedPath, iFrameInterval, blockSize, searchRange);
+
+//         cout << "Encoding completed." << endl;
+//         cout << "PSNR: " << metrics.psnr << " dB" << endl;
+//         cout << "MSE: " << metrics.mse << endl;
+//         cout << "Compression Ratio: " << metrics.compressionRatio << endl;
+//         cout << "Encoding Time: " << metrics.encodingTime << " seconds" << endl;
 
 //         cout << "Decoding video..." << endl;
+//         auto decodeStartTime = chrono::high_resolution_clock::now();
 //         coder.decodeVideo(encodedPath, outputPath);
+//         auto decodeEndTime = chrono::high_resolution_clock::now();
+//         double decodeTime = chrono::duration_cast<chrono::milliseconds>(decodeEndTime - decodeStartTime).count() / 1000.0;
 
+//         cout << "Decoding completed." << endl;       
+//         cout << "Decoding Time: " << decodeTime << " seconds" << endl;
 //     } catch (const exception& e) {
 //         cerr << "Error: " << e.what() << endl;
 //         return 1;

@@ -228,8 +228,8 @@ int main() {
             "../proj2/input/videos/bus_cif.y4m",
             {15, 16, 16, true, 5, 500000});
 
-        config.addTestCase("akiyo_qcif",
-            "../proj2/input/videos/akiyo_qcif.y4m",
+        config.addTestCase("bowing_qcif",
+            "../proj2/input/videos/bowing_cif.y4m",
             {10, 8, 8, true, 3, 300000});
 
         VideoTester tester(config);

@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
-#include "video/videoCoder.h"
+#include "video/videoCoder.cpp"
 #include "image/imageCoder.h"
-#include "audio/audioCoding.h"
+#include "audio/audioCoding.cpp"
 
 using namespace std;
 
@@ -61,17 +61,30 @@ int encodeImage(string inputFile) {
     return 0;
 }
 
-void encodeAudio(string inputPath) {
+void encodeAudio(string inputPath, bool lossy, string bitrate) {
     // string inputPath = "../proj2/input/audio/sample.wav";
     string encodedPath = "../proj2/output/encoded_audio.bin";
     string outputPath = "../proj2/output/decoded_audio.wav";
 
-    AudioCodec codec;
-    cout << "Encoding audio..." << endl;
+    bool isLossy = false;
+    double targetBitrate = 0;
+    bool isAdaptive = false;
+
+    if (lossy) {
+        isLossy = true;
+        targetBitrate = stod(bitrate);
+    } else {
+        isAdaptive = true;
+    }
+
+    AudioCodec codec(4, isAdaptive, isLossy, targetBitrate);
+
+    cout << "Encoding..." << endl;
     codec.encode(inputPath, encodedPath);
-    cout << "Decoding audio..." << endl;
+
+    cout << "Decoding..." << endl;
     codec.decode(encodedPath, outputPath);
-    cout << "Audio encoding and decoding completed." << endl;
+
 }
 
 void encodeVideo(string inputPath) {
@@ -98,7 +111,7 @@ void encodeVideo(string inputPath) {
     auto decodeEndTime = chrono::high_resolution_clock::now();
     double decodeTime = chrono::duration_cast<chrono::milliseconds>(decodeEndTime - decodeStartTime).count() / 1000.0;
 
-    cout << "Decoding completed." << endl;
+    cout << "Decoding completed." << endl;       
     cout << "Decoding Time: " << decodeTime << " seconds" << endl;
 }
 
@@ -106,7 +119,7 @@ int main() {
   while (true)
   {  
     int choice;
-    string inputPath;
+    string inputPath, fileName, bitrate;
     cout << "Select encoding type:" << endl;
     cout << "1. Image Encoding" << endl;
     cout << "2. Audio Encoding" << endl;
@@ -116,21 +129,34 @@ int main() {
 
     switch (choice) {
         case 1:
-            cout << "Enter the path to image" << endl;
-            cin >> inputPath;
-            inputPath = "../proj2" + inputPath;
+            cout << "Enter the image file name (has to be in /inputs/images)" << endl;
+            cin >> fileName;
+            inputPath = "../proj2/input/images/" + fileName;
             encodeImage(inputPath);
             break;
+
         case 2:
-            cout << "Enter the path to audio" << endl;
-            cin >> inputPath;
-            inputPath = "../proj2" + inputPath;
-            encodeAudio(inputPath);
+            cout << "Enter the audio file name (has to be in /inputs/audios)" << endl;
+            cin >> fileName;
+            inputPath = "../proj2/input/audios/" + fileName;
+            char lossyChoice;
+            bool lossy;
+            bitrate = "0.0";
+            cout << "Do you want lossy encoding? (y/n): ";
+            cin >> lossyChoice;
+
+            if (lossyChoice == 'y' || lossyChoice == 'Y')   {
+                lossy = true;
+                cout << "What's the target bitrate: ";
+                cin >> bitrate;
+            }
+            encodeAudio(inputPath,lossy,bitrate);
             break;
+
         case 3:
-            cout << "Enter the path to video" << endl;
-            cin >> inputPath;
-            inputPath = "../proj2" + inputPath;
+            cout << "Enter the video file name (has to be in /inputs/videos)" << endl;
+            cin >> fileName;
+            inputPath = "../proj2/input/videos/" + fileName;
             encodeVideo(inputPath);
             break;
         default:
