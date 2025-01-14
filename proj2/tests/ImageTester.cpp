@@ -42,8 +42,8 @@ string formatFileSize(size_t bytes) {
 
 int main() {
     string originalImagePath = "../proj2/input/images/image.ppm";
-    string reconstructedImagePath = "../proj2/output/reconstructed_image.ppm";
-    string encodedFilePath = "../proj2/output/encoded_residuals.bin";
+    string reconstructedImagePath = "../proj2/output/decoded_image.ppm";
+    string encodedFilePath = "../proj2/output/encoded_image.bin";
 
     size_t originalSize = getFileSize(originalImagePath);
     size_t encodedSize = getFileSize(encodedFilePath);

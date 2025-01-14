@@ -45,12 +45,13 @@ struct VideoHeader {
 };
 
 class VideoCoder {
+public:
+    bool isLossy;
 private:
     ImageCoder imageCoder;
     int blockSize;
     int quantizationLevel;
     int targetBitrate;
-    bool isLossy;
     EncodingMetrics metrics;
 
     size_t totalBits = 0;
