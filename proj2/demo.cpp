@@ -6,17 +6,59 @@
 
 using namespace std;
 
-void encodeImage(string inputPath) {
+int encodeImage(string inputFile) {
     // string inputPath = "../proj2/input/images/sample.jpg";
-    string encodedPath = "../proj2/output/encoded_image.bin";
+    string encodedFile = "../proj2/output/encoded_image.bin";
     string outputPath = "../proj2/output/decoded_image.jpg";
+    Mat image = imread(inputFile, IMREAD_COLOR);
+    if (image.empty()) {
+        cerr << "Error: Could not load the image." << endl;
+        return -1;
+    }
 
     ImageCoder coder;
-    cout << "Encoding image..." << endl;
-    coder.encodeImage(inputPath, encodedPath);
-    cout << "Decoding image..." << endl;
-    coder.decodeImage(encodedPath, outputPath);
-    cout << "Image encoding and decoding completed." << endl;
+    Predictors::Standards selectedPredictor = Predictors::JPEG_PL;
+
+    // Encode
+    vector<vector<int>> residuals = coder.calculateResiduals(image, selectedPredictor);
+    coder.encodeWithGolomb(residuals, encodedFile);
+
+    // Decode
+    vector<vector<int>> decodedResiduals = coder.decodeWithGolomb(encodedFile);
+    Mat reconstructed = coder.reconstructImage(decodedResiduals, selectedPredictor);
+
+    // Save reconstructed image
+    imwrite("../proj2/output/decoded_image.ppm", reconstructed);
+    
+    // Verify lossless compression
+    Mat diff;
+    absdiff(image, reconstructed, diff);
+    
+    // Check each channel separately
+    vector<Mat> diffChannels;
+    split(diff, diffChannels);
+    
+    int totalDiff = 0;
+    for (int i = 0; i < 3; i++) {
+        int channelDiff = countNonZero(diffChannels[i]);
+        totalDiff += channelDiff;
+        if (channelDiff > 0) {
+            cout << "Channel " << i << " has " << channelDiff << " different pixels" << endl;
+        }
+    }
+    
+    if (totalDiff == 0) {
+        cout << "Compression is lossless!" << endl;
+    } else {
+        cout << "Warning: Compression is lossy. Total different pixels: " << totalDiff << endl;
+    }
+
+    // Display comparison
+    Mat comparison;
+    hconcat(image, reconstructed, comparison);
+    imshow("Original (Left) vs Reconstructed (Right)", comparison);
+    waitKey(0);
+    return 0;
 }
 
 void encodeAudio(string inputPath) {
@@ -33,7 +75,7 @@ void encodeAudio(string inputPath) {
 }
 
 void encodeVideo(string inputPath) {
-    string inputPath = "../proj2/input/videos/sample.mp4";
+    // string inputPath = "../proj2/input/videos/sample.mp4";
     string encodedPath = "../proj2/output/encoded_video.bin";
     string outputPath = "../proj2/output/decoded_video.mp4";
     int iFrameInterval = 10;

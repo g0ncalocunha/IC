@@ -54,8 +54,8 @@ public:
         TestCase testCase;
         testCase.name = name;
         testCase.inputPath = input;
-        testCase.encodedPath = "encoded_" + name + ".bin";
-        testCase.outputPath = "decoded_" + name + ".mp4";
+        testCase.encodedPath = "../proj2/output/encoded_" + name + ".bin";
+        testCase.outputPath = "../proj2/output/decoded_" + name + ".mp4";
         testCase.params = params;
         
         // Get frame count and file size
@@ -77,11 +77,24 @@ public:
             return 0.0;
         }
 
+        // Ensure that the original and decoded frames have the same number of channels
+        if (original.channels() != decoded.channels()) {
+            cerr << "Error: Number of channels in original and decoded frames do not match." << endl;
+            return 0.0;
+        }
+
         Mat diff;
         absdiff(original, decoded, diff);
+
+        // Ensure that the diff matrix has the same number of channels as the original and decoded frames
+        if (diff.channels() != original.channels()) {
+            cerr << "Error: Number of channels in diff matrix does not match original and decoded frames." << endl;
+            return 0.0;
+        }
+
         diff.convertTo(diff, CV_64F);
         diff = diff.mul(diff);
-        
+
         double mse = sum(diff)[0] / (diff.total() * original.channels());
         return (mse > 0) ? 10.0 * log10(255.0 * 255.0 / mse) : 100.0;
     }
@@ -89,7 +102,7 @@ public:
     static double calculateAveragePSNR(const string& originalPath, const string& decodedPath) {
         VideoCapture origVideo(originalPath);
         VideoCapture decodedVideo(decodedPath);
-        
+
         if (!origVideo.isOpened() || !decodedVideo.isOpened()) {
             throw runtime_error("Cannot open video files for PSNR calculation");
         }
@@ -100,7 +113,13 @@ public:
 
         while (origVideo.read(origFrame) && decodedVideo.read(decodedFrame)) {
             if (origFrame.empty() || decodedFrame.empty()) break;
-            
+
+            // Ensure that the original and decoded frames have the same number of channels
+            if (origFrame.channels() != decodedFrame.channels()) {
+                cerr << "Error: Number of channels in original and decoded frames do not match." << endl;
+                return 0.0;
+            }
+
             double framePSNR = calculateFramePSNR(origFrame, decodedFrame);
             totalPSNR += framePSNR;
             frameCount++;
@@ -202,15 +221,15 @@ int main() {
         VideoTestConfiguration config;
 
         config.addTestCase("akiyo_cif", 
-            "../videos/akiyo_cif.y4m", 
+            "../proj2/input/videos/akiyo_cif.y4m", 
             {10, 16, 16, true, 1, 0});
 
         config.addTestCase("bus_cif",
-            "../videos/bus_cif.y4m",
+            "../proj2/input/videos/bus_cif.y4m",
             {15, 16, 16, true, 5, 500000});
 
-        config.addTestCase("deadline_cif",
-            "../videos/deadline_cif.y4m",
+        config.addTestCase("akiyo_qcif",
+            "../proj2/input/videos/akiyo_qcif.y4m",
             {10, 8, 8, true, 3, 300000});
 
         VideoTester tester(config);

@@ -45,10 +45,10 @@ struct VideoHeader {
 };
 
 class VideoCoder {
-    friend class VideoTester;
 private:
     ImageCoder imageCoder;
     int blockSize;
+    int quantizationLevel;
     int targetBitrate;
     bool isLossy;
     EncodingMetrics metrics;
@@ -256,6 +256,71 @@ private:
         return bestMotion;
     }
 
+    void decodeIFrame(bitStream& bs, Mat& frame, const VideoHeader& header) {
+        if (header.isLossy) {
+            // Decode lossy I-frame
+            for (int y = 0; y < frame.rows; y += 8) {
+                for (int x = 0; x < frame.cols; x += 8) {
+                    for (int c = 0; c < 3; c++) {
+                        Mat block(8, 8, CV_32F);
+                        vector<int> zigZag;
+                        for (int i = 0; i < 64; i++) {
+                            zigZag.push_back(bs.readBits(8) - 128);
+                        }
+                        block = inverseZigZag(zigZag);
+                        dequantizeBlock(block, c == 0);
+                        idct2D(block);
+                        block.copyTo(frame(Rect(x, y, 8, 8)));
+                    }
+                }
+            }
+        } else {
+            // Decode lossless I-frame
+            vector<Mat> channels(3);
+            for (int c = 0; c < 3; c++) {
+                channels[c] = Mat(frame.rows, frame.cols, CV_8UC1);
+                for (int i = 0; i < frame.rows; i++) {
+                    for (int j = 0; j < frame.cols; j++) {
+                        channels[c].at<uchar>(i,j) = bs.readBits(8);
+                    }
+                }
+            }
+            merge(channels, frame);
+        }
+    }
+
+    void decodePFrame(bitStream& bs, Mat& frame, const Mat& prevFrame, 
+                     const VideoHeader& header) {
+        for (int y = 0; y < frame.rows; y += header.blockSize) {
+            for (int x = 0; x < frame.cols; x += header.blockSize) {
+                int mvX = bs.readBits(8) - 128;
+                int mvY = bs.readBits(8) - 128;
+                
+                Rect currBlock(x, y, 
+                             min(header.blockSize, frame.cols - x),
+                             min(header.blockSize, frame.rows - y));
+                
+                int predX = max(0, min(frame.cols - currBlock.width, x + mvX));
+                int predY = max(0, min(frame.rows - currBlock.height, y + mvY));
+                
+                Mat predictedBlock = prevFrame(Rect(predX, predY, 
+                                                  currBlock.width, currBlock.height));
+                
+                if (header.isLossy) {
+                    // Decode lossy residual
+                    Mat residual = decodeLossyResidual(bs, currBlock.size());
+                    Mat reconstructed = reconstructBlock(predictedBlock, residual);
+                    reconstructed.copyTo(frame(currBlock));
+                } else {
+                    // Decode lossless residual
+                    Mat residual = decodeLosslessResidual(bs, currBlock.size());
+                    Mat reconstructed = reconstructBlock(predictedBlock, residual);
+                    reconstructed.copyTo(frame(currBlock));
+                }
+            }
+        }
+    }
+
     Mat decodeLossyResidual(bitStream& bs, const Size& blockSize) {
         Mat residual(blockSize, CV_16SC3);
         vector<Mat> channels(3);
@@ -272,7 +337,7 @@ private:
     }
     
     Mat decodeLosslessResidual(bitStream& bs, const Size& blockSize) {
-        return decodeLossyResidual(bs, blockSize); 
+        return decodeLossyResidual(bs, blockSize); // Same process for now
     }
 
     int calculateIntraBitrate(const Mat& block) {
@@ -285,81 +350,9 @@ private:
     }
 
 public:
-    int quantizationLevel;
-
      VideoCoder(int bs = 16, bool lossy = false, int qLevel = 1, int tBitrate = 0) 
         : blockSize(bs), isLossy(lossy), quantizationLevel(qLevel), 
           targetBitrate(tBitrate), imageCoder() {}
-
-    void decodeIFrame(bitStream& bs, Mat& frame, const VideoHeader& header) {
-    frame = Mat(header.height, header.width, CV_8UC3, Scalar(0, 0, 0));
-
-    if (header.isLossy) {
-        for (int y = 0; y < frame.rows; y += 8) {
-            for (int x = 0; x < frame.cols; x += 8) {
-                for (int c = 0; c < 3; c++) {
-                    Mat block(8, 8, CV_32F);
-                    vector<int> zigZag(64);
-                    for (int i = 0; i < 64; i++) {
-                        zigZag[i] = bs.readBits(8) - 128;
-                    }
-                    block = inverseZigZag(zigZag);
-                    dequantizeBlock(block, c == 0);
-                    idct2D(block);
-                    block.convertTo(block, CV_8U);
-
-                    Rect blockRect(x, y, block.cols, block.rows);
-                    Mat roi = frame(blockRect).colRange(0, block.cols).rowRange(0, block.rows);
-                    roi.forEach<Vec3b>([&block, c](Vec3b& pixel, const int* position) {
-                        pixel[c] = saturate_cast<uchar>(block.at<float>(position[0], position[1]));
-                    });
-                }
-            }
-        }
-    } else {
-        // Decode lossless I-frame
-        vector<Mat> channels(3);
-        for (int c = 0; c < 3; c++) {
-            channels[c] = Mat(frame.rows, frame.cols, CV_8UC1);
-            for (int i = 0; i < frame.rows; i++) {
-                for (int j = 0; j < frame.cols; j++) {
-                    channels[c].at<uchar>(i, j) = bs.readBits(8);
-                }
-            }
-        }
-        merge(channels, frame);
-    }
-}
-
-    void decodePFrame(bitStream& bs, Mat& frame, const Mat& prevFrame, const VideoHeader& header) {
-        frame = Mat(header.height, header.width, CV_8UC3, Scalar(0, 0, 0));
-
-        for (int y = 0; y < frame.rows; y += header.blockSize) {
-            for (int x = 0; x < frame.cols; x += header.blockSize) {
-                int mvX = bs.readBits(8) - 128;
-                int mvY = bs.readBits(8) - 128;
-
-                Rect currBlock(x, y,
-                    min(header.blockSize, frame.cols - x),
-                    min(header.blockSize, frame.rows - y));
-
-                int predX = max(0, min(frame.cols - currBlock.width, x + mvX));
-                int predY = max(0, min(frame.rows - currBlock.height, y + mvY));
-
-                Rect refBlock(predX, predY, currBlock.width, currBlock.height);
-                Mat predictedBlock = prevFrame(refBlock);
-
-                Mat residual = header.isLossy ? decodeLossyResidual(bs, currBlock.size())
-                                            : decodeLosslessResidual(bs, currBlock.size());
-
-                residual.convertTo(residual, predictedBlock.type());
-                Mat reconstructed;
-                add(predictedBlock, residual, reconstructed, noArray(), CV_8UC3);
-                reconstructed.copyTo(frame(currBlock));
-            }
-        }
-    }
-
 
     EncodingMetrics encodeVideo(const string& inputPath, const string& outputPath, 
                                int iFrameInterval, int blockSize, int searchRange) {
@@ -422,6 +415,7 @@ public:
                                          min(8, frame.rows - y));
                             Mat block = frame(blockRect).clone();
                             
+                            // Process each channel
                             vector<Mat> channels;
                             split(block, channels);
                             
@@ -471,7 +465,7 @@ public:
                             int predY = max(0, min(frame.rows - currBlockHeight, y + mv.y));
                             predictedBlock = prevFrame(Rect(predX, predY, currBlockWidth, currBlockHeight));
                             
-                            // Motion vector
+                            // Write motion vector
                             bs.writeBits(mv.x + 128, 8);
                             bs.writeBits(mv.y + 128, 8);
                             
@@ -493,7 +487,7 @@ public:
                             // Lossy mode - DCT-based coding
                             mv = estimateMotion(frame, prevFrame, x, y, blockSize, searchRange);
                             
-                            //Motion vector
+                            // Write motion vector
                             bs.writeBits(mv.x + 128, 8);
                             bs.writeBits(mv.y + 128, 8);
                             
@@ -598,30 +592,20 @@ public:
 // int main() {
 //     try {
 //         string inputPath = "../proj2/input/videos/bus_cif.y4m";
-//         string encodedPath = "../proj2/output/encoded_bus.bin";
-//         string outputPath = "../proj2/output/decoded_bus.mp4";
+//         string encodedPath = "../proj2/output/encoded.bin";
+//         string outputPath = "../proj2/output/output.mp4";
 //         int iFrameInterval = 10;
 //         int blockSize = 16;
 //         int searchRange = 16;
 
 //         VideoCoder coder;
-//         cout << "Encoding video..." << endl;
-//         EncodingMetrics metrics = coder.encodeVideo(inputPath, encodedPath, iFrameInterval, blockSize, searchRange);
 
-//         cout << "Encoding completed." << endl;
-//         cout << "PSNR: " << metrics.psnr << " dB" << endl;
-//         cout << "MSE: " << metrics.mse << endl;
-//         cout << "Compression Ratio: " << metrics.compressionRatio << endl;
-//         cout << "Encoding Time: " << metrics.encodingTime << " seconds" << endl;
+//         cout << "Encoding video..." << endl;
+//         coder.encodeVideo(inputPath, encodedPath, iFrameInterval, blockSize, searchRange);
 
 //         cout << "Decoding video..." << endl;
-//         auto decodeStartTime = chrono::high_resolution_clock::now();
 //         coder.decodeVideo(encodedPath, outputPath);
-//         auto decodeEndTime = chrono::high_resolution_clock::now();
-//         double decodeTime = chrono::duration_cast<chrono::milliseconds>(decodeEndTime - decodeStartTime).count() / 1000.0;
 
-//         cout << "Decoding completed." << endl;       
-//         cout << "Decoding Time: " << decodeTime << " seconds" << endl;
 //     } catch (const exception& e) {
 //         cerr << "Error: " << e.what() << endl;
 //         return 1;

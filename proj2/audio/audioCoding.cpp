@@ -25,21 +25,22 @@ private:
     sf::SoundBuffer buffer;
     std::unique_ptr<golomb> coder;
 
-    int calculateOptimalM(const std::vector<int16_t>& deltas) {
-        if (deltas.empty()) return 8;
-        
-        // Calculate mean absolute value
-        double sum = 0;
-        for (const auto& delta : deltas) {
-            sum += std::abs(delta);
+    uint32_t calculateChecksum(const sf::Int16* samples, size_t size) {
+        uint32_t checksum = 0;
+        for (size_t i = 0; i < size; i++) {
+            checksum = (checksum << 1) ^ static_cast<uint32_t>(samples[i]);
         }
-        double mean = sum / deltas.size();
-        
-        // Choose M based on mean value
-        if (mean < 4) return 4;
-        if (mean < 8) return 8;
-        if (mean < 16) return 16;
-        return 32;
+        return checksum;
+    }
+
+    // Verification of lossless reconstruction
+    bool verifyBlock(const sf::Int16* original, const sf::Int16* decoded, size_t size) {
+        for (size_t i = 0; i < size; i++) {
+            if (original[i] != decoded[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     void dct(const std::vector<double>& input, std::vector<double>& output) {
@@ -74,47 +75,123 @@ private:
         }
     }
 
-    void encodeLossless(const sf::Int16* samples, size_t blockSize, bitStream& bs) {
+     void encodeLossless(const sf::Int16* samples, size_t blockSize, bitStream& bs) {
         if (blockSize == 0) return;
-        
-        // Write first sample directly
+
+        // Block checksum for verification
+        uint32_t checksum = calculateChecksum(samples, blockSize);
+        bs.writeBits(checksum, 32);
+
         bs.writeBits(static_cast<uint16_t>(samples[0] + 32768), 16);
-        
-        // Calculate deltas
-        std::vector<int16_t> deltas(blockSize - 1);
+
+        int k;
+        if (adaptive && blockSize > 1) {
+            // Calculate mean absolute difference for better k parameter estimation
+            double sum = 0;
+            int maxDelta = 0;
+            for (size_t i = 1; i < blockSize; i++) {
+                int delta = std::abs(samples[i] - samples[i-1]);
+                sum += delta;
+                maxDelta = std::max(maxDelta, delta);
+            }
+            
+            double mean = sum / (blockSize - 1);
+            if (mean > 0) {
+                k = static_cast<int>(std::log2(mean * 0.69314718)); //optimal Rice coding
+            } else {
+                k = 0;
+            }
+            
+            // Adjust k based on maximum delta 
+            int maxBits = static_cast<int>(std::log2(maxDelta + 1));
+            k = std::min(k, maxBits);
+            k = std::clamp(k, 0, 12);  
+            bs.writeBits(k, 4);
+        } else {
+            k = 8;  // Default -> non-adaptive mode
+        }
+
+        int16_t prevSample = samples[0];
+        int16_t prevDelta = 0;
+
         for (size_t i = 1; i < blockSize; i++) {
-            deltas[i - 1] = samples[i] - samples[i - 1];
-        }
-        
-        // Update Golomb parameter if needed
-        if (adaptive && !deltas.empty()) {
-            int m = calculateOptimalM(deltas);
-            coder->setM(m);
-            bs.writeBits(m, 6);
-        }
-        
-        // Encode deltas with Golomb coding
-        for (const auto& delta : deltas) {
-            coder->encode(delta, bs);
+            int32_t predicted = prevSample + prevDelta;
+            int32_t actual = samples[i];
+            int32_t delta = actual - predicted;
+            
+            prevDelta = actual - prevSample;
+            prevSample = actual;
+
+            uint32_t uValue;
+            if (delta < 0) {
+                uValue = (-2 * delta - 1);
+            } else {
+                uValue = (2 * delta);
+            }
+            
+            uint32_t q = uValue >> k;
+            uint32_t r = uValue & ((1 << k) - 1);
+            
+            while (q > 31) {  
+                bs.writeBits(0x7FFFFFFF, 31);  // Write 31 ones
+                q -= 31;
+            }
+            if (q > 0) {
+                bs.writeBits((1 << q) - 1, q);
+            }
+            bs.writeBit(0);
+            
+            if (k > 0) {  // Only write remainder if k > 0
+                bs.writeBits(r, k);
+            }
         }
     }
 
     void decodeLossless(bitStream& bs, size_t blockSize, std::vector<sf::Int16>& decodedSamples, size_t offset) {
         if (blockSize == 0) return;
-        
-        // Read first sample directly
+
+        uint32_t originalChecksum = bs.readBits(32);
+
         decodedSamples[offset] = static_cast<int16_t>(bs.readBits(16) - 32768);
-        
-        // Read adaptive parameter if needed
+
+        int k = 8;  // Default for fixed mode
         if (adaptive && blockSize > 1) {
-            int m = bs.readBits(6);
-            coder->setM(m);
+            k = bs.readBits(4);
         }
-        
-        // Decode remaining samples using deltas
+
+        int16_t prevSample = decodedSamples[offset];
+        int16_t prevDelta = 0;
+
         for (size_t i = 1; i < blockSize; i++) {
-            int16_t delta = coder->decode(bs);
-            decodedSamples[offset + i] = decodedSamples[offset + i - 1] + delta;
+            uint32_t q = 0;
+            while (bs.readBit()) {
+                q++;
+            }
+            
+            uint32_t r = (k > 0) ? bs.readBits(k) : 0;
+            
+            uint32_t uValue = (q << k) | r;
+            
+            int32_t delta;
+            if (uValue & 1) {
+                delta = -((uValue + 1) >> 1);
+            } else {
+                delta = (uValue >> 1);
+            }
+            
+            int32_t predicted = prevSample + prevDelta;
+            int32_t actual = predicted + delta;
+            
+            actual = std::clamp(actual, -32768, 32767);
+            decodedSamples[offset + i] = static_cast<int16_t>(actual);
+            
+            prevDelta = actual - prevSample;
+            prevSample = actual;
+        }
+
+        uint32_t decodedChecksum = calculateChecksum(&decodedSamples[offset], blockSize);
+        if (decodedChecksum != originalChecksum) {
+            throw std::runtime_error("Checksum verification failed - data corruption detected");
         }
     }
 
@@ -150,7 +227,6 @@ public:
         bitStream bs;
         bs.openFile(outputFile, std::ios::binary | std::ios::out);
 
-        // Write header
         bs.writeBits(channelCount, 8);
         bs.writeBits(sampleCount & 0xFFFF, 16);
         bs.writeBits(sampleCount >> 16, 16);
@@ -160,16 +236,14 @@ public:
         bs.writeBit(adaptive);
         bs.writeBit(lossy);
 
-        // Process blocks
         for (uint32_t i = 0; i < sampleCount; i += BLOCK_SIZE) {
             const size_t blockSize = std::min(
                 static_cast<size_t>(BLOCK_SIZE),
                 static_cast<size_t>(sampleCount - i));
-
+            
             bs.writeBits(blockSize, 16);
 
             if (lossy) {
-                // Convert to doubles [-1,1]
                 std::vector<double> blockData(blockSize);
                 for (size_t j = 0; j < blockSize; j++) {
                     blockData[j] = samples[i + j] / 32767.0;
@@ -178,7 +252,6 @@ public:
                 std::vector<double> dctCoeffs;
                 dct(blockData, dctCoeffs);
 
-                // Quantize and encode DCT coefficients
                 for (size_t j = 0; j < blockSize; j++) {
                     const double step = (1.0 / quantizationLevel) * (1.0 + j * j / (blockSize * blockSize));
                     const int16_t quantized = static_cast<int16_t>(std::round(dctCoeffs[j] / step));
@@ -188,7 +261,7 @@ public:
                 encodeLossless(samples + i, blockSize, bs);
             }
         }
-
+        
         bs.flushBuffer();
     }
 
@@ -196,7 +269,6 @@ public:
         bitStream bs;
         bs.openFile(inputFile, std::ios::binary | std::ios::in);
 
-        // Read header
         const uint8_t channelCount = bs.readBits(8);
         const uint32_t sampleCount = bs.readBits(16) | (bs.readBits(16) << 16);
         const uint32_t sampleRate = bs.readBits(16) | (bs.readBits(16) << 16);
@@ -213,7 +285,6 @@ public:
                 static_cast<size_t>(sampleCount - currentSample));
 
             if (lossy) {
-                // Decode and dequantize DCT coefficients
                 std::vector<double> dctCoeffs(blockSize);
                 for (size_t j = 0; j < blockSize; j++) {
                     const double step = (1.0 / quantizationLevel) * (1.0 + j * j / (blockSize * blockSize));
@@ -221,11 +292,9 @@ public:
                     dctCoeffs[j] = quantized * step;
                 }
 
-                // Apply IDCT
                 std::vector<double> output;
                 idct(dctCoeffs, output);
 
-                // Convert back to samples
                 for (size_t j = 0; j < blockSize; j++) {
                     decodedSamples[currentSample + j] = static_cast<sf::Int16>(
                         std::clamp(std::round(output[j] * 32767.0), -32768.0, 32767.0));

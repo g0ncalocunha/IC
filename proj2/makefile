@@ -34,8 +34,8 @@ videoCoder: video/videoCoder.cpp
 	g++ -o output/videoCoder.out video/videoCoder.cpp image/imageCoder.cpp util/predictors.cpp util/golomb.cpp util/bitStream.cpp `pkg-config --cflags --libs opencv4`
 	./output/videoCoder.out
 
-videoTester: VideoTester.cpp
-	g++ -o output/VideoTester.out video/VideoTester.cpp tests/CompressionVerifier.cpp util/bitStream.cpp util/predictors.cpp util/golomb.cpp image/imageCoder.cpp `pkg-config --cflags --libs opencv4`
+videoTester: tests/VideoTester.cpp
+	g++ -o output/VideoTester.out tests/VideoTester.cpp tests/CompressionVerifier.cpp util/bitStream.cpp util/predictors.cpp util/golomb.cpp image/imageCoder.cpp `pkg-config --cflags --libs opencv4`
 	./output/VideoTester.out
 
 demo:	demo.cpp

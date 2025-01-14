@@ -127,8 +127,8 @@ Mat ImageCoder::reconstructImage(const vector<vector<int>>& residuals, Predictor
 }
 
 // int main() {
-//     string inputFile = "images/image.ppm";
-//     string encodedFile = "encoded_residuals.bin";
+//     string inputFile = "../proj2/input/images/image.ppm";
+//     string encodedFile = "../proj2/output/encoded_residuals.bin";
     
 //     Mat image = imread(inputFile, IMREAD_COLOR);
 //     if (image.empty()) {
@@ -137,7 +137,7 @@ Mat ImageCoder::reconstructImage(const vector<vector<int>>& residuals, Predictor
 //     }
 
 //     ImageCoder coder;
-//     Predictors::Standards selectedPredictor = Predictors::JPEG_PL;
+//     Predictors::Standards selectedPredictor = Predictors::JPEG_ABC;
 
 //     // Encode
 //     vector<vector<int>> residuals = coder.calculateResiduals(image, selectedPredictor);
@@ -148,7 +148,7 @@ Mat ImageCoder::reconstructImage(const vector<vector<int>>& residuals, Predictor
 //     Mat reconstructed = coder.reconstructImage(decodedResiduals, selectedPredictor);
 
 //     // Save reconstructed image
-//     imwrite("reconstructed_image.ppm", reconstructed);
+//     imwrite("../proj2/output/reconstructed_image.ppm", reconstructed);
     
 //     // Verify lossless compression
 //     Mat diff;
